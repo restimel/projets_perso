@@ -46,6 +46,7 @@ function foundSolution(){
 function game(taille){
 	this.size=taille||0;
 	this.tab=[];
+	this.position = [0,0]; //position courante
 	
 	taille=this.size;
 	for(var i=0;i<taille;i++){
@@ -61,9 +62,9 @@ game.prototype.del=function(x,y){
 
 game.prototype.snapshot=function(){
 	var tab=this.tab.copy();
-	Game_shot.prototype.target=1;
+	Game_shot.prototype.target=0;
 	//postMessage({cmd:"solutionUpdate",done:done.length,tocompute:todo.length,distance:current.distanceC+"/"+current.distanceE});
-	return new Game_shot(tab,0);
+	return new Game_shot(tab,this.position,0);
 }
 
 var jeu=new game();
@@ -72,83 +73,99 @@ var jeu=new game();
 /*
 	Objet game_shot
 */
-function Game_shot(tab,distanceC,parent){
+function Game_shot(tab,position,distanceC,parent){
 	this.tab=tab||[]; //tableau représentant les pions
+	this.position = position || [0,0];
 	this.distanceC=distanceC||0; //cout actuel
 	this.distanceE=this.estimate(); //distance total estimée pour atteindre la fin (cout actuel + estimation pour atteindre la fin)
 	this.parent=parent||null; //objet parent
+
+	this.tab[position[0]][position[1]] = 1;
 }
-Game_shot.prototype.target=1; //position de l'arrivée
+Game_shot.prototype.target=0; //position de l'arrivée
 
 Game_shot.prototype.estimate=function(){
-	var li=this.tab.length,lj,cmpt=0;
+	var li=this.tab.length,lj,cmpt=0, dst = li * this.tab[0].length;
 	while(li--){
 		lj=this.tab[li].length;
 		while(lj--){
-			if(this.tab[li][lj]===1) cmpt++;
+			if(this.tab[li][lj]!==0) cmpt++;
 		}
 	}
-	return this.distanceE=cmpt;
+
+	return this.distanceE= dst - cmpt +1;
 }
 
-Game_shot.prototype.verify_move=function(i,j,direction){
-	var li=this.tab.length,lj=li;
+Game_shot.prototype.verify_move=function(i,j){
+	var li=this.tab.length,lj=this.tab[0].length;
 	
-	if(this.tab[i][j] === 1){
-		var n_grille=this.tab.copy();
-		switch(direction){
-			case 1: //à droite
-				if(i+2<li && n_grille[i+1][j]===1 && n_grille[i+2][j]===0){
-					n_grille[i+1][j]=0;
-				}else{
-					return false;
-				}
-			break;
-			case 2: //à gauche
-				if(i>1 && n_grille[i-1][j]===1 && n_grille[i-2][j]===0){
-					n_grille[i+1][j]=0;
-				}else{
-					return false;
-				}
-			break;
-			case 3: //en bas
-				if(j+2<lj && n_grille[i][j+1]===1 && n_grille[i][j+2]===0){
-					n_grille[i][j+1]=0;
-				}else{
-					return false;
-				}
-			break;
-			case 4: //en haut
-				if(j>1 && n_grille[i][j-1]===1 && n_grille[i][j-2]===0){
-					n_grille[i][j-1]=0;
-				}else{
-					return false;
-				}
-			break;
-			default: return false;
-		}
-		return new Game_shot(n_grille,this.distanceC+1,this);
-	}else{
+	if (i<0 || i>= li) {
 		return false;
 	}
+	if (j<0 || j>= lj) {
+		return false;
+	}
+
+	if(this.tab[i][j] === 1){
+		return false;
+	}
+
+	var n_grille=this.tab.copy();
+	n_grille[i][j]=1;
+	return new Game_shot(n_grille,[i,j],this.distanceC+1,this);
 }
 
 Game_shot.prototype.get_next=function(){
-	var result=[],i=-1,li=this.tab.length,j,lj,t,k;
-	while(++i<li){
-		j=-1;
-		lj=this.tab[i].length;
-		while(++j<lj){
-			if(this.tab[i][j]===1){
-				k=1;
-				do{
-					if(t=this.verify_move(i,j,k)){
-						result.push(t);
-					}
-				}while(k++<4);
-			}
-		}
+	var result=[],i,j,t,k;
+	
+	i = this.position[0]-2;
+	j = this.position[1]-1;
+	if(t=this.verify_move(i,j)){
+		result.push(t);
 	}
+
+	i = this.position[0]-2;
+	j = this.position[1]+1;
+	if(t=this.verify_move(i,j)){
+		result.push(t);
+	}
+
+	i = this.position[0]+2;
+	j = this.position[1]-1;
+	if(t=this.verify_move(i,j)){
+		result.push(t);
+	}
+
+	i = this.position[0]+2;
+	j = this.position[1]+1;
+	if(t=this.verify_move(i,j)){
+		result.push(t);
+	}
+
+	i = this.position[0]-1;
+	j = this.position[1]-2;
+	if(t=this.verify_move(i,j)){
+		result.push(t);
+	}
+
+	i = this.position[0]-1;
+	j = this.position[1]+2;
+	if(t=this.verify_move(i,j)){
+		result.push(t);
+	}
+
+	i = this.position[0]+1;
+	j = this.position[1]-2;
+	if(t=this.verify_move(i,j)){
+		result.push(t);
+	}
+
+	i = this.position[0]+1;
+	j = this.position[1]+2;
+	if(t=this.verify_move(i,j)){
+		result.push(t);
+	}
+
 	return result;
 }
 
