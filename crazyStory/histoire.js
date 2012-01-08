@@ -26,8 +26,8 @@ function adaptString(str,listeObj){
 		if(interlocuteur){
 			switch(interlocuteur.etat){
 				case "enrhumé":
-					message=message.replace(/m/g,"b").replace(/j/g,"z").replace(/c([eih'])/g,"¹$1").replace(/c/g,"g").replace(/¹(.)/g,"c$1").replace(/k/g,"g").replace(/q/g,"g").replace(/t(?![ s])/g,"d");
-					message=message.replace(/M/g,"B").replace(/J/g,"Z").replace(/C([eih'])/g,"¹$1").replace(/C/g,"G").replace(/¹(.)/g,"C$1").replace(/K/g,"G").replace(/Q/g,"G").replace(/T/g,"D");
+					message=message.replace(/m/g,"b").replace(/j/g,"z").replace(/c(?![^eih'])/g,"g").replace(/k/g,"g").replace(/q/g,"g").replace(/t(?![ s.,])/g,"d");
+					message=message.replace(/M/g,"B").replace(/J/g,"Z").replace(/C(?![^eih'])/g,"G").replace(/K/g,"G").replace(/Q/g,"G").replace(/T(?![ s.,])/g,"D");
 					break;
 			}
 		}
@@ -42,7 +42,6 @@ function adaptString(str,listeObj){
 
 function histoire(p1,p2,p3,p4,l1,l2,l3,o1){
 	var lstObj={other:null,p1:p1,p2:p2,p3:p3,p4:p4,l1:l1,l2:l2,l3:l3,o1:o1,t1:p1,t2:p2};//t1 et t2 sont des objetse temporaire (pour les actions identiques avec des persos différents)
-	p3.etat="enrhumé";
 	var introduction="<p>";
 	introduction+="Il était une fois un";
 	if(p1.nomSexe==="F") introduction+="e";

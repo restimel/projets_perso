@@ -203,4 +203,11 @@ function runStory(){
 		o1=listeObjets[document.getElementById("cadeau").value];
 	var message=histoire(p1,p2,p3,p4,l1,l2,l3,o1);
 	document.getElementById("histoire").innerHTML=message;
+	var rslt="";
+	if(p1.etat==="" && p2.etat==="" && p3.etat==="" && p4.etat==="" && p1.surnom==="Petit Chaperon rouge" && p2.nom==="loup" && p3.surnom==="mère-grand" && l1.nom==="village" && l2.nom==="bois" && l3.nom==="village" && o1.nom==="une galette et un petit pot de beurre"){
+		rslt+="Ceci est la version proche de celle de Perrault<br />";
+	}
+	document.getElementById("resultat").innerHTML=rslt;
+	p1.etat=p2.etat=p3.etat=p4.etat="";
 }
+//p3.etat="enrhumé";

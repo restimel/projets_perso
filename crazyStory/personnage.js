@@ -3,6 +3,7 @@ function Personnage(nom,sexe,surnom,surnomSexe){
 	this.nomSexe=sexe || "M";
 	this.surnom=surnom || nom;
 	this.surnomSexe=surnomSexe || sexe;
+	this.etat="";
 }
 Personnage.prototype.relationnel0="mon enfant";
 Personnage.prototype.relationnel1="§¤mon §mon §ma §mon ¤p3.surnom¤§";
