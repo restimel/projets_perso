@@ -3,13 +3,13 @@ function adaptString(str,listeObj){
 	function analyseMotif(m,masculin,masculin2,feminin,feminin2,obj,ref){
 		var message="";
 		if(listeObj[obj][ref+"Sexe"]==="F"){
-			if("aeiouy".indexOf(listeObj[obj][ref].charAt(0))===-1){
+			if("haeiouy".indexOf(listeObj[obj][ref].charAt(0))===-1){
 				message = feminin;
 			}else{
 				message = feminin2;
 			}
 		}else{
-			if("aeiouy".indexOf(listeObj[obj][ref].charAt(0))===-1){
+			if("haeiouy".indexOf(listeObj[obj][ref].charAt(0))===-1){
 				message = masculin;
 			}else{
 				message = masculin2;
@@ -63,7 +63,7 @@ function histoire(p1,p2,p3,p4,l1,l2,l3,o1){
 	rencontre+="</p>";
 	
 	var attaque1="<p>";
-	attaque1+=adaptString("§¤Le §L'§La §L'¤p2.nom¤§¤¤p2.nom¤¤ ne fut pas longtemps à arriver à §¤le §l'§la §l'¤l3.surnom¤§¤¤l3.surnom¤¤ de §¤le §l'§la §l'¤p3.surnom¤§¤¤p3.surnom¤¤ ; "+l3.entree1+".",lstObj)+"<br/>";
+	attaque1+=adaptString("§¤Le §L'§La §L'¤p2.nom¤§¤¤p2.nom¤¤ ne fut pas longtemps à arriver à §¤le §l'§la §l'¤l3.surnom¤§¤¤l3.surnom¤¤ §¤du §de l'§de la §de l'¤p3.surnom¤§¤¤p3.surnom¤¤ ; "+l3.entree1+".",lstObj)+"<br/>";
 	attaque1+=adaptString(" — ££p3§Qui est là ?££",lstObj)+"<br/>";
 	attaque1+=adaptString(" — ££p2§C'est "+p1.relationnel2+"¤¤p1.nom¤¤ §¤le §l'§la §l'¤p1.surnom¤§¤¤p1.surnom¤¤££, dit §¤le §l'§la §l'¤p2.nom¤§¤¤p2.nom¤¤ en contrefaisant sa voix, ££p2§qui vous apporte ¤¤o1.nom¤¤"+p1.attaque1Dialogue1+"££",lstObj)+"<br/>";
 	attaque1+=adaptString("§¤Le §L'§La §L'¤p3.surnom¤§¤¤p3.surnom¤¤, qui était "+l3.emplacement+" à cause qu'§¤il§elle¤p3.nom¤§ "+p1.attaque1Raison+", lui cria :",lstObj);

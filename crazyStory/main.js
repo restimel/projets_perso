@@ -6,21 +6,21 @@ var listeObjets=[];
 var listeLieux=[];
 
 
-var personnage=new Personnage("petite fille","F","Petit Chaperon rouge","M");
+var personnage=new Personnage("petite fille","F","petit chaperon rouge","M");
 personnage.relationnel0="mon enfant";
 personnage.introductionCarac=", la plus jolie qu'on eût su voir ; sa mère en était folle, et §¤son §son §sa §sa ¤p3.surnom¤§¤¤p3.surnom¤¤ plus §¤fou§folle¤p3.surnom¤§ encore";
 personnage.introductionSurnom="§¤Ce§Cet§Cette¤p3.nom¤§ ¤¤p3.nom¤¤ lui fit faire un petit chaperon rouge, qui lui seyait si bien, que partout on l'appelait le Petit Chaperon rouge.";
-personnage.introductionMission="Un jour, sa mère, ayant cuit et fait des galettes, lui dit : ££other§Va voir comment se porte §¤ton§ta¤p3.surnom¤§ ¤¤p3.surnom¤¤, car on m'a dit qu'§¤il§elle¤p3.surnom¤§ était malade. Porte-lui ¤¤o1.nom¤¤.££";
-personnage.rencontreVolonte="<span class=\"notDone\">, qui eut bien envie de ???</span>";
+personnage.introductionMission="Un jour, sa mère, ¤¤o1.preparation¤¤, lui dit : ££other§Va voir comment se porte §¤ton§ta¤p3.surnom¤§ ¤¤p3.surnom¤¤, car on m'a dit qu'§¤il§elle¤p3.surnom¤§ était malade. Porte-lui ¤¤o1.nom¤¤.££";
+personnage.rencontreVolonte=", qui avait été privée de son argent de poche par sa mère, eut bien envie de §¤le§la¤p1.nom¤§ voler";
 personnage.rencontreDialogue1=", que ma mère lui envoie";
 personnage.attaque1Dialogue1=", que ma mère vous envoie";
 personnage.attaque1Raison="se trouvait un peu mal";
-//personnage.attaque1attaque="Il se jeta sur §¤le §l'§la §l'¤p3.nom¤§¤¤p3.nom¤¤, et §¤le§la¤p3.nom¤§ dévora en moins de rien ; car il y avait plus de trois jours qu'il n'avait mangé.";
+personnage.attaque1attaque="Elle se jeta sur §¤le §l'§la §l'¤p3.nom¤§¤¤p3.nom¤¤, §¤le§la¤p3.nom¤§ bâillonna et §¤le§la¤p3.nom¤§ cacha en moins de rien. Elle §¤le§la¤p3.nom¤§ dépouilla de tout ce qu'elle trouva.";
 personnage.attaque1voix="la petite voix de la fille hésita d'abord";
 personnage.attaque1Visite="était §¤enrhumé§enrhumée¤p3.surnom¤§";
 personnage.attaque1voixAmeliore="augmentant un peu sa voix";
-//personnage.questions=[["",""],["",""]];
-//personnage.attaque2attaque="se jeta sur §¤le §l'§la §l'¤p1.surnom¤§¤¤p1.surnom¤¤, et §¤le§la¤p3.nom¤§ mangea";
+personnage.questions=[["une jolie chevelure","te séduire"],["une petite bouche","te sourire"],["une petite taille","t'échapper"],["de petites mains","te dépouiller"]];
+personnage.attaque2attaque="se jeta sur §¤le §l'§la §l'¤p1.surnom¤§¤¤p1.surnom¤¤, et §¤le§la¤p1.nom¤§ dépouilla";
 listePersonnages.push(personnage);
 
 
@@ -41,30 +41,50 @@ personnage.attaque1voix="la grosse voix du Loup";
 personnage.attaque1Visite="avait sa voix déformée par la peur";
 personnage.attaque1voixAmeliore="adoucissant un peu sa voix";
 personnage.questions=[["de grands bras","t'embrasser"],["de grandes jambes","courir"],["de grandes oreilles","écouter"],["de grands yeux","voir"],["de grandes dents","te manger"]];
-personnage.attaque2attaque="se jeta sur §¤le §l'§la §l'¤p1.surnom¤§¤¤p1.surnom¤¤, et §¤le§la¤p3.nom¤§ mangea";
+personnage.attaque2attaque="se jeta sur §¤le §l'§la §l'¤p1.surnom¤§¤¤p1.surnom¤¤, et §¤le§la¤p1.nom¤§ mangea";
 listePersonnages.push(personnage);
 
 
 personnage=new Personnage("bonne femme","F","mère-grand","F");
-personnage.relationnel0="mamie";
+personnage.relationnel0="mère-grand";
 personnage.relationnel2="ta ";
 personnage.introductionCarac=", la plus vieille qu'on eût su voir ; sa fille l'aimait beaucoup, et §¤son§sa¤p3.surnom¤§ ¤¤p3.surnom¤¤ plus encore";
 personnage.introductionSurnom="Elle était si bonne avec §¤ce§cet§cette¤p3.nom¤§ ¤¤p3.nom¤¤ que partout on l'appelait la Mère-grand.";
-personnage.introductionMission="Un jour, ayant cuit et fait des galettes, elle se dit : ££p1§Je vais voir comment se porte §¤mon§mon§ma§mon¤p3.surnom¤§ ¤¤p3.surnom¤¤, car on m'a dit qu'§¤il§elle¤p3.surnom¤§ était malade. Je lui porterai ¤¤o1.nom¤¤, et cela lui fera plaisir££.";
-personnage.rencontreVolonte="<span class=\"notDone\">, qui eut bien envie de ???</span>";
+personnage.introductionMission="Un jour, ¤¤o1.preparation¤¤, elle se dit : ££p1§Je vais voir comment se porte §¤mon§mon§ma§mon¤p3.surnom¤§ ¤¤p3.surnom¤¤, car on m'a dit qu'§¤il§elle¤p3.surnom¤§ était malade. Je lui porterai ¤¤o1.nom¤¤, et cela lui fera plaisir££.";
+personnage.rencontreVolonte=", qui eut bien envie de §¤le§la¤p1.nom¤§ transformer en tourte";
 personnage.rencontreDialogue1=", que j'ai ¤¤o1.fabrication¤¤ pour §¤lui§elle¤p3.nom¤§";
 personnage.attaque1Dialogue1=", que j'ai ¤¤o1.fabrication¤¤ pour toi";
-//personnage.attaque1Raison="se trouvait un peu mal";
-//personnage.attaque1attaque="Il se jeta sur §¤le §l'§la §l'¤p3.nom¤§¤¤p3.nom¤¤, et §¤le§la¤p3.nom¤§ dévora en moins de rien ; car il y avait plus de trois jours qu'il n'avait mangé.";
+personnage.attaque1Raison="se trouvait un peu §¤souffrant§souffrante¤p3.nom¤§";
+personnage.attaque1attaque="Elle se jeta sur §¤le §l'§la §l'¤p3.nom¤§¤¤p3.nom¤¤, et §¤le§la¤p3.nom¤§ transforma tourte en moins de rien ; car elle avait la main.";
 personnage.attaque1voix="la voix bégayante de la mère-grand s'interrogea d’abord";
 personnage.attaque1Visite="était trop §¤ému§émue¤p3.surnom¤§";
 personnage.attaque1voixAmeliore="contrôlant un peu sa voix";
-//personnage.questions=[["",""],["",""]];
-//personnage.attaque2attaque="se jeta sur §¤le §l'§la §l'¤p1.surnom¤§¤¤p1.surnom¤¤, et §¤le§la¤p3.nom¤§ mangea";
+personnage.questions=[["de vieux yeux","supporter ce monde"],["de vielles dents","prendre le temps de manger"],["de vielles mains","pétrir mes plats"],["de vielles recettes","te transformer en tourte"]];
+personnage.attaque2attaque="se jeta sur §¤le §l'§la §l'¤p1.surnom¤§¤¤p1.surnom¤¤, et §¤le§la¤p1.nom¤§ transforma en tourte";
 listePersonnages.push(personnage);
 
-personnage=new Personnage("test","M","testeur","M");
+
+personnage=new Personnage("boucher","M","gros boucher","M");
+personnage.relationnel0="mon gros";
+//personnage.relationnel1="§¤le §l'§la §l'¤p3.surnom¤§";
+//personnage.relationnel2="§¤le §l'§la §l'¤p1.nom¤§";
+//personnage.relationnel3="§¤le §l'§la §l'¤p3.surnom¤§";
+personnage.introductionCarac=", le meilleur boucher qu'on eût su voir ; §¤le §l'§la §l'¤p3.surnom¤§¤¤p3.surnom¤¤ l'admirait beaucoup";
+personnage.introductionSurnom="Malgrès ses rondeurs, il était aimé dans §¤tout le §tout l'§toute la §toute l'¤l1.nom¤§¤¤l1.nom¤¤.";
+personnage.introductionMission="Un jour, ¤¤o1.preparation¤¤, il se décida d'aller voir §¤son meilleur client§sa meilleure cliente¤p3.nom¤§ : §¤le §l'§la §l'¤p3.surnom¤§ ¤¤p3.surnom¤¤. ££p1§Pour lui faire plaisir, je vais lui porter ¤¤o1.nom¤¤££.";
+personnage.rencontreVolonte=", qui eut bien envie de §¤le§la¤p1.nom¤§ charcuter";
+personnage.rencontreDialogue1=", que j'ai ¤¤o1.fabrication¤¤ pour §¤lui§elle¤p3.nom¤§";
+personnage.attaque1Dialogue1=", que j'ai ¤¤o1.fabrication¤¤ pour vous";
+personnage.attaque1Raison="se trouvait un peu mal";
+personnage.attaque1attaque="Il se jeta sur §¤le §l'§la §l'¤p3.nom¤§¤¤p3.nom¤¤, et §¤le§la¤p3.nom¤§ charcuta en moins de rien.";
+personnage.attaque1voix="la grosse voix du boucher";
+personnage.attaque1Visite="avait sa voix déformée par l'émotion";
+personnage.attaque1voixAmeliore="adoucissant un peu sa voix";
+personnage.questions=[["un gros ventre","manger"],["une grosse bouche","te parler"],["de gros yeux","te voir"],["de gros bras","te tenir"],["un gros couteau","te charcuter"]];
+personnage.attaque2attaque="se jeta sur §¤le §l'§la §l'¤p1.surnom¤§¤¤p1.surnom¤¤, et §¤le§la¤p1.nom¤§ charcuta";
 listePersonnages.push(personnage);
+
+
 
 
 var lieu=new Lieu("village","M","maison","F","du boucher",1);
@@ -104,10 +124,12 @@ listeLieux.push(lieu);
 
 var objet=new Objet("rien du tout","M",0,"sorti du néant");
 objet.le="ton cadeau";
+objet.preparation="n'ayant rien fait";
 listeObjets.push(objet);
 
 objet=new Objet("une galette et un petit pot de beurre","M",2,"préparés");
 objet.le="la galette et le petit pot de beurre";
+objet.preparation="ayant cuit et fait des galettes";
 listeObjets.push(objet);
 
 
