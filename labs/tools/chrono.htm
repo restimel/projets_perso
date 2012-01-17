@@ -1,0 +1,78 @@
+<html>
+<head>
+<title>
+Test de temps
+</title>
+</head>
+<body>
+<div id="result"></div>
+<script language="javascript"><!--
+
+var avance=1;
+var temps=0;
+var d = new Date();
+
+function change_state(state){
+	switch(state){
+		case 0: //demarre
+			d=new Date();
+			avance=1;
+			break;
+		case 1: //arrete
+			if(avance) temps+= Date.now() - d;
+			if(temps){
+				avance=0;
+				document.getElementById('test').innerHTML="temps: "+temps+" ms";
+				temps=0;
+				
+			}
+			break;
+		case 2:
+			//pause
+			if(avance){
+				temps+= Date.now() - d;
+				avance=0;
+			}
+			break;
+		default:
+			alert('etat incompris');
+	}
+	document.getElementById('result').innerHTML="temps: "+temps+" ms";
+	return;
+}
+
+
+function timer(){
+	if(!avance){
+		return;
+	}
+	var d2= temps + Date.now() - d;
+	var txt="temps: "+(d2)+" ms";
+	if(d2>60000){
+		txt+="[";
+		txt+=Math.floor(d2/60000)+"min ";
+		txt+=Math.floor((d2%60000)/1000)+"s ";
+		txt+="]";
+	}
+	document.getElementById('result').innerHTML="temps: "+txt;
+	return;
+}
+
+
+setInterval(timer,100);
+
+--></script>
+<style>
+a{
+	font-size: 20pt;
+	color: black ;
+	text-decoration:none ;
+}
+</style>
+<hr>
+<a href="javascript:change_state(0)"><b>&gt;</b></a> - <a href="javascript:change_state(2)"><b>||</b></a> - <a href="javascript:change_state(1)"><b>&#9632;</b></a>
+<hr>
+<div id="test"></div>
+<hr>
+</body>
+</html>

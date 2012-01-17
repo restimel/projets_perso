@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>
+Bloc
+</title>
+</head>
+<body>
+
+<style>
+#result{
+	overflow:auto;
+	top:0;
+	bottom:0;
+	right: 350px;
+	position:absolute;
+	width: 150px;
+}
+.case{
+	position: absolute;
+	width : 30px;
+	height : 30px;
+	background: #FFEECC;
+	border: 1px solid #EEDD33;
+	padding: 0px;
+	margin: 0px;
+	z-Index: 1;
+}
+.bloc{
+	position: absolute;
+	width : 26px;
+	height : 26px;
+	background: #CCEEFF;
+	border: 1px solid #33DDEE;
+	padding: 0px;
+	margin: 2px;
+	z-Index: 2;
+}
+.bloc_start{
+	background: #FFEECC;
+}
+.snapshot{
+	border: 1px solid black;
+	padding: 0px;
+	margin: 0px
+}
+.snapshot td{
+	border: 1px solid black;
+	padding: 0px;
+	margin: 0px
+}
+#f_creation{
+	right: 50px;
+	position: absolute;
+	border: 3px solid #000000;
+	z-Index: 1000;
+	padding: 5px;
+}
+#f_fleches{
+	display: none;
+}
+#tab_fleche{
+	border: none;
+	padding: 1px;
+	margin: 0px;
+}
+#b_debug{
+	position: absolute;
+	bottom: 0px;
+}
+#jeu{
+	position: absolute;
+	top: 100px;
+	z-index: 1;
+}
+header{
+	display:block;
+}
+</style>
+<div id="jeu"></div>
+<menu id="f_creation">
+	<input type="number" id="f_size" value="5"><button onclick="creation();">create</button><hr>
+	<header id="case_titre">first, select a block</header>
+	<label>Groupe: <select id="f_groupe" onchange="changeGroupe(this.value);">
+		<option>empty</option>
+		<option>groupe 1</option>
+	</select></label><br>
+	<label>Should go to<input id="f_goto" placeholder="anywhere" onchange="changeTarget(this.value);"></label><br>
+	<hr>
+	<button onclick="solution();">Find a solution</button> <button onclick="stopWorker();">Stop &amp; reset</button>
+</menu>
+
+<!--<div id="f_creation">
+	<input type="number" id="f_size" value="5"><br>
+	
+	<label for="f_add_bloc">Ajouter des blocs:</label><input type="checkbox" id="f_add_bloc" onchange="formulaire(this);"><br>
+	<label for="f_link_bloc">Lier des blocs:</label><input type="checkbox" id="f_link_bloc" onchange="formulaire(this);"><br>
+	<label for="f_set_start">Définir le bloc cible:</label><input type="checkbox" id="f_set_start" onchange="formulaire(this);"><br>
+	<label for="f_set_finish">Définir la case d'arrivée:</label><input type="checkbox" id="f_set_finish" onchange="formulaire(this);"><br>
+	<label for="f_jeu">mode jeu:</label><input type="checkbox" id="f_jeu" onchange="formulaire(this);"><br>
+	<div id="f_fleches" class="f_cache"><table id="tab_fleche">
+		<tr><td></td><td><button onclick="move_bloc(2)">&uarr;</button></td><td></td></tr>
+		<tr><td><button onclick="move_bloc(4)">&larr;</button></td><td></td><td><button onclick="move_bloc(6)">&rarr;</button></td></tr>
+		<tr><td></td><td><button onclick="move_bloc(8)">&darr;</button></td><td></td></tr>
+	</table></div>
+	<input type="button" value="create" onclick="creation();">
+</div>-->
+
+<div id="message"></div>
+<div id="result"></div>
+
+
+
+<script>
+var options="";
+
+var message=(function(){
+	var timer=-1;
+	function erase(){
+		document.getElementById("message").innerHTML="";
+		timer=-1;
+	}
+	
+	return function message(text){
+		document.getElementById("message").innerHTML=text;
+		if(timer!=-1){
+			clearTimeout(timer);
+		}
+		timer=setTimeout(erase,5000);
+	};
+})();
+
+function formulaire(element){
+	document.getElementById("f_add_bloc").checked=false;
+	document.getElementById("f_link_bloc").checked=false;
+	document.getElementById("f_jeu").checked=false;
+	document.getElementById("f_set_start").checked=false;
+	document.getElementById("f_set_finish").checked=false;
+	element.checked=true;
+	options="";
+	if(document.getElementById("f_jeu").checked){
+		document.getElementById("f_fleches").style.display="block";
+	}else{
+		document.getElementById("f_fleches").style.display="none";
+	}
+}
+
+/*
+	Communication avec la grille
+*/
+var grille;
+function startWorker(){
+	grille = new Worker("./moteur.js");
+	grille.onerror=function(e){
+		console.error("erreur dans le worker\n"+e.message);
+	}
+	grille.onmessage=function(e){
+		var data=e.data;
+		switch(data.cmd){
+			case "giveInfo": infoCase(data.rsp); break;
+			case "giveGroupe": listeGroupe(data.liste); break;
+			case "update": update(data.x,data.y,data.color);break;
+			case "solutionUpdate": solutionUpdate(data.done,data.tocompute,data.distance);break;
+			case "solutionFound": solutionFound(data.nbMove,data.message);break;
+			case "debug": console.debug(data.message);break;
+			default: console.warn("command "+data.cmd +" unknown");
+		}
+	};
+}
+
+startWorker();
+
+function stopWorker(){
+	grille.terminate();
+	startWorker();
+	creation();
+	document.getElementById("result").innerHTML="Targets are erased";
+}
+
+function infoCase(info){
+	document.getElementById("case_titre").textContent="Bloc "+info.x+"-"+info.y;
+	document.getElementById("f_groupe").value=info.groupe;
+	document.getElementById("f_goto").value=info.goto;
+}
+
+function listeGroupe(groupes){
+	var option,
+		i=0,
+		li=groupes.length,
+		select=document.getElementById("f_groupe");
+	while(select.length){
+		select.remove(0);
+	}
+	while(i<li){
+		option=document.createElement("option");
+		option.textContent=option.value=groupes[i].nom;
+		option.style.color=groupes[i].color;
+		select.add(option);
+		i++;
+	}
+}
+
+function update(x,y,color){
+	var element=document.getElementById("grille_"+x+"_"+y);
+	if(element){
+		if(color && color!=="none"){
+			element.style.background=color;
+		}else{
+			element.parentNode.removeChild(element);
+		}
+	}else{
+		if(color && color!=="none"){
+			element=create_carre(x,y,"bloc");
+			element.style.background=color;
+			element.id="grille_"+x+"_"+y;
+			document.getElementById("jeu").appendChild(element);
+		}
+	}
+}
+
+/*
+	functions
+*/
+
+function create_carre(x,y,classname){
+	var element=document.createElement("div");
+	element.className=classname;
+	element.style.top=y*30+'px';
+	element.style.left=x*30+'px';
+	element.x=x;
+	element.y=y;
+	element.onclick=function(){action_case(this.x,this.y);};
+	return element;
+}
+
+var current={x:undefined,y:undefined};
+function action_case(x,y){
+	grille.postMessage({cmd:"getCase",x:x,y:y});
+	current.x=x;
+	current.y=y;
+}
+
+function changeGroupe(grp){
+	grille.postMessage({cmd:"setGroupe",groupe:grp,x:current.x,y:current.y});
+}
+
+function changeTarget(target){
+	target=target.split(/[\s-xX,_.;]+/);
+	if(target.length===2){
+		grille.postMessage({cmd:"setTarget",tx:target[0],ty:target[1],x:current.x,y:current.y});
+	}else{
+		grille.postMessage({cmd:"setTarget",tx:"NaN",ty:"NaN",x:current.x,y:current.y});
+	}
+}
+
+/*
+function action_case(x,y){
+	var mode=-1;
+	if(document.getElementById("f_add_bloc").checked){
+		mode=1; //mode ajout bloc
+	}
+	if(document.getElementById("f_link_bloc").checked){
+		mode=2; //ajouter des liens
+	}
+	if(document.getElementById("f_jeu").checked){
+		mode=3; //mode jeu
+	}
+	if(document.getElementById("f_set_start").checked){
+		mode=4; //mode definit la position de départ
+	}
+	if(document.getElementById("f_set_finish").checked){
+		mode=5; //mode definit la position d'arrivée
+	}
+	
+	switch(mode){
+		case 1://mode ajout
+			if(jeu.tab[x][y]){
+				//remove bloc
+				jeu.del(x,y);
+			}else{
+				var element=create_carre(x,y,"bloc");
+				jeu.tab[x][y]=new bloc(element,x,y);
+				document.getElementById("jeu").appendChild(element);
+			}
+		break;
+		case 2:
+			//ajouter des liens
+			if(jeu.tab[x][y]){
+				if(options){
+					jeu.tab[x][y].add_link([jeu.tab[options[0]][options[1]]]);
+					options="";
+				}else{
+					options=[x,y];
+				}
+			}
+		break;
+		case 3:
+			//mode jeu
+			options=[x,y];
+		break;
+		case 4:
+			//definit la position de depart
+				if(jeu.tab[x][y]){
+					if(jeu.tab[jeu.position[0]][jeu.position[1]]){
+						jeu.tab[jeu.position[0]][jeu.position[1]].className="bloc";
+					}
+					jeu.position[0]=x;
+					jeu.position[1]=y;
+					jeu.tab[x][y].className="bloc_start";
+					message("le bloc cible est maintenant celui situé en ("+x+","+y+")");
+				}
+		break;
+		case 5:
+			//definit la position d'arrivée
+				jeu.finish[0]=x;
+				jeu.finish[1]=y;
+				message("la case d'arrivée est maintenant celle située en ("+x+","+y+")");
+		break;
+		default:
+			alert('unknown mode');
+	}
+}
+*/
+
+function move_bloc(d){
+	if(!options){
+		alert("vous devez selectionner un bloc");
+		return false;
+	}
+	var dx=0,dy=0;
+	switch(d){
+		case 2: //haut
+			dy=-1;
+			break;
+		case 4: //gauche
+			dx=-1;
+			break;
+		case 6: //droite
+			dx=1;
+			break;
+		case 8: //bas
+			dy=1;
+			break;
+		default:
+			dx=0;
+			dy=0;
+	}
+	alert([dx,dy]+"todo deplacement");
+}
+
+
+function creation(){
+	var element,i,j,l=j=i=parseInt(document.getElementById("f_size").value,10),parent=document.getElementById("jeu");
+	grille.postMessage({cmd:"creation",size:l});
+	parent.innerHTML="";
+	while(i--){
+		while(j--){
+			element=create_carre(i,j,"case");
+			parent.appendChild(element);
+		}
+		j=l;
+	}
+}
+
+
+Array.prototype.copy=function(){
+	var ntab=[],i=0,li=this.length;
+	while(i<li){
+		if(this[i] instanceof Array){
+			ntab[i]=this[i++].copy();
+		}else{
+			ntab[i]=this[i++];
+		}
+	}
+	return ntab;
+}
+
+var time,time2=time=Date.now();
+function solution(){
+	time=Date.now();
+	grille.postMessage({cmd:"solution"});
+	var t='<progress value="0" max="100"></progress><br>';
+	t+='<label>duration: <output>0ms</output><br>';
+	t+='<label>speed: <output>-</output><br>';
+	t+='<label>distance: <output></output><br>';
+	t+='<label>done: <output></output><br>';
+	t+='<label>tocompute: <output></output><br>';
+	document.getElementById("result").innerHTML=t;
+}
+
+function solutionUpdate(done,tocompute,distance){
+	var duree=Date.now()-time;
+	var t='<progress value="'+done+'" max="'+(tocompute+done)+'"></progress><br>';
+	t+='<label>duration: <output>'+duree+'ms</output><br>';
+	t+='<label>speed: <output>'+1/(Date.now()-time2)+'</output><br>';
+	t+='<label>distance: <output>'+distance+'</output><br>';
+	t+='<label>done: <output>'+done+'</output><br>';
+	t+='<label>tocompute: <output>'+tocompute+'</output><br>';
+	time2=Date.now();
+	document.getElementById("result").innerHTML=t;
+}
+
+function solutionFound(nbC,message){
+	var duree=(Date.now()-time)/1000;
+	var t="Fini!<br>";
+	t+="Duration: "+duree+"s<br>In "+nbC+" moves";
+	document.getElementById("debug").innerHTML=t;
+	document.getElementById("result").innerHTML=message;
+}
+
+function DEBUG(){
+	document.getElementById("debug").innerHTML="en cours de recherche...";
+	var s=jeu.snapshot();
+	s.parent=s;
+	/*var t=s.display();
+	var suite=s.get_next();
+	var i=suite.length;
+	while(i--){
+		//suite[i].distanceC+"/"+suite[i].distanceE+"---"+suite[i].target+
+		t+=suite[i].display();
+	}*/
+	var t1=new Date();
+	var suite=s.Aetoile()||{display:function(){return "<div>pas de solution... :'(</div>";},distanceC:"pas de solution... :'(",parent:s};
+	var t2=new Date();
+	var t="Fini!<br>";
+	t+="temps:"+((t2-t1)/1000)+"<br>nombre de coup necessaire:"+suite.distanceC;
+	document.getElementById("debug").innerHTML=t;
+	t="";
+	var i=suite.distanceC;
+	while(suite!=s && suite!=null){
+		t+=i--;
+		t+=suite.display();
+		suite=suite.parent;
+	}
+	t+=0;
+	t+=s.display();
+	document.getElementById("result").innerHTML=t;
+}
+
+</script>
+<div id="b_debug"><div id="debug"></div>
+<!--<button onclick="DEBUG()">DebuG</button>-->
+</div>
+</body>
+</html>

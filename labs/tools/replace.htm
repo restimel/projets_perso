@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf8">
+	<title>Outil de modification de texte</title>
+</head>
+<body>
+source:<textarea id="source" rows="20" cols="40"></textarea><button onclick="document.getElementById('source').value='';">empty</button><br>
+<section id="zoneRegexp">
+<div>
+	<label>regexp:<input id="regexp0"></label> <label>flag:<input id="flag0" value="gi"></label><br>
+	<label>replace:<input id="replace0"></label>
+</div>
+</section>
+<hr>
+<button onclick="addReg()">+</button>
+<hr>
+<button onclick="doReplace()">Do it</button><br>
+resultat<textarea id="resultat" rows="20" cols="40"></textarea><button onclick="document.getElementById('resultat').value='';">empty</button><br>
+<script type="text/javascript">
+var addReg=(function(){
+	var nbElement=1;
+	return function(){
+		var text='<hr><label>regexp:<input id="regexp'+nbElement+'"></label> <label>flag:<input id="flag'+nbElement+'" value="gi"></label><br>\n<label>replace:<input id="replace'+nbElement+'"></label><br>';
+		nbElement++;
+		var element=document.createElement("div");
+		element.innerHTML=text;
+		document.getElementById("zoneRegexp").appendChild(element);;
+	};
+})();
+
+function doReplace(){
+	var source =document.getElementById("source").value;
+	var rgx =document.getElementById("regexp0").value;
+	var flg =document.getElementById("flag0").value;
+	var rplc =document.getElementById("replace0").value;
+	var Regex=new RegExp(rgx,flg);
+	var rslt = source.replace(Regex,rplc);
+	
+	var i=1;
+	while(rgx=document.getElementById("regexp"+i)){
+		rgx = rgx.value;
+		flg = document.getElementById("flag"+i).value;
+		rplc = document.getElementById("replace"+i).value;
+		Regex = new RegExp(rgx,flg);
+		rslt = rslt.replace(Regex,rplc);
+		i++;
+	}
+	document.getElementById("resultat").value=rslt;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!--
+Labs.html
+
+Author: Benoit Mariat (b.mariat@gmail.com)
+Date: November 2010
+
+License: You are free to use, share, redistribute and modify it if you keep all authors and contributors names. ( http://creativecommons.org/licenses/by/3.0/)
+
+Vous êtes autorisés à utiliser, partager, redistribuer et modifier ce code tant que vous gardez les noms des auteurs et contributeurs. (http://creativecommons.org/licenses/by/3.0/deed.fr)
+
+
+Content: Lots of fun stuff ;)
+Original file: http://b.mariat.free.fr/javascript/labs/
+
+	(')_(')
+	( °-° )
+	(__.__)
+	(") (")
+
+-->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+<title>
+My Labs
+</title>
+
+<link rel="stylesheet" href="./labs.css" type="text/css" >
+</head>
+<body id="labsBody">
+
+<div class="labsZoneMenu labsZoneGauche"><div>
+<div class="menu labsMenuGauche">
+
+<menu class="open">
+	<menu label="CV">
+		<header>Curiculum Vitae</header>
+		<details>Qui suis-je? Que fais-je? Pour tout savoir de moi.</details>
+	</menu>
+	<menu label="javascript">
+		<header>javascript</header>
+		<details>Codes javascripts</details>
+		<menu label="Allumette">
+			<header><a href="./scripts/flamme.html">Allumette</a></header>
+			<details>Une animation représentant une allumette.<br>Le <i>dessin</i> n'a été réalisé qu'avec du CSS. Le javascript est utilisé pour réalisé les animations.</details>
+		</menu>
+		<menu label="Tangram">
+			<header><a href="./scripts/tangram.html">Tangram</a></header>
+			<details>Le Tangram est un jeu où le but est de reproduire une figure à l'aide de 7 figures géométriques appelées Tans.<br>Canvas est utilisé pour réaliser ce script.</details>
+		</menu>
+	</menu>
+	<menu>
+		<header>test</header>
+		<menu><header>test1</header></menu>
+		<menu><header>test2</header></menu>
+		<menu><header>test3</header></menu>
+		<menu><header>test4</header></menu>
+		<menu><header>test5</header></menu>
+		<menu><header>test6</header></menu>
+		<menu><header>sous-menu</header>
+			<menu><header>test1</header></menu>
+			<menu><header>test2</header></menu>
+			<menu><header>test3</header></menu>
+			<menu><header>test4</header></menu>
+			<menu><header>test5</header></menu>
+			<menu><header>test6</header></menu>
+			<details>Juste pour tester différent sous-menu</details>
+		</menu>
+		<menu><header>test7</header></menu>
+	</menu>
+</menu>
+<!--
+<ul>
+<li description="Une animation représentant une allumette.<br>Le <i>dessin</i> n'a été réalisé qu'avec du CSS. Le javascript est utilisé pour réalisé les animations."><a href="./scripts/flamme.html">Allumette</a></li>
+<li description="Le Tangram est un jeu où le but est de reproduire une figure à l'aide de 7 figures géométriques appelées Tans.<br>Canvas est utilisé pour réaliser ce script."><a href="./scripts/tangram.html">Tangram</a></li>
+</ul></li><li description="Codes de CSS3">CSS3</li><li><ul><li>test02</li></ul></li>
+<li>HTML5</li>
+<li><ul><li><a href="?">test01</a></li><li>test02</li><li><a href="?">test01</a></li><li>test02</li><li>javascript</li><li><ul><li>test1</li><li>test2</li></ul></ul></li>
+<li description="Juste pour tester et pour voir les limites de mes codes :)<br>donc tout doit s'afficher correctement.">Tests</li>
+<li><ul><li description="c'est juste pour tester le système dans sa globalité"><a href="?">test01</a></li><li description="Et même s'il n'y a pas de lien :)">test02</li><li description="Encore un autre test"><a href="?">test01</a></li><li>test02</li><li>javascript</li><li description="Un autre test"><a href="?">test11</a></li><li>test02</li><li><a href="?" description="Un autre test...<br><br><b>C'est quoi tous ces tests????</b>">test12</a></li><li>test02</li><li>javascript</li><li description="hop hop hop<br><br>Circulez!<br>Il n'y a rien à voir"><a href="?">test001</a></li><li>test02</li><li description="ha?"><a href="?">test01</a></li><li>test02</li><li>javascript</li></ul></li>
+
+</ul>
+-->
+</div>
+</div></div>
+
+
+<div id="labsDemo"></div>
+
+
+<div class="labsZoneMenu labsZoneDroite">
+<div><div class="menu labsMenuDroite">
+<input type="hidden" id="labsDefaultTitreDescription" value="Le Titre">
+<header id="labsTitreDescription">Titre</header>
+<section id="labsDescription">Description de ce qu'on peut voir soit dans le menu soit dans la zone centrale où il doit y avoir un code.</section>
+<input type="hidden" id="labsDefaultDescription" value="Description de ce qu'on peut voir soit dans le menu soit dans la zone centrale où il doit y avoir un code.<br>Bon là c'est juste un test.">
+</div></div></div>
+
+
+<div id="labsChargement">En cours de chargement...</div>
+
+<script type="text/javascript" src="./labs.js"></script>
+</body>
+</html>

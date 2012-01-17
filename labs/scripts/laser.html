@@ -1,0 +1,93 @@
+
+
+<textarea id="origine" onchange="afficheTexte(this.value);">Ceci est un texte pour voir s'il s'affiche bien!</textarea>
+
+<div id="result" style="position:absolute;top:100;left:10;width:1000;border:3px solid blue;
+padding: 10px;
+-moz-border-end:6px double blue;
+-moz-border-radius:50px 50px 50px 50px;
+-moz-border-start:6px double blue;
+
+border-end:6px double blue;
+border-radius:50px 50px 50px 50px;
+border-start:6px double blue;
+
+/* */ -moz-box-shadow:
+					inset #0000ff 0 0 20px 10px,
+					#0000ff 0 0 34px 15px;
+				/* */ -webkit-box-shadow:
+					inset #0000ff 0 0 20px 10px,
+					#0000ff 0 0 34px 15px;
+				box-shadow:
+					inset #0000ff 0 0 20px 10px,
+					#0000ff 0 0 34px 15px;
+
+
+
+"></div>
+
+<script>
+var afficheTexte=function(){
+	var zone=document.getElementById("result"),
+		index=0,
+		texte="",
+		vitesse=100;
+	function brulure(lettre){
+		function effet(){
+			if(rouge>0 || vert>0){
+				if(vert<rouge/2){
+					if(rouge>200){
+						rouge-=round(random()*15)+1;
+					}else{
+						rouge-=round(random()*20);
+						vert+=round(random()*20)+1;
+						if(vert>rouge/2){
+							vert=rouge/2;
+						}
+					}
+					element.style.color="rgb("+rouge+","+vert+",0)";
+					timer=setTimeout(effet,vitesse*1);
+				}else{
+					element.style.color="rgb("+rouge+","+vert+",0)";
+					timer=setTimeout(effet,vitesse*0.8);
+					rouge-=25;
+					vert-=25;
+				}
+			}else{
+				zone.insertBefore(document.createTextNode(lettre),element);
+				zone.removeChild(element);
+			}
+		}
+		if(lettre===" "){
+			zone.appendChild(document.createTextNode(lettre));
+		}else{
+			var element=document.createElement("span"),
+				rouge=255,
+				vert=0,
+				timer=setTimeout(effet,vitesse),
+				round=Math.round,
+				random=Math.random;
+			element.style.color="rgb("+rouge+","+vert+",0)";
+			element.appendChild(document.createTextNode(lettre));
+			zone.appendChild(element);
+		}
+	}
+	function serie(){
+		var lettre=texte[index++];
+		brulure(lettre);
+		if(index<texte.length){
+			if(lettre===" "){
+				serie();
+			}else{
+				setTimeout(serie,vitesse*0.5);
+			}
+		}
+	}
+	return function(txt){
+		texte=txt;
+		zone.innerHTML="";
+		serie();
+	};
+}();
+
+</script>

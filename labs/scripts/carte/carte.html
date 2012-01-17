@@ -1,0 +1,367 @@
+<html>
+<head>
+<title>Create Map</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+
+
+The problem is that when loading a local html page in Firefox via file:///path/to/file  it doesn’t seem to recognize if resources are on the same domain, since there is no domain. The ‘same Origin’ policy in Javascript prevents loading of external resources for security reasons. If you put your page on a local host like http://tests.local/page it will work. Another way to fix it is to go to Firefox’s config via about:config and changing the following value: security.fileuri.strict_origin_policy
+<hr>
+
+
+
+
+
+Image:<input type="url" id="urlImage" value="./france.png"> <br>
+<label for="pdr" style="color:red;">Poids pondéré rouge:</label><input type="number" id="pdr" value="1"><br>
+<label for="pdv" style="color:green;">Poids pondéré vert:</label><input type="number" id="pdg" value="1"><br>
+<label for="pdb" style="color:blue;">Poids pondéré bleu:</label><input type="number" id="pdb" value="1"><br>
+<label for="dstmax">Distance max/couleur:</label><input type="number" id="dstmax" value="15"><br>
+<br>
+<label for="cheatColor">Palette prédéfinie: </label><input type="input" value="" id="cheatColor">154,205,50|128,128,0|34,139,34|10,10,130|139,69,19|222,184,135|255,248,220<br>
+<br>
+<input type="button" onclick="chargeImage(document.getElementById('urlImage').value);" value="run"><br>
+<br>
+<div id="Chargement" style="font-weight:bold;background-color:red;">not loaded</div>
+<canvas width="603" height="540" id="canvas">
+Cette page utilise la balise <b>CANVAS</b> et il semble que votre navigateur ne supporte pas cette balise.<br>
+Si vous souhaitez utilisez l'outil présent sur cette page, veuillez utiliser un navigateur supportant cette balise.
+</canvas><br>
+<br>
+<br>
+
+<script type="text/javascript">
+
+function loading(msg){
+	document.getElementById("Chargement").innerHTML=msg;
+}
+
+function chargeImage(url){
+	var canvas=document.getElementById("canvas");
+	if(!canvas.getContext){
+		alert("Votre navigateur ne supporte pas la méthode getContext!");
+		return false;
+	}
+    var ctx = canvas.getContext("2d"),w=parseInt(canvas.width,10),h=parseInt(canvas.height,10);
+	var img=new Image();
+	img.src=url;
+
+	function ld(event){
+		clearTimeout(timer);
+		ctx.drawImage(img,0,0);
+		analyse2(ctx,parseInt(img.width),parseInt(img.height));
+	}
+
+	img.onload=ld;
+	var timer=setTimeout(ld,1000);
+	ctx.clearRect(0,0,w,h);
+}
+
+
+
+var analyse2=function(ctx,w,h){
+	var image=ctx.getImageData(0, 0, 603, 540),
+	//var image=ctx.getImageData(0, 0, 200, 200),
+		data=image.data,
+		pdr=parseInt(document.getElementById("pdr").value,10),
+		pdg=parseInt(document.getElementById("pdg").value,10),
+		pdb=parseInt(document.getElementById("pdb").value,10),
+		dstmax=parseInt(document.getElementById("dstmax").value,10),
+		couleurs=[[0,0,200],[0,200,0],[0,0,100],[0,100,0],[0,250,250],[200,250,250],[0,0,0]],
+		histogramme=[],
+		reduce=[],
+		step=0;
+
+
+		Couleur.prototype.pdr=pdr;
+		Couleur.prototype.pdg=pdg;
+		Couleur.prototype.pdb=pdb;
+
+		dstmax=dstmax*dstmax*(pdr+pdg+pdb);
+
+		var d1=Date.now();
+
+		function sequenceur(){
+			var f,txt;
+			if(step===0 && document.getElementById("cheatColor").value){
+				reduce=[];
+				document.getElementById("cheatColor").value.split("|").forEach(function(valeur){
+					var rgb=valeur.split(",");
+					reduce.push(new Couleur(rgb[0],rgb[1],rgb[2]));
+				});
+				step=2;
+			}
+			switch(++step){
+				case 1:
+					f=generateHistogramme;
+					txt="Calcul de l'histogramme";
+				break;
+				case 2:
+					f=reduceColor;
+					txt="Réduction de couleurs";
+					break;
+				case 3:
+					f=chooseColor;
+					txt='<a href="#chooseColor">↓Modification des couleurs↓</a>';
+					break;
+				case 4:
+					f=replaceColor;
+					txt="Remplacement des couleurs";
+					break;
+				default: //fin?
+					f=debug;
+					txt="fini";
+			}
+			if(typeof f === "function"){
+				loading(txt);
+				setTimeout(f,100);
+			}
+		}
+
+		function generateHistogramme(){
+			var i=0,
+				li=data.length;
+			histogramme.add=function(r,g,b){
+				var i=0,li=this.length;
+				while(i<li){
+					if(this[++i].compare(r,g,b)) break;
+				}
+				if(i===li){
+					i=this.push(new Couleur(r,g,b))-1;
+				}
+				this[i].inc();
+			}
+
+			while(i<li){
+				histogramme.add(data[i++],data[i++],data[i++]);
+				i++;
+			}
+
+			histogramme=histogramme.sort(function(a,b){if(a.nb>b.nb) return -1; else return 1;});
+			sequenceur();
+		}
+
+		function reduceColor(){
+			var i=0,
+				li=histogramme.length,
+				j,lj=0;
+			while(i<li){
+				j=lj;
+				while(j-- && reduce[j].distance(histogramme[i])>dstmax){}
+				if(j===-1){
+					lj=reduce.push(histogramme[i]);
+				}
+				i++;
+			}
+
+			/*
+			couleurs=[];
+			j=0;
+			while(j<lj){
+				couleurs[j]=reduce[j++].getColor();
+			}*/
+
+			sequenceur();
+		}
+
+		function replaceColor(){
+			var i=0,
+				li=data.length,
+				r,g,b,a,
+				j,lj=couleurs.length,
+				d,mx=[];
+
+			while(i<li){
+				r=data[i++];
+				g=data[i++];
+				b=data[i++];
+				a=data[i++];
+				j=0;
+				mx=[Infinity,0];
+				while(j<lj){
+					d=(r-couleurs[j][0])*(r-couleurs[j][0])*pdr + (g-couleurs[j][1])*(g-couleurs[j][1])*pdg + (b-couleurs[j][2])*(b-couleurs[j][2])*pdb;
+					if(d<mx[0]){
+						mx[0]=d;
+						mx[1]=j;
+					}
+					j++;
+				}
+				j=mx[1];
+				data[i-4]=couleurs[j][0];
+				data[i-3]=couleurs[j][1];
+				data[i-2]=couleurs[j][2];
+			}
+
+			ctx.putImageData(image,0,0);
+
+			sequenceur();
+		}
+
+		function chooseColor(){
+			var elem=document.createElement("div"),
+				i=reduce.length,
+				ligne,input,r,g,b;
+			while(i--){
+				ligne=document.createElement("div");
+				r=document.createElement("input");
+				r.type="number";
+				r.id="rouge"+i;
+				r.value=reduce[i].r;
+
+				g=document.createElement("input");
+				g.type="number";
+				g.id="vert"+i;
+				g.value=reduce[i].g;
+
+				b=document.createElement("input");
+				b.type="number";
+				b.id="bleu"+i;
+				b.value=reduce[i].b;
+
+				input=document.createElement("input");
+				input.type="checkbox";
+				input.id="active"+i;
+				input.checked=true;
+
+				ligne.style.backgroundColor='rgb('+r.value+','+g.value+','+b.value+')';
+				input.onchange=(function(r,g,b,ligne){return function(){
+					if(this.checked){
+						ligne.style.backgroundColor='rgb('+r.value+','+g.value+','+b.value+')';
+						r.disabled=g.disabled=b.disabled=false;
+					}else{
+						ligne.style.backgroundColor='rgb(100,100,100)';
+						r.disabled=g.disabled=b.disabled=true;
+					}
+				};})(r,g,b,ligne);
+				r.onchange=b.onchange=g.onchange=(function(r,g,b,ligne){return function(){ligne.style.backgroundColor='rgb('+r.value+','+g.value+','+b.value+')';};})(r,g,b,ligne);
+				ligne.appendChild(input);
+				ligne.appendChild(r);
+				ligne.appendChild(g);
+				ligne.appendChild(b);
+				elem.appendChild(ligne);
+			}
+			input=document.createElement("input");
+			input.type="button";
+			input.value="Change color";
+			input.onclick=suite;
+			elem.appendChild(input);
+
+			document.getElementById("cheatColor").value=reduce.join("|");
+
+			elem.id="chooseColor";
+			window.location.hash="#chooseColor";
+			document.body.appendChild(elem);
+
+			function suite(){
+				couleurs=[];
+				var lj=reduce.length,j=-1;
+				while(++j<lj){
+					if(document.getElementById("active"+j).checked){
+						couleurs.push([document.getElementById("rouge"+j).value,document.getElementById("vert"+j).value,document.getElementById("bleu"+j).value]);
+					}
+				}
+
+				document.getElementById("cheatColor").value=couleurs.join("|");
+				document.body.removeChild(elem);
+				sequenceur();
+			}
+		}
+
+		function debug(){
+			alert("nombre de couleurs: "+histogramme.length+"\nnombre de couleurs réduite: "+reduce.length+"\ntemps: "+((Date.now()-d1)/1000));
+		}
+
+		sequenceur();
+}
+
+function analyse(ctx,w,h){
+  try{
+	var Round=Math.round,
+		image=ctx.getImageData(0, 0, 603, 540),
+		data=image.data,
+		i=0,
+		li=data.length,
+		r,g,b,a,
+		pdr=parseInt(document.getElementById("pdr").value,10),
+		pdg=parseInt(document.getElementById("pdg").value,10),
+		pdb=parseInt(document.getElementById("pdb").value,10),
+		couleurs=[[0,0,200],[0,200,0],[0,0,100],[0,100,0],[0,250,250],[200,250,250],[0,0,0]],
+		j,lj=couleurs.length,
+		d,mx=[];
+
+
+	histogramme(data);
+
+	while(i<li){
+		r=data[i++];
+		g=data[i++];
+		b=data[i++];
+		a=data[i++];
+		j=0;
+		mx=[Infinity,0];
+		while(j<lj){
+			d=(r-couleurs[j][0])*(r-couleurs[j][0])*pdr + (g-couleurs[j][1])*(g-couleurs[j][1])*pdg + (b-couleurs[j][2])*(b-couleurs[j][2])*pdb;
+			/*if(i<10){
+				alert("i: "+i+"\nRGB: "+([r,g,b])+"\nj: "+j+"\ncouleurs: "+couleurs[j]+"\nd: "+d);
+			}*/
+			if(d<mx[0]){
+				mx[0]=d;
+				mx[1]=j;
+			}
+			j++;
+		}
+		j=mx[1];
+		data[i-4]=couleurs[j][0];
+		data[i-3]=couleurs[j][1];
+		data[i-2]=couleurs[j][2];
+	}
+}catch(e){
+	alert("debut\n"+e);
+}
+try{
+//	image.data=data;
+	ctx.putImageData(image,0,0);
+}catch(e){
+	alert("fin\n"+e);
+}
+
+}
+
+function Couleur(r,g,b){
+	this.r=r;
+	this.g=g;
+	this.b=b
+
+	this.nb=0;
+}
+
+Couleur.prototype.compare=function(r,g,b){
+	if(typeof g === "undefined"){
+		return this.r===r.r && this.g===r.g && this.b===r.b;
+	}else{
+		return this.r===r && this.g===g && this.b===b;
+	}
+}
+
+Couleur.prototype.inc=function(nb){
+	this.nb+=nb||1;
+}
+
+Couleur.prototype.distance=function(color){
+	return (color.r-this.r)*(color.r-this.r)*this.pdr + (color.g-this.g)*(color.g-this.g)*this.pdg + (color.b-this.b)*(color.b-this.b)*this.pdb;
+}
+
+Couleur.prototype.getColor=function(){
+	return [this.r,this.g,this.b,255];
+}
+
+Couleur.prototype.toString=function(){
+	return this.r+","+this.g+","+this.b;
+}
+
+</script>
+<hr>
+//security.fileuri.strict_origin_policy : false
+</body>
+</html>

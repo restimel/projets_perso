@@ -1,0 +1,168 @@
+body, #labsBody{
+	background-color: #000000;
+	color: #FFFFFF;
+	margin: 0px;
+	padding: 0px;
+}
+
+a{
+	color: #FFFFFF;
+}
+
+menu details{
+	display:none !important; /*pour cacher les commentaires*/
+}
+
+menu{
+	margin-top:0.5em;
+	margin-left:1.1em;
+	margin-top:0.5em;
+	margin-bottom:0.5em;
+}
+
+/*.menu ul{*/
+.menu>menu{
+	display: block;
+	padding: 0.1em;
+	margin-left:0em;
+}
+
+/*.menu li, .menu>div{*/
+.menu header{
+	line-height: 1em;
+	border: 1px solid #AAAADD;
+	background-color:#666677;
+	-moz-box-shadow: #9999BB 0 2px 2px 0;
+	box-shadow: 0 2px 2px 0 #9999BB, inset -26px -26px 48px -6px #333338,inset -16px -16px 40px 8px #326a4b;
+	display: block;
+	/*margin: 0.5em;*/
+	margin-bottom:5px;
+	padding: 0.2em;
+	padding-left: 2em;
+	cursor : pointer;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+}
+
+/*Tout cacher ce qu'il y a dans les menus*/
+menu *{
+	display: none;
+}
+/*Ne pas cacher les headers des menus*/
+menu header, menu header *{
+	display: block;
+}
+
+/*Afficher les menus qui sont dans le menu ouvert*/
+menu.open>menu{
+	display: block;
+	overflow:hidden;/*ceci est important pour que scrollheight ait une valeur*/
+}
+
+/*marqué le menu actif*/
+.actif>header{
+/*	background-color:#AAAA66;
+	box-shadow: 0 2px 2px 0 #9999BB, inset -26px -26px 48px -6px #999933,inset -16px -16px 40px 8px #326a4b;*/
+	box-shadow: 0 2px 2px 0 #9999BB, inset -26px -26px 48px -6px #333338,inset -16px -16px 40px 8px #FFFF44;
+}
+
+
+.labsMenu, .menu{
+	border: 4px double #77777A;
+	background-color:#333338;
+	display: block;
+	padding: 1em;
+	max-height: 500px;
+	overflow: auto;
+}
+
+.labsMenuGauche{
+	border-left: none;
+	-moz-border-radius-bottomright: 60px;
+	-moz-border-radius-topright: 60px;
+	border-radius-bottomright: 60px;
+	border-radius-topright: 60px;
+	border-bottom-right-radius: 60px;
+	border-top-right-radius: 60px;
+	padding-left:0px;
+}
+
+.labsMenuDroite{
+	border-right: none;
+	-moz-border-radius-bottomleft: 60px;
+	-moz-border-radius-topleft: 60px;
+	border-radius-bottomleft: 60px;
+	border-radius-topleft: 60px;
+	border-bottom-left-radius: 60px;
+	border-top-left-radius: 60px;
+}
+
+.labsMenuHaut{
+	border-top: none;
+	-moz-border-radius-bottomright: 60px;
+	-moz-border-radius-bottomleft: 60px;
+	border-radius-bottomright: 60px;
+	border-radius-bottomleft: 60px;
+	border-bottom-right-radius: 60px;
+	border-bottom-left-radius: 60px;
+}
+
+
+.labsZoneMenu>div{
+	/*position: fixed;*/
+	display: table-cell;
+	/*height:500px;*/
+	width: inherit;
+	vertical-align: middle;
+}
+
+.labsZoneMenu{
+	position: fixed;
+	top: 0px;
+	bottom: 0px;
+	width: 250px;
+	overflow: auto;
+}
+
+.labsZoneGauche{
+	left: 0px;
+}
+
+.labsZoneDroite{
+	right: 0px;
+}
+
+
+#labsDemo{
+	position: fixed;
+	top: 0px;
+	bottom: 0px;
+	left: 250px;
+	right: 250px;
+	overflow: auto;
+}
+
+
+#labsTitreDescription{
+	text-align:center;
+	font-weight: bold;
+}
+
+#labsChargement{
+	position: fixed;
+	top: 40%;
+	left: 40%;
+	border: 0.4em double #334466;
+	background-color: #BBDDAA;
+	color: #660000;
+	padding: 2em;
+	-moz-border-radius-bottomleft: 100px;
+	-moz-border-radius-topright: 100px;
+	border-radius-bottomleft: 100px;
+	border-radius-topright: 100px;
+	border-bottom-left-radius: 100px;
+	border-top-right-radius: 100px;
+	-moz-box-shadow: inset #334466 2px 2px 60px 5px, #DDBB99 0 2px 100px 5px;
+	box-shadow: inset #334466 2px 2px 60px 5px, #DDBB99 0 2px 100px 5px;
+	display: none;
+}

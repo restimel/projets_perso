@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf8">
+	<title>CSS box-shadow helper</title>
+	
+	<style>
+		#test{
+			border: 1px Solid black;
+			width: 300px;
+			height: 100px;
+			margin: 50px;
+			padding: 5px;
+		}
+		output{
+			font-style:italic;
+			cursor: pointer;
+		}
+		header{
+			margin-bottom: 0.8em;
+			font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+<div id="test">Some text in this box...</div>
+<hr>
+<header>Configure the box-shadow properties to get the effect you want</header>
+<label>previous box-shadow: <input id="BScss" value="" title="initial CSS value" placeholder="box-shadow initial CSS value" onchange="changeCSS()"></label><br>
+<label><input type="checkbox" id="BSinside" onchange="changeCSS()"> inset</label><br>
+<label>offset-x: <input type="range" id="BSoffsetX" min="-500" max="500" step="1" value="0" onchange="changeCSS(this)">
+	<select id="BSoffsetXUnit" onchange="changeCSS()">
+		<option>px</option>
+		<option>em</option>
+		<option>ex</option>
+		<option>%</option>
+		<option>in</option>
+		<option>cm</option>
+		<option>mm</option>
+		<option>pt</option>
+		<option>pc</option>
+	</select></label><br>
+<label>offset-y: <input type="range" id="BSoffsetY" min="-500" max="500" step="1" value="0" onchange="changeCSS(this)">
+	<select id="BSoffsetYUnit" onchange="changeCSS()">
+		<option>px</option>
+		<option>em</option>
+		<option>ex</option>
+		<option>%</option>
+		<option>in</option>
+		<option>cm</option>
+		<option>mm</option>
+		<option>pt</option>
+		<option>pc</option>
+	</select></label><br>
+<label>blur-radius: <input type="range" id="BSblur" min="0" max="500" step="1" value="0" onchange="changeCSS(this)">
+	<select id="BSblurUnit" onchange="changeCSS()">
+		<option>px</option>
+		<option>em</option>
+		<option>ex</option>
+		<option>%</option>
+		<option>in</option>
+		<option>cm</option>
+		<option>mm</option>
+		<option>pt</option>
+		<option>pc</option>
+	</select></label><br>
+<label>spread-radius: <input type="range" id="BSspread" min="-500" max="500" step="1" value="0" onchange="changeCSS(this)">
+	<select id="BSspreadUnit" onchange="changeCSS()">
+		<option>px</option>
+		<option>em</option>
+		<option>ex</option>
+		<option>%</option>
+		<option>in</option>
+		<option>cm</option>
+		<option>mm</option>
+		<option>pt</option>
+		<option>pc</option>
+	</select></label><br>
+<label>color: <input type="color" id="BScolor" value="#000000" onchange="changeCSS()"></label><br>
+<br>
+<span title="CSS result">box-shadow:&emsp;<output id="BSoutput" onclick="return updateCSS(event,this);"></output><input id="BSoutputModify" style="display:none;min-width:25ex;width:50%;" /></span>
+<hr>
+<header>Configure this page for your test</header>
+<label>Box CSS: <textarea id="BxCSS" onchange="changeTest()" placeholder="CSS applied to the box" title="Apply some CSS to the box (values defined below could overwrite these values)"></textarea></label><br>
+<label>color: <input id="BGcolor" type="color" value="#000000" onchange="changeTest()"></label><br>
+<label>background-color: <input id="BGbgColor" type="color" value="#FFFFFF" onchange="changeTest()"></label><br>
+<label>background-color (box): <input id="BGboxColor" type="color" value="#FFFFFF" onchange="changeTest()"></label><br>
+<label>border-color (box): <input id="BGboxBorder" type="color" value="#000000" onchange="changeTest()"></label><br>
+<label>Text content: <textarea id="BxText" onchange="changeTest()" placeholder="Content in the box">Some text in this box...</textarea></label><br>
+
+
+<script>
+function updateCSS(event,elemOrig){
+	var elem=document.getElementById("BSoutputModify");
+	elemOrig=elemOrig||this;
+	elem.value=elemOrig.value;
+	elem.onblur=function(){
+		var vl=elem.value,v;
+		elemOrig.style.display="inline";
+		elem.style.display="none";
+		vl=vl.split(/(^[^,]+),?/);
+		v=vl[1];
+		document.getElementById("BScss").value=vl[2]||"";
+		v=v.split(/\s+/);
+		if(v.length===5 || (v.length===6 && v[0]==="inset")){
+			var i=0;
+			if(v.length===6){
+				document.getElementById("BSinside").checked=true;
+				i++;
+			}else{
+				document.getElementById("BSinside").checked=false;
+			}
+
+			document.getElementById("BSoffsetX").value=parseFloat(v[i]);
+			document.getElementById("BSoffsetXUnit").value=v[i].split(/([%a-z]+)/)[1];
+			i++;
+			document.getElementById("BSoffsetY").value=parseFloat(v[i]);
+			document.getElementById("BSoffsetYUnit").value=v[i].split(/([%a-z]+)/)[1];
+			i++;
+			document.getElementById("BSblur").value=parseFloat(v[i]);
+			document.getElementById("BSblurUnit").value=v[i].split(/([%a-z]+)/)[1];
+			i++;
+			document.getElementById("BSspread").value=parseFloat(v[i]);
+			document.getElementById("BSspreadUnit").value=v[i].split(/([%a-z]+)/)[1];
+			i++;
+			document.getElementById("BScolor").value=v[i];
+		}
+		changeCSS();
+	}
+	elem.style.display="inline";
+	elemOrig.style.display="none";
+	elem.focus();
+	event.preventDefault();
+	return false;
+}
+
+function changeCSS(slider){
+	var element=document.getElementById("test"),
+		origCSS=document.getElementById("BScss").value,
+		inside=document.getElementById("BSinside").checked?"inset ":"",
+		offsetX=parseFloat(document.getElementById("BSoffsetX").value),
+		offsetY=parseFloat(document.getElementById("BSoffsetY").value),
+		blur=parseFloat(document.getElementById("BSblur").value),
+		spread=parseFloat(document.getElementById("BSspread").value),
+		color=document.getElementById("BScolor").value,
+		result="";
+
+	//traitement d'une ou de valeur(s) déjà définie(s) pour box-shadow
+	origCSS=origCSS.replace(/^\s+|box-shadow| ?: ?|\s+$/g,""); //trim + suppression d'un éventuel "box-shadow :"
+	if(origCSS){
+		origCSS=","+origCSS;
+	}else{
+		origCSS="";
+	}
+
+	//création du code CSS
+	result=inside+offsetX+document.getElementById("BSoffsetXUnit").value+" "+offsetY+document.getElementById("BSoffsetYUnit").value+" "+blur+document.getElementById("BSblurUnit").value+" "+spread+document.getElementById("BSspreadUnit").value+" "+color+origCSS;
+
+	//affichage du résultat
+	document.getElementById("BSoutput").value=result;
+	element.style.boxShadow=result;
+}
+
+function changeTest(){
+//permet de changer l'environnement
+	var element=document.getElementById("test");
+	element.style.cssText=document.getElementById("BxCSS").value;
+	element.style.backgroundColor=document.getElementById("BGboxColor").value;
+	element.style.borderColor=document.getElementById("BGboxBorder").value;
+	document.body.style.backgroundColor=document.getElementById("BGbgColor").value;
+	document.body.style.color=document.getElementById("BGcolor").value;
+	element.innerHTML=document.getElementById("BxText").value.replace(/\r\n|\n|\r/g,"<br>");
+	changeCSS();
+}
+changeCSS();
+</script>
+</body>
+</html>

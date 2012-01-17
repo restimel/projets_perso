@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>Alumette</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+
+<style type="text/css">
+body{
+	background-color: #000000;
+	color: #FFFFFF;
+}
+
+.souffre{
+	background: #442200;
+
+	-moz-border-radius: 40px;
+	border-radius: 40px;
+
+	-moz-box-shadow: inset #cc2266 4px 5px 45px 3px;
+	-webkit-box-shadow: inset #cc2266 4px 5px 45px 3px;
+	box-shadow: inset #cc2266 4px 5px 45px 3px;
+
+	height: 65px;
+	margin: 180px 150px 30px 150px;
+	width: 50px;
+	z-index: 2;
+	position: relative;
+	cursor: pointer;
+}
+.tige{
+	background: #EEDDAA;
+
+	height: 250px;
+	margin: -35px 162px 5px 162px;
+	width: 26px;
+	z-index: 1;
+	position: relative;
+
+	-moz-box-shadow: inset #806040 2px 0 10px 3px;
+	-webkit-box-shadow: inset #806040 2px 0 10px 3px;
+	box-shadow: inset #806040 2px 0 10px 3px;
+}
+</style>
+
+<div class="labsMenu labsMenuHaut">
+Vent aléatoire: <input type="checkbox" onchange="flamme.autoVent(this.checked);"><br>
+vent:<input type="number" id="vent" value="0" onchange="flamme.changeVent();"><button onclick="flamme.changeVent(-1);">-</button><button onclick="flamme.changeVent(1);">+</button>
+</div>
+<br>
+<div id="flamme" class="souffre"></div>
+<div id="tige" class="tige"></div>
+<br>
+
+
+<script type="text/javascript" src="./flamme.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+<textarea id="source" onchange="conversion(this.value)"></textarea>
+<hr>
+<textarea id="resultat"></textarea>
+
+<script>
+function conversion(source){
+	var rslt="",i,j,compteur;
+	
+	//liste des compétences
+	var lstEau=["Acupuncture","Accuponcture","Apprenti Pêcheur","Canon à Eau","Clone Aqueux","Coup Fatal","Coups Sournois","Cuisinier","Douche Ecossaise","Entrainement sous-marin","Entraînement sous-marin","Entrainement sous-marin Avancé","Entrainement sous-marin avancé","Entraînement Sous-Marin Avancé","Gel","Griffes Empoisonnées","Griffes empoisonnées","Karaté sous-marin","Magasinier","Maître Nageur","Maître Pêcheur","Marécage","Marecage","Mutation","Pêcheur Confirmé","Perception","Pétrification","Poche Ventrale","Rayon Kaar-Sher","Sang-Acide","Sans-Pitié","Sapeur","Sumo","Zéro Absolu"],
+		lstTerre=["Acrobate","Archéologue","Carapace","Charisme","Cocon","Colosse","Croissance","Détective","Endurance","Esprit Gorilloz","Etat Primal","Expert en Fouilles","Fouille","Garde Forestier","Géant","Héritage Faroe","Ingénieur","Instinct Sauvage","Large Machoire","Leader","Planificateur","Printemps Précoce","Renforts Korgon","Résistance à la Magie","Sauvagerie","Sympathique","Tenacité","Ténacité","Vignes"],
+		lstFoudre=["Adrénaline","Archange Corrosif","Archange Génésif","Attaque-éclair","Aube Feuillue","Aura Hermétique","Bénédiction","Brancardier","Célérité","Concentration","Coup Double","Crépuscule Flamboyant","Croc-Diamant","Danse Foudroyante","Embuche","Fission Elémentaire","Fission élémentaire","Focus","Foudre","Intelligence","Marchand","Medecine","Médecine","Paratonnerre","Plan de Carrière","Premiers Soins","Prêtre","Purée Salvatrice","Régénérescence","Réincarnation","Voie de Gaïa","Voie de Kaos"],
+		lstAir=["Agilité","Analyse","Attaque Plongeante","Cueillette","Disque Vacuum","Elasticité","Envol","Esquive","Éveil","Forme Etherale","Forme Vaporeuse","Furtivité","Haleine Fétive","Maître Lévitateur","Méditation Solitaire","Méditation Transcendantale","Mistral","Nuage Toxique","Oeil de Lynx","Paumes Éjectables","Professeur","Saut","Souffle de Vie","Spécialiste","Stratégie","Tai-chi","Tai-Chi","Talon d'Achile","Talon d'Achille","Tornade","Trou Noir","Vent vif","Vent Vif"],
+		lstFeu=["Arts Martiaux","Aura Incandescente","Aura Incandescante","Belier","Bélier","Boule de Feu","Brave","Charge","Chasseur de Dragon","Chasseur de Géant","Chasseur de Goupignon","Chef de Guerre","Chef de guerre","Coeur Ardent","Colère","Combustion","Coulée de Lave","Force","Furie","Griffes enflammées","Kamikaze","Météore","Paume Chalumeau","Sang Chaud","Self-Contrôle","Sieste","Souffle Ardent","Torche","Vengeance","Vigilance","Waïkikidô"],
+		lstNeutre=["Charge Cornue","Coque","Cuirasse","Déplacement Instantané","Déplacement instantané","Ecrasement","Insaisissable","Piétinement","Rock"],
+		lstDouble=[];
+	
+	//on limite la recherche à ce qui nous intéresse
+	var parser=(/Gérer mes dinoz Acheter un Dinoz !([\s\S]*)Mis à jour fréquemment/).exec(source);
+	if(parser){
+		parser=parser[1];
+	}else{
+		alert('Le texte ne doit pas être formatté correctement');
+		return;
+	}
+	//on découpe toutes les informations
+	parser=parser.split(/[\t ]*(?:\r\n|\n\r|\n|\r)[\t ]*/g);
+	
+	//nom du dino
+	rslt+="[g][s]"+parser[1]+"[/s][/g]: ";
+	
+	//niveau du dino
+	rslt+="niveau "+parser[2];
+	
+	//xp du dino
+	rslt+=" ("+parser[12]+":exp:)";
+	
+	//vie du dino
+	rslt+="\n"+parser[11]+":vie:";
+	
+	//recherche du nombre d'objet tranportable
+	i=14;
+	compteur=0;
+	while(parser[i++]=="[x]"){compteur++;}
+	rslt+="\n[i]Il peut transporter "+compteur+" objets.[/i]\n";
+	
+	//recherche de la liste des compétences
+	while(!(/Compétence\s*Type\s*Dés./).test(parser[i++])){};
+	
+	//liste toutes les compétences
+	var feu=[],
+		bois=[],
+		eau=[],
+		foudre=[],
+		air=[],
+		neutre=[],
+		doubl=[],
+		competence;
+	do{
+		competence=(/^[\t \s]*([^ \t].*?[^ \t])[\t \s]*([A-Z])$/).exec(parser[i]);
+		if(competence){
+			if(lstFeu.indexOf(competence[1])!==-1) feu.push(competence[1]);
+			else if(lstTerre.indexOf(competence[1])!==-1) bois.push(competence[1]);
+			else if(lstEau.indexOf(competence[1])!==-1) eau.push(competence[1]);
+			else if(lstFoudre.indexOf(competence[1])!==-1) foudre.push(competence[1]);
+			else if(lstAir.indexOf(competence[1])!==-1) air.push(competence[1]);
+			else if(lstDouble.indexOf(competence[1])!==-1) doubl.push(competence[1]);
+			else if(lstNeutre.indexOf(competence[1])!==-1) neutre.push(competence[1]);
+			else doubl.push(competence[1]);
+		}
+	}while(parser[++i]!=="Caractéristiques");
+	
+	//affichage des compétences
+	//feu
+	rslt+=":feu:"+parser[5]+" (";
+	feu=feu.reverse();
+	j=feu.length;
+	while(j--){
+		rslt+=feu[j];
+		if(j) rslt+=",";
+	}
+	rslt+=")\n";
+	
+	//bois
+	rslt+=":bois:"+parser[6]+" (";
+	bois=bois.reverse();
+	j=bois.length;
+	while(j--){
+		rslt+=bois[j];
+		if(j) rslt+=",";
+	}
+	rslt+=")\n";
+	
+	//eau
+	rslt+=":eau:"+parser[7]+" (";
+	eau=eau.reverse();
+	j=eau.length;
+	while(j--){
+		rslt+=eau[j];
+		if(j) rslt+=",";
+	}
+	rslt+=")\n";
+	
+	//foudre
+	rslt+=":foudre:"+parser[8]+" (";
+	foudre=foudre.reverse();
+	j=foudre.length;
+	while(j--){
+		rslt+=foudre[j];
+		if(j) rslt+=",";
+	}
+	rslt+=")\n";
+	
+	//air
+	rslt+=":air:"+parser[9]+" (";
+	air=air.reverse();
+	j=air.length;
+	while(j--){
+		rslt+=air[j];
+		if(j) rslt+=",";
+	}
+	rslt+=")\n";
+	
+	//neutre
+	if(neutre.length){
+		rslt+=":neutre: (";
+		neutre=neutre.reverse();
+		j=neutre.length;
+		while(j--){
+			rslt+=neutre[j];
+			if(j) rslt+=",";
+		}
+		rslt+=")\n";
+	}
+	
+	//double
+	if(doubl.length){
+		rslt+=":!: (";
+		doubl=doubl.reverse();
+		j=doubl.length;
+		while(j--){
+			rslt+=doubl[j];
+			if(j) rslt+=",";
+		}
+		rslt+=")\n";
+	}
+
+	//on affiche le résultat
+	document.getElementById("resultat").value=rslt;
+}
+</script>

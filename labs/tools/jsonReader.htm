@@ -1,0 +1,347 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf8">
+	<title>JSON reader</title>
+	
+	<style>
+		.openObject{
+			display: block;
+			border: 1px solid black;
+			padding-left:5px;
+			box-shadow: 5px 5px 5px 0px #CCCCCC,inset 0px -1px 1px 0px #000000;
+		}
+		.closeObject{
+			display:inline;
+		}
+		#objet header{
+			color: #0000FF;
+			display: inline;
+			padding: 5px;
+			cursor: pointer;
+		}
+		
+		#javascript{
+			position: fixed;
+			top: 10px;
+			right: 10px;
+			padding: 5px;
+			box-shadow: 7px 7px 10px 5px #DDDDDD;
+		}
+		#javascript input{
+			height: 20px;
+			font-style: italic;
+		}
+	</style>
+</head>
+<body>
+
+
+
+<section>
+	<header>Code JSON</header>
+	<textarea id="source" onchange="jsonReader(this.value)"></textarea>
+</section>
+<hr>
+<section>
+	<header>Présentation de l'objet</header>
+	<div id="objet"></div>
+</section>
+<section id="javascript">
+	<header>Code javascript permettant d'accéder à cette valeur</header>
+	<input id="codeJS" title="OBJ. désigne l'objet créé par JSON" onchange="searchObj(this.value)">&nbsp;</output>
+</section>
+
+<script>
+
+function countObj(myobj){
+	var count = 0,x;
+	for (x in myobj) if (myobj.hasOwnProperty(x)) count++;
+	return count;
+}
+
+function createLink(obj,elem,str){
+	return function(){
+		if(elem.style.display=="block"){
+			elem.style.display="none";
+		}else{
+			if(!elem.innerHTML){
+				writeObj(obj,elem,str);
+			}
+			elem.style.display="block";
+		}
+	};
+}
+
+function writeObj(objet,element,str){
+	var elem,body,titre,x,code;
+	element.innerHTML="";
+	for(x in objet){
+		titre=document.createElement("header");
+		titre.textContent=x;
+		elem=document.createElement("section");
+		elem.className="closeObject";
+		body=document.createElement("section");
+		body.className="openObject";
+		body.style.display="none";
+		if(/^[^_a-z]|[^a-z0-9_]/.test(x)){
+			if(isNaN(x)){
+				code=str+'["'+x.replace(/(["\\])/g,"\\$1")+'"]';
+			}else{
+				code=str+'['+x+']';
+			}
+		}else{
+			code=str+'.'+x;
+		}
+		if(objet[x] === null){
+			elem.textContent=" (null)";
+		}else if(typeof objet[x] === "object"){
+			if(objet[x] instanceof Array){
+				elem.textContent=" (Array ["+objet[x].length+"])";
+				if(objet[x].length>0) titre.onclick=createLink(objet[x],body,code);
+			}else{
+				var nb=countObj(objet[x]);
+				elem.textContent=" ("+typeof objet[x]+" ["+nb+"])";
+				if(nb>0) titre.onclick=createLink(objet[x],body,code);
+			}
+		}else if(typeof objet[x] === "string"){
+			elem.textContent=" "+objet[x]+" (string ["+objet[x].length+"])";
+		}else{
+			elem.textContent=" "+objet[x]+" ("+typeof objet[x]+")";
+		}
+		elem.onmouseover=(function(msg){return function(){document.getElementById("codeJS").textContent=msg;};})(code);
+		element.appendChild(titre);
+		element.appendChild(elem);
+		element.appendChild(body);
+		element.appendChild(document.createElement("br"));
+	}
+	element.className="openObject";
+}
+
+function jsonVerify(str,inside,offset){
+//permet d'essayer de trouver les problèmes de code JSON
+	var i=0,li=str.length,current,msg="",previous=inside;
+	offset=offset||0;
+	do{
+		current=str[i];
+		switch(current){
+			case "{":
+				if(inside==="\"" || inside==="'"){
+					previous="";
+					continue;
+				}
+				if(previous && "{}]\"';".indexOf(previous)!==-1){
+					return "Caractère "+(i+offset+1)+": le caractère { ne devrait pas être là";
+				}
+				if(inside==="{" && previous===","){
+					return "Caractère "+(i+offset+1)+": le caractère { ne devrait pas être devant , lorsqu'il est dans un objet (cet objet commence position "+offset+")";
+				}
+				
+				msg=jsonVerify(str.substring(i+1),"{",i+offset+1);
+				if(typeof msg ==="number"){
+					i=msg-offset;
+					previous="}";
+				}else{
+					return msg;
+				}
+				break;
+			case "[":
+				if(inside==="\"" || inside==="'"){
+					previous="";
+					continue;
+				}
+				if(previous && "{}]\"';".indexOf(previous)!==-1){
+					return "Caractère "+(i+offset+1)+": le caractère [ ne devrait pas être là";
+				}
+				if(inside==="{" && previous===","){
+					return "Caractère "+(i+offset+1)+": le caractère [ ne devrait pas être devant , lorsqu'il est dans un objet (cet objet commence position "+offset+")";
+				}
+				msg=jsonVerify(str.substring(i+1),"[",i+offset+1);
+				if(typeof msg ==="number"){
+					i=msg-offset;
+					previous="]";
+				}else{
+					return msg;
+				}
+				break;
+			case "]":
+				if(inside==="\"" || inside==="'"){
+					previous="";
+					continue;
+				}
+				if(previous && "{,:;".indexOf(previous)!==-1 || inside!=="["){
+					return "Caractère "+(i+offset+1)+": le caractère ] ne devrait pas être là";
+				}
+				return i+offset;
+				break;
+			case "}":
+				if(inside==="\"" || inside==="'"){
+					previous="";
+					continue;
+				}
+				if(previous && "[,:;".indexOf(previous)!==-1 || inside!=="{"){
+					return "Caractère "+(i+offset+1)+": le caractère } ne devrait pas être là.";
+				}
+				return i+offset;
+				break;
+			case "\"":
+				if(inside==="'"){
+					previous="";
+					continue;
+				}
+				if(inside==="\""){
+					if(previous ==="\\"){
+						previous="";
+					}else{
+						return i+offset;
+					}
+				}else{
+					if(previous && "}]\"';".indexOf(previous)!==-1){
+						return "Caractère "+(i+offset+1)+": le caractère \" ne devrait pas être là";
+					}
+					msg=jsonVerify(str.substring(i+1),"\"",i+offset+1);
+					if(typeof msg ==="number"){
+						i=msg-offset;
+						previous="\"";
+					}else{
+						return msg;
+					}
+				}
+				break;
+			case "'":
+				if(inside==="\""){
+					previous="";
+					continue;
+				}
+				if(inside==="'"){
+					if(previous ==="\\"){
+						previous="";
+					}else{
+						return i+offset;
+					}
+				}else{
+					if(previous && "}]\"';".indexOf(previous)!==-1){
+						return "Caractère "+(i+offset+1)+": le caractère ' ne devrait pas être là";
+					}
+					msg=jsonVerify(str.substring(i+1),"'",i+offset+1);
+					if(typeof msg ==="number"){
+						i=msg-offset;
+						previous="'";
+					}else{
+						return msg;
+					}
+				}
+				break;
+			
+			case ",":
+				if(inside==="\"" || inside==="'"){
+					previous="";
+					continue;
+				}
+				if(previous && "{[,:;".indexOf(previous)!==-1 || !inside){
+					return "Caractère "+(i+offset+1)+": le caractère , ne devrait pas être là";
+				}
+				previous=",";
+				break;
+			case ":":
+				if(inside==="\"" || inside==="'"){
+					previous="";
+					continue;
+				}
+				if(previous && "}]{[,:;".indexOf(previous)!==-1 || inside!=="{"){
+					return "Caractère "+(i+offset+1)+": le caractère : ne devrait pas être là. Objet position "+offset;
+				}
+				previous=":";
+				break;
+			
+			case "\\":
+				if(inside==="\"" || inside==="'"){
+					if(previous==="\\") previous=""; else previous="\\";
+				}else{
+					return "Caractère "+(i+offset+1)+": le caractère \\ ne devrait pas être là";
+				}
+				break;
+			default:
+				if(inside==="\"" || inside==="'"){
+					previous=current;
+				}else{
+					if("-1234567890".indexOf(current)!==-1 && ((inside==="{" && previous===":") || (inside==="[" && (previous==="," || previous==="[")))){
+						previous=current;
+					}else if("1234567890.".indexOf(current)!==-1 && "-1234567890.".indexOf(previous)!==-1){
+						previous=current;
+					}else{
+						var ok=false;
+						switch(current){
+							case "n":
+								if(inside==="{" && previous===":")ok="n";
+								if(inside==="[" && previous===",")ok="n";
+								if(inside==="[" && previous==="[")ok="n";
+								break;
+							case "u":
+								if(previous==="n")ok="nu";
+								break;
+							case "l":
+								if(previous==="nu")ok="nul";
+								if(previous==="nul")ok="null";
+								break;
+							case " ":
+								if(inside==="") ok=" ";
+								break;
+							case "\t":
+								if(inside==="") ok="\t";
+								break;
+						}
+						if(ok){
+							previous=ok;
+						}else{
+							return "Caractère "+(i+offset+1)+": le caractère "+current+" ne devrait pas être là. Se situe dans l'objet "+inside+" position "+offset;
+						}
+						
+					}
+				}
+		}
+	}while(++i<li);
+	if(inside) return "Caractère "+(i+offset)+": Il manque la fin de l'objet, un caractère "+inside+" a été ouvert à la position "+offset+" et n'a pas été refermé";
+	else return "Pas de soucis détecté";
+}
+
+function jsonReader(str){
+	var element=document.getElementById("objet");
+	try{
+		var obj=JSON.parse(str);
+	}catch(e){
+		var msg=jsonVerify(str,"",0),pst=(/Caractère (\d+).+(?:position (\d+))/i).exec(msg);
+		element.innerHTML='<font color="red"><b>Erreur de formatage</b></font>: '+e+"<br>"+msg+"<br><br>";
+		if(pst){
+			element.innerHTML+="<i>"+str.substring(0,pst[2]-1)+'<font color="blue">'+str.substring(pst[2]-1,pst[1]-1)+'</font><font color="red">'+str[pst[1]-1]+'</font>'+str.substring(pst[1])+"</i>";
+		}else{
+			pst=(/Caractère (\d+)/i).exec(msg);
+			if(pst){
+				element.innerHTML+="<i>"+str.substring(0,pst[1]-1)+'<font color="red">'+str[pst[1]-1]+'</font>'+str.substring(pst[1])+"</i>";
+			}else{
+				element.innerHTML+="<i>"+str+"</i>";
+			}
+		}
+		return false;
+	}
+	if(obj===null){
+		alert("Aucun objet JSON trouvé");
+		return false;
+	}
+	element.innerHTML="";
+	var elem=document.createElement("section");
+	//elem.className="openObject";
+	writeObj(obj,elem,"OBJ");
+	element.appendChild(elem);
+}
+
+function searchObj(v){
+	var element=document.getElementById("objet");
+	alert("Aucun objet n'a été chargé pour l'instant");
+	return false;
+};
+
+</script>
+
+</body>
+</html>

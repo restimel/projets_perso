@@ -1,0 +1,267 @@
+<html>
+<head>
+<script type="text/javascript">
+function convert_month(d){
+	d=d.toLowerCase();
+	switch(d){
+		case "jan": return 1; break;
+		case "january": return 1; break;
+		case "janvier": return 1; break;
+		case "feb": return 2; break;
+		case "february": return 2; break;
+		case "fevrier": return 2; break;
+		case "février": return 2; break;
+		case "fev": return 2; break;
+		case "mar": return 3; break;
+		case "march": return 3; break;
+		case "mars": return 3; break;
+		case "apr": return 4; break;
+		case "april": return 4; break;
+		case "avr": return 4; break;
+		case "avril": return 4; break;
+		case "may": return 5; break;
+		case "mai": return 5; break;
+		case "jun": return 6; break;
+		case "june": return 6; break;
+		case "juin": return 6; break;
+		case "jul": return 7; break;
+		case "july": return 7; break;
+		case "juillet": return 7; break;
+		case "aug": return 8; break;
+		case "august": return 8; break;
+		case "aout": return 8; break;
+		case "aôut": return 8; break;
+		case "aou": return 8; break;
+		case "sep": return 9; break;
+		case "september": return 9; break;
+		case "septembre": return 9; break;
+		case "oct": return 10; break;
+		case "october": return 10; break;
+		case "octobre": return 10; break;
+		case "nov": return 11; break;
+		case "novembre": return 11; break;
+		case "november": return 11; break;
+		case "dec": return 12; break;
+		case "déc": return 12; break;
+		case "december": return 12; break;
+		case "decembre": return 12; break;
+		case "décembre": return 12; break;
+		default:
+			return 0;
+	}
+}
+
+function get_Date(i){
+	var d=new Date();
+	if(!document.getElementById("j"+i)){
+		return new Date();
+	}
+	var jour=parseInt(document.getElementById("j"+i).value,10);
+	var mois=parseInt(document.getElementById("M"+i).value,10);
+	var annee=parseInt(document.getElementById("A"+i).value,10);
+	var heure=parseInt(document.getElementById("h"+i).value,10);
+	var min=parseInt(document.getElementById("min"+i).value,10);
+	var sec=parseInt(document.getElementById("sec"+i).value,10);
+	if(jour) d.setDate(jour);
+	if(mois) d.setMonth(mois-1);
+	if(annee) d.setFullYear(annee);
+	if(heure || heure===0) d.setHours(heure);
+	if(min || min===0) d.setMinutes(min);
+	if(sec || sec===0) d.setSeconds(sec);
+	d.setMilliseconds(0);
+	return d;
+}
+
+function compare_date(){
+	var t1=new Date();
+	var t2=new Date();
+	t1.setTime(get_Date(1));
+	t2.setTime(get_Date(2));
+	if(t1-t2>0){
+		var t=t2;
+		t2=t1;
+		t1=t;
+	}
+	var diff=t2-t1;
+	var txt="";
+	txt+=t1.toLocaleString()+" &rarr; "+t2.toLocaleString()+"<br>";
+	txt+=Math.floor(diff/1000)+"s<br>";
+	txt+=Math.floor(diff/3600000)+"h "+Math.floor(diff%3600000/60000)+"min "+Math.floor(diff%60000/1000)+"s<br>";
+	txt+=Math.floor(diff/(3600000*24))+"j "+Math.floor((diff%(3600000*24))/3600000)+"h "+Math.floor(diff%3600000/60000)+"min "+Math.floor(diff%60000/1000)+"s<br>";
+	document.getElementById("result").innerHTML=txt;
+}
+
+function parse_date(i){
+	var dt=document.getElementById("d"+i).value;
+	var txt=" &rarr; "
+	var color="#00FF00";
+	var rgx=/([0-1]?[0-9])\/([0-3]?[0-9])\/([0-9]+) - ([0-2]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])/; //09/28/2009 - 19:09:50 (compuware)
+	var spl=rgx.exec(dt);
+	if(spl==null){
+		if(dt=="") txt="";
+		else{
+			rgx=/([0-3]?[0-9]) ([A-Za-z]+) ([0-9]+) ([0-2]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])/; //Tue, 29 Sep 2009 12:25:12 GMT (javascript)
+			spl=rgx.exec(dt);
+			if(spl!=null){
+				//Tue, 29 Sep 2009 12:25:12 GMT (javascript)
+				txt+=dt;
+				document.getElementById("j"+i).value=spl[1];
+				document.getElementById("M"+i).value=convert_month(spl[2]);
+				document.getElementById("A"+i).value=spl[3];
+				document.getElementById("h"+i).value=spl[4];
+				document.getElementById("min"+i).value=spl[5];
+				document.getElementById("sec"+i).value=spl[6];
+				compare_date();
+			}else{
+				rgx=/([0-9]+)-([0-1]?[0-9])-([0-3]?[0-9]) ([0-2]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])/; //2009-09-25 01:36:29 (log)
+				spl=rgx.exec(dt);
+				if(spl!=null){
+					//2009-09-25 01:36:29 (log)
+					txt+=dt;
+					document.getElementById("j"+i).value=spl[3];
+					document.getElementById("M"+i).value=spl[2];
+					document.getElementById("A"+i).value=spl[1];
+					document.getElementById("h"+i).value=spl[4];
+					document.getElementById("min"+i).value=spl[5];
+					document.getElementById("sec"+i).value=spl[6];
+					compare_date();
+				}else{
+					rgx=/([a-zA-Z]+) ([0-3]?[0-9]), ([0-9]+), ([0-2]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9]) ([AP]M)/; //October 15, 2009, 11:58:57 AM (windows)
+					spl=rgx.exec(dt);
+					if(spl!=null){
+						//October 15, 2009, 11:58:57 AM (windows)
+						txt+=dt;
+						document.getElementById("j"+i).value=spl[2];
+						document.getElementById("M"+i).value=convert_month(spl[1]);
+						document.getElementById("A"+i).value=spl[3];
+						document.getElementById("h"+i).value=parseInt(spl[4],10)+((spl[7]=="PM")?12:0);
+						document.getElementById("min"+i).value=spl[5];
+						document.getElementById("sec"+i).value=spl[6];
+						compare_date();
+					}else{
+						rgx=/^([0-9]+)-([0-9]{2})-([0-9]{2})$/; //HTML5: date
+						spl=rgx.exec(dt);
+						if(spl!=null){
+							//2010-04-16 (HTML5: date)
+							txt+=dt;
+							var t=new Date(spl[1],spl[2],spl[3]);
+							document.getElementById("j"+i).value=t.getDate();
+							document.getElementById("M"+i).value=t.getMonth()+1;
+							document.getElementById("A"+i).value=t.getFullYear();
+							document.getElementById("h"+i).value=t.getHours();
+							document.getElementById("min"+i).value=t.getMinutes();
+							document.getElementById("sec"+i).value=t.getSeconds();
+							compare_date();
+						}else{
+							rgx=/^\s*([0-9]+)\s*(ms|s|us|µs|ns|min|h|H|)\s*$/; //timestamp (s)
+							spl=rgx.exec(dt);
+							if(spl!=null){
+								//timestamp (s)
+								txt+=dt;
+								var t=new Date();
+								switch(spl[2]){
+									case "ms":
+										t.setTime(parseInt(spl[1],10));
+									break;
+									case "us":
+									case "µs":
+										t.setTime(parseInt(spl[1],10)/1000);
+									break;
+									case "ns":
+										t.setTime(parseInt(spl[1],10)/1000000);
+									break;
+									case "min":
+										t.setTime(parseInt(spl[1],10)*60000);
+									break;
+									case "H":
+									case "h":
+										t.setTime(parseInt(spl[1],10)*3600000);
+									break;
+									case "":
+									case "s":
+									default:
+										t.setTime(parseInt(spl[1],10)*1000);
+								}
+								document.getElementById("j"+i).value=t.getDate();
+								document.getElementById("M"+i).value=t.getMonth()+1;
+								document.getElementById("A"+i).value=t.getFullYear();
+								document.getElementById("h"+i).value=t.getHours();
+								document.getElementById("min"+i).value=t.getMinutes();
+								document.getElementById("sec"+i).value=t.getSeconds();
+								compare_date();
+							}else{
+								rgx=/^\s*([+-])\s*([0-9]+(?:\.[0-9]+)?)\s*(s|ms|min|h|H|us|µs|)\s*$/; //delay
+								spl=rgx.exec(dt);
+								if(spl!=null){
+									//delay
+									txt+=dt;
+									var t=new Date();
+									t.setTime(get_Date(i-1));
+									var tmps=parseFloat(spl[2]);
+									switch(spl[3]){
+										case "ns": tmps/=1000000; break;
+										case "us":
+										case "µs": tmps/=1000; break;
+										case "ms": break;
+										case "":
+										case "s": tmps*=1000; break;
+										case "min": tmps*=60000; break;
+										case "H":
+										case "h": tmps*=3600000; break;
+									}
+									if(spl[1]=="+"){
+										t.setMilliseconds(t.getSeconds()+tmps);
+									}else{
+										t.setMilliseconds(t.getSeconds()-tmps);
+									}
+									document.getElementById("j"+i).value=t.getDate();
+									document.getElementById("M"+i).value=t.getMonth()+1;
+									document.getElementById("A"+i).value=t.getFullYear();
+									document.getElementById("h"+i).value=t.getHours();
+									document.getElementById("min"+i).value=t.getMinutes();
+									document.getElementById("sec"+i).value=t.getSeconds();
+									compare_date();
+								}else{
+									txt+=" <b>(Date does not match)</b> "+dt;
+									color="#FF0000";
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}else{
+		//09/28/2009 - 19:09:50 (compuware)
+		txt+=dt;
+		document.getElementById("j"+i).value=spl[2];
+		document.getElementById("M"+i).value=spl[1];
+		document.getElementById("A"+i).value=spl[3];
+		document.getElementById("h"+i).value=spl[4];
+		document.getElementById("min"+i).value=spl[5];
+		document.getElementById("sec"+i).value=spl[6];
+		compare_date();
+	}
+	var elem=document.getElementById("temp"+i);
+	elem.innerHTML=txt;
+	elem.style.color=color;
+}
+</script>
+</head>
+<body>
+<u>Reference date</u><br>
+<label for="d1">Date text to parse</label><input type="text" id="d1" onchange="parse_date(1)"><input type="date" onchange="var d1=document.getElementById('d1');d1.value=this.value;d1.onchange();" style="width:12px; background:red;" value="X"><span id="temp1"></span><br>
+<input type="text" id="j1" size="2" title="Day">/<input type="text" id="M1" size="2" title="Month">/<input type="text" id="A1" size="3" title="Year (4 digits)"> - <input type="text" id="h1" size="2" title="hours">:<input type="text" id="min1" size="2" title="minutes">:<input type="text" id="sec1" size="2" title="seconds">
+<hr>
+<u>date</u><br>
+<label for="d2">Date text to parse</label><input type="text" id="d2" onchange="parse_date(2)"><input type="date" onchange="var d2=document.getElementById('d2');d2.value=this.value;d2.onchange();" style="width:12px; background:red;" value="X"><span id="temp2"></span><br>
+<input type="text" id="j2" size="2" title="Day">/<input type="text" id="M2" size="2" title="Month">/<input type="text" id="A2" size="3" title="Year (4 digits)"> - <input type="text" id="h2" size="2" title="hours">:<input type="text" id="min2" size="2" title="minutes">:<input type="text" id="sec2" size="2" title="seconds">
+<hr>
+<input type="button" onclick="compare_date()" value="Calcul"><br>
+<div id="result" style="background:#DDDDFF;">
+</div>
+<br>
+<hr color="#00FF00">
+personnal notes:<br><textarea rows="20" style="width:99%;"></textarea>
+</body>
+</html>
