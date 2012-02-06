@@ -409,7 +409,91 @@ Original file: http://b.mariat.free.fr/javascript/labs/labs.js
 		}
 		return change;
 	}();
+	
+	/**
+	 * createMenu()
+	 * 		Permet de mettre en place le menu
+	 */
+	function createMenu(){
+		var xhr = null;
+		if (window.XMLHttpRequest) {
+			xhr = new XMLHttpRequest();
+		}else if (window.ActiveXObject) {
+			try {
+				xhr = new ActiveXObject("Msxml2.XMLHTTP");
+			} catch(e) {
+				xhr = new ActiveXObject("Microsoft.XMLHTTP");
+			}
+		}else{
+			// le navigateur ne supporte pas l'AJAX on lance le lien
+			//problème...
+			//TODO alternatif
+		}
+		
+		xhr.onreadystatechange = function() {
+			switch(xhr.readyState){
+				case 3: //chargement en cours
+					document.getElementById("mainMenu").innerHTML="<progress>chargement du menu</progress>";
+					break;
+				case 4: //chargement fini
+					if(xhr.status !== 200 && xhr.status !== 0){
+						//une erreur est apparue
+						document.getElementById("mainMenu").innerHTML="Problem Error "+xhr.status+"...<br>The menu could not be loaded, sorry.";
+					}else{
+						//chargement réussi
+						
+						var json=xhr.responseText;
+						console.log("json:"+json);
+						try{
+							json=JSON.parse(json);
+						}catch(e){
+							document.getElementById("mainMenu").innerHTML="JSON Error <br>"+e.message+"<br>The menu could not be loaded, sorry.";
+							return;
+						}
+						var txt='<menu class="open">';
+						txt+=generateMenu(json.menu);
+						txt+='</menu>';
+						document.getElementById("mainMenu").innerHTML=txt;
+						init(menu,lien);
+					}
+					break;
+			}
+		};
+		
+		xhr.open("GET", "./menu.json", true);
+		xhr.send(null);
+		
+		function generateMenu(liste){
+			var i=0,li=liste.length,txt="",tmp;
+			while(i<li){
+				txt+="<menu";
+				if(liste[i].label){
+					txt+=' label="'+liste[i].label+'"';
+				}
+				txt+=">"
+				if(tmp=(liste[i].nom || liste[i].url)){
+					txt+="<header>";
+					if(liste[i].url){
+						txt+='<a href="'+liste[i].url+'">'+tmp+'</a>';
+					}else{
+						txt+=tmp;
+					}
+					txt+="</header>";
+				}
+				if(liste[i].info){
+					txt+='<details>'+liste[i].info+'</details>';
+				}
+				if(liste[i].menu){
+					txt+=generateMenu(liste[i].menu);
+				}
+				txt+="</menu>";
+				i++;
+			}
+			return txt;
+		}
+	}
 
 	//remplacement du HTML par le code du menu
-	init(menu,lien);
+	//init(menu,lien);
+	createMenu();
 })();

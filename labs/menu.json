@@ -1,0 +1,33 @@
+{
+	"menu":[
+		{
+			"nom":"Curiculum Vitae",
+			"label":"CV",
+			"info":"Qui suis-je? Que fais-je? Pour tout savoir de moi.",
+			"complement":"",
+			"url":""
+		},
+		{
+			"nom":"javascript",
+			"label":"javascript",
+			"info":"Démonstration et codes javascript",
+			"complement":"",
+			"url":"",
+			"menu":[
+				{
+					"nom":"Allumette",
+					"label":"Allumette",
+					"info":"Une animation représentant une allumette.<br>Le <i>dessin</i> n'a été réalisé qu'avec du CSS. Le javascript est utilisé pour réalisé les animations.",
+					"complement":"Le dessin n'a été réalisé qu'en CSS. Principalement en utilisant la propriété <i>box-shadow</i>.<br>L'animation est géré par du javascript.",
+					"url":"./labs/flamme.html"
+				},{
+					"nom":"Tangram",
+					"label":"Tangram",
+					"info":"Le Tangram est un jeu où le but est de reproduire une figure à l'aide de 7 figures géométriques appelées Tans.<br>Canvas est utilisé pour réaliser ce script.",
+					"complement":"",
+					"url":"./games/tangram/tangram.html"
+				}
+			]
+		}
+	]
+}
