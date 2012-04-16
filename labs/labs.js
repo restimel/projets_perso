@@ -69,6 +69,15 @@ Original file: http://b.mariat.free.fr/javascript/labs/labs.js
 	if(typeof Array.prototype.indexOf === "undefined"){
 	//pour gérer la compatibilité avec IE qui ne connait pas indexOf
 		Array.prototype.indexOf= function(obj){
+			var i=-1,li=this.length;
+			while(++i<li && this[i]!==obj){}
+			return i==li?-1:i;
+		}
+	}
+
+	if(typeof Array.prototype.lastIndexOf === "undefined"){
+	//pour gérer la compatibilité avec IE qui ne connait pas lastIndexOf
+		Array.prototype.lastIndexOf= function(obj){
 			var i=this.length;
 			while(i-- && this[i]!==obj){}
 			return i;
@@ -171,50 +180,65 @@ Original file: http://b.mariat.free.fr/javascript/labs/labs.js
 							
 								//on change l'adresse dans la barre d'adresse
 								if(history.pushState){
-									history.pushState(null, titre, contenu[0]);
+									//history.pushState(null, titre, contenu[0]); //TODO uncomment
 									//TODO popstate https://developer.mozilla.org/en/DOM/window.onpopstate
 									//lecture: https://developer.mozilla.org/en/DOM/Manipulating_the_browser_history
 								}
 							
 								var texte=xhr.responseText;
-								document.getElementById("labsDemo").innerHTML=texte;
-								if(texte.indexOf("<script")!==-1){
-									var jscripts=texte.split(/<script(.*)\s*<\/script>/g),
+								document.getElementById("labsDemo").innerHTML=texte; //insertion du HTML
+
+								if(~texte.indexOf("<script")){
+									//insertion des scripts javascript
+									var jscripts=texte.split(/(<script[\s\S]*?<\/\s?script>)/),
 										path=contenu[0], //le chemin pour accéder aux fichiers
-										i=0,
+										i=-1,
 										li,jscript;
 									jscripts.pop();
 									jscripts.shift();
 									li=jscripts.length;
 
-									if(path.indexOf("/")!==-1){
+									if(~path.indexOf("/")){
 										path=path.substr(0,path.lastIndexOf("/")+1);
 									}else{
 										path="./";
 									}
-
+									
 									//exécution du javascript contenu dans la page ou lié à la page
-									while(i<li){
-										jscript=(/src\s?=\s?"(.*?)"|>\s*(.*)$/i).exec(jscripts[i++]);
+									while(++i<li){
+										if(!~jscripts[i].indexOf("<script")){
+											//ce morceau ne contient pas de script
+											continue;
+										}
+										jscript=(/src\s?=\s?"(.*?)"|>\s*([\s\S]*)\s*<\/\s?script>$/i).exec(jscripts[i]);
 										if(!jscript){
 											continue;
 										}else if(jscript[1]){
 											//Cas d'un fichier javascript lié à la page
-											var elem=document.createElement("script");
-											elem.type="text/javascript";
-											elem.src=path+jscript[1];
-											elem.onload=function(){document.body.removeChild(elem);};
-											elem.onerror=function(){document.body.removeChild(elem);alert("There is a problem to load the javascript :(");};
-											document.body.appendChild(elem);
+											(function(){
+												var elem=document.createElement("script");
+												elem.type="text/javascript";
+												elem.src=path+jscript[1];
+												elem.onload=function(){document.body.removeChild(elem);};
+												elem.onerror=function(){document.body.removeChild(elem);alert("There is a problem to load the javascript :(");};
+												document.body.appendChild(elem);
+											})();
 										}else if(jscript[2]){
 											//Cas d'un code javascript inclus dans la page
-											eval(jscript[2]);
+											if(texte.match(/<[^>]+\son[a-z]+=["']/i)){
+												console.warn("La page "+contenu[0]+" contient un script inline avec des événements sur des balises HTML. Ces événements peuvent ne pas fonctionner !");
+											}
+											try{
+												eval(jscript[2]);
+											}catch(e){
+												console.error("Du code javascript inline dans la page "+contenu[0]+" n'a pas pu être exécutée correctement:\n"+e);
+											}
 										}
-									}
+									}//while
 								}
 							}
 							break;
-					}
+					}//switch
 				};
 
 				xhr.open("GET", contenu[0], true);
@@ -443,7 +467,6 @@ Original file: http://b.mariat.free.fr/javascript/labs/labs.js
 						//chargement réussi
 						
 						var json=xhr.responseText;
-						console.log("json:"+json);
 						try{
 							json=JSON.parse(json);
 						}catch(e){
