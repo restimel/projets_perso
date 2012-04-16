@@ -78,7 +78,8 @@
 	</select></label><br>
 <label>color: <input type="color" id="BScolor" value="#000000" onchange="changeCSS()"></label><br>
 <br>
-<span title="CSS result">box-shadow:&emsp;<output id="BSoutput" onclick="return updateCSS(event,this);"></output><input id="BSoutputModify" style="display:none;min-width:25ex;width:50%;" /></span>
+<span title="CSS result">box-shadow:&emsp;<output id="BSoutput" onclick="return updateCSS(event,this);"></output><input id="BSoutputModify" style="display:none;min-width:25ex;width:50%;" /></span><br>
+<button onclick="document.getElementById('BScss').value = document.getElementById('BSoutput').value;changeTest();">Add a shadow effect</button>
 <hr>
 <header>Configure this page for your test</header>
 <label>Box CSS: <textarea id="BxCSS" onchange="changeTest()" placeholder="CSS applied to the box" title="Apply some CSS to the box (values defined below could overwrite these values)"></textarea></label><br>

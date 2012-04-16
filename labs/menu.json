@@ -8,6 +8,37 @@
 			"url":""
 		},
 		{
+			"nom":"Outils",
+			"label":"Outils",
+			"info":"Quelques outils pratiques. Certains sont de petits outils qui permettent de donner un petit coup de pouce à certaines situations. D'autres sont des aides qui permettent de travailler plus vite... quand on sait les utiliser :)",
+			"complement":"La plupart de ces outils sont écrits en javascript et restent donc limiter par le navigateur utilisé.",
+			"url":"",
+			"menu":[
+				{
+					"nom":"HTML/CSS",
+					"label":"HTML & CSS",
+					"info":"Cette section regroupe des outils permettant d'aider à la conception de code HTML ou de style CSS",
+					"url":"",
+					"menu":[
+						{
+							"nom":"CSS : Box Shadow",
+							"label":"CSS: Box Shadow",
+							"info":"Petit outil permettant d'aider à l'application de la propriété Box Shadow sur un élément HTML",
+							"url":"./tools/box_shadow.html"
+						}
+					]
+				},{
+					"nom":"Texte",
+					"label":"Manipulation de textes",
+					"info":"Cette section regroupe des outils permettant de manipuler du texte.<br/>Quelques soit le travail en informatique, le texte est l'élément de base. Avoir les bons outils permet de gagner souvent beaucoup de temps.",
+					"complement":"",
+					"url":"",
+					"menu":[
+					]
+				}
+			]
+		},
+		{
 			"nom":"javascript",
 			"label":"javascript",
 			"info":"Démonstration et codes javascript",
