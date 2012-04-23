@@ -9,26 +9,26 @@ a{
 	color: #FFFFFF;
 }
 
-menu details{
+.labsZoneMenu menu details{
 	display:none !important; /*pour cacher les commentaires*/
 }
 
 menu{
 	margin-top:0.5em;
-	margin-left:1.1em;
+	margin-left:0.9em;
 	margin-top:0.5em;
 	margin-bottom:0.5em;
 }
 
 /*.menu ul{*/
-.menu>menu{
+.labsZoneMenu .menu>menu{
 	display: block;
 	padding: 0.1em;
 	margin-left:0em;
 }
 
 /*.menu li, .menu>div{*/
-.menu header{
+.labsZoneMenu .menu header{
 	line-height: 1em;
 	border: 1px solid #AAAADD;
 	background-color:#666677;
@@ -45,22 +45,22 @@ menu{
 }
 
 /*Tout cacher ce qu'il y a dans les menus*/
-menu *{
+.labsZoneMenu menu *{
 	display: none;
 }
 /*Ne pas cacher les headers des menus*/
-menu header, menu header *{
+.labsZoneMenu menu header,.labsZoneMenu menu header *{
 	display: block;
 }
 
 /*Afficher les menus qui sont dans le menu ouvert*/
-menu.open>menu{
+.labsZoneMenu menu.open>menu{
 	display: block;
 	overflow:hidden;/*ceci est important pour que scrollheight ait une valeur*/
 }
 
 /*marqué le menu actif*/
-.actif>header{
+.labsZoneMenu .actif>header{
 /*	background-color:#AAAA66;
 	box-shadow: 0 2px 2px 0 #9999BB, inset -26px -26px 48px -6px #999933,inset -16px -16px 40px 8px #326a4b;*/
 	box-shadow: 0 2px 2px 0 #9999BB, inset -26px -26px 48px -6px #333338,inset -16px -16px 40px 8px #FFFF44;

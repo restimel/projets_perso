@@ -1,14 +1,30 @@
 <html>
 <head>
-<title>
-Test de temps
-</title>
+<title>Mesure de temps</title>
+<style>
+	#corps button{
+		font-size: 20pt;
+		background-color: white;
+		color: black;
+		text-decoration:none ;
+		font-weight: bold;
+		cursor: pointer;
+	}
+</style>
 </head>
 <body>
-<div id="result"></div>
-<script language="javascript"><!--
+<section id="corps">
+	<div id="result">Time: 0 ms</div>
+	<hr>
+	<button id="play" title="(re)start">&gt;</button> - <button id="pause" title="pause">||</button> - <button id="stop" title="stop">&#9632;</button> - <button id="record" title="record this timestamp">&#9679;</button>
+	<hr>
+	<div id="test"></div>
+	<hr>
+	<div id="chrono.htm"></div>
+</section>
 
-var avance=1;
+<script type="text/javascript">
+var pause=-1; // -1:arret; 0:play; 1:pause
 var temps=0;
 var d = new Date();
 
@@ -16,63 +32,72 @@ function change_state(state){
 	switch(state){
 		case 0: //demarre
 			d=new Date();
-			avance=1;
+			if(pause!==1){
+				temps=0;
+				document.getElementById('test').innerHTML="";
+			}
+			pause=0;
 			break;
 		case 1: //arrete
-			if(avance) temps+= Date.now() - d;
+			if(!pause){
+				temps+= Date.now() - d;
+			}
 			if(temps){
-				avance=0;
-				document.getElementById('test').innerHTML="temps: "+temps+" ms";
+				pause=-1;
+				document.getElementById('test').innerHTML+="<br>Stop: "+temps+" ms";
 				temps=0;
-				
+				document.getElementById('result').innerHTML="Time: "+temps+" ms";
 			}
 			break;
-		case 2:
-			//pause
-			if(avance){
+		case 2:	//pause
+			if(!pause){
 				temps+= Date.now() - d;
-				avance=0;
+				pause=1;
+				document.getElementById('test').innerHTML+="<br>pause: "+temps+" ms";
+				document.getElementById('result').innerHTML="Time: "+temps+" ms";
+			}
+			break;
+		case 3:	//record
+			if(!pause){
+				document.getElementById('test').innerHTML+="<br>record: "+(temps + Date.now() - d)+" ms";
 			}
 			break;
 		default:
-			alert('etat incompris');
+			console.warn('action unknown');
 	}
-	document.getElementById('result').innerHTML="temps: "+temps+" ms";
 	return;
 }
 
 
 function timer(){
-	if(!avance){
+	if(!document.getElementById("chrono.htm")){ //pour vérifier si on est toujours dans cette page
+		clearInterval(chronoTimer);
+		return;
+	}
+	if(pause){
 		return;
 	}
 	var d2= temps + Date.now() - d;
-	var txt="temps: "+(d2)+" ms";
+	var txt=(d2)+" ms";
 	if(d2>60000){
-		txt+="[";
+		txt+=" [";
 		txt+=Math.floor(d2/60000)+"min ";
 		txt+=Math.floor((d2%60000)/1000)+"s ";
 		txt+="]";
 	}
-	document.getElementById('result').innerHTML="temps: "+txt;
+	document.getElementById('result').innerHTML="Time: "+txt;
 	return;
 }
 
 
-setInterval(timer,100);
+var chronoTimer = setInterval(timer,100);
 
---></script>
-<style>
-a{
-	font-size: 20pt;
-	color: black ;
-	text-decoration:none ;
-}
-</style>
-<hr>
-<a href="javascript:change_state(0)"><b>&gt;</b></a> - <a href="javascript:change_state(2)"><b>||</b></a> - <a href="javascript:change_state(1)"><b>&#9632;</b></a>
-<hr>
-<div id="test"></div>
-<hr>
+
+//ajout des événements sur les éléments
+document.getElementById('play').onclick = function(){change_state(0)};
+document.getElementById('pause').onclick = function(){change_state(2)};
+document.getElementById('stop').onclick = function(){change_state(1)};
+document.getElementById('record').onclick = function(){change_state(3)};
+</script>
 </body>
 </html>

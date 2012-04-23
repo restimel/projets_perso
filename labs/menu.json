@@ -34,6 +34,52 @@
 					"complement":"",
 					"url":"",
 					"menu":[
+						{
+							"nom":"Comparaison de textes",
+							"label":"Comparaison de textes",
+							"info":"Petit outil permettant d'identifier les différences entre deux textes",
+							"url":"./tools/compareString2.html"
+						},
+						{
+							"nom":"Remplacement de chaines",
+							"label":"Remplacement de chaines",
+							"info":"Petit outil permettant de remplacer des chaines à partir de plusieurs template et de valeurs incréementales",
+							"url":"./tools/replace.htm"
+						}
+					]
+				},
+				{
+					"nom":"Programmation",
+					"label":"Programmation en général",
+					"info":"Cette section regroupe des outils permettant d'aider à la programmation ou ce qui à rapport à la conception informatique.",
+					"url":"",
+					"menu":[
+						{
+							"nom":"lecteur JSON",
+							"label":"lecteur JSON",
+							"info":"Petit outil permettant d'aider à la lecture et à la création de JSON.\nIl permet d'afficher un JSON de manière plus visible et indique où se trouve les erreurs dans la création d'un JSON.\nIl permet aussi de comparer deux JSON afin de voir les différences.",
+							"url":"./tools/jsonReader.htm"
+						}
+					]
+				},
+				{
+					"nom":"divers",
+					"label":"divers",
+					"info":"Cette section regroupe divers outils qui ne rentre dans aucune catégorie précédente",
+					"url":"",
+					"menu":[
+						{
+							"nom":"Chronométre",
+							"label":"Chronométre",
+							"info":"Petit chronomètre permettant de mesurer des temps",
+							"url":"./tools/chrono.htm"
+						},
+						{
+							"nom":"Analyseur de dates",
+							"label":"Analyseur de dates",
+							"info":"Petit outil permettant de mesurer le temps entre deux dates, ou de savoir à quel moment correspond un timestamp.",
+							"url":"./tools/ddate.htm"
+						}
 					]
 				}
 			]

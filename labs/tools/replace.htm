@@ -1,26 +1,49 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
+<html>
 <head>
 	<meta charset="utf8">
-	<title>Outil de modification de texte</title>
+	<title>Tools: Text switching</title>
 </head>
 <body>
-source:<textarea id="source" rows="20" cols="40"></textarea><button onclick="document.getElementById('source').value='';">empty</button><br>
-<section id="zoneRegexp">
-<div>
-	<label>regexp:<input id="regexp0"></label> <label>flag:<input id="flag0" value="gi"></label><br>
-	<label>replace:<input id="replace0"></label>
+
+<menu style="position:fixed;top:0px;right:0px;z-index:10000;" title="Rules manager">
+	<button id="saveReg">Save Rules</button> <button id="loadReg">Load Rules</button><br>
+	<textarea id="manageCode" placeholder="Rules to load"></textarea>
+	<aside id="infoSave" style="visibility:hidden;font-style:italic;font-size:0.8em;">You should copy this line to reuse it later</aside>
+</menu>
+
+<label>source:<textarea id="source" rows="20" cols="50" placeholder="text to change"></textarea></label>
+<button onclick="document.getElementById('source').value='';">empty</button>
+<label id="sourceFile">Load source from File<input type="file"></label><br>
+
+<header>Change rules to apply:</header>
+<section id="zoneRegexp"></section>
+<hr>
+<button id="addReg" title="Add a new rule">+</button>
+<hr>
+
+<button id="doIt">Do it</button><br>
+<label>result:<textarea id="resultat" rows="20" cols="40" placeholder="text changed will be displayed here"></textarea></label>
+<button onclick="document.getElementById('resultat').value='';">empty</button><br>
+
+<div id="loading" style="display:none;text-align:center;position:fixed;top:50%;left:40%;width:300px;height:100px;background-color:#EEEEFF;border:1px solid black;">
+	<progress>Wait...</progress><br>
+	Script is running
 </div>
-</section>
-<hr>
-<button onclick="addReg()">+</button>
-<hr>
-<button onclick="doReplace()">Do it</button><br>
-resultat<textarea id="resultat" rows="20" cols="40"></textarea><button onclick="document.getElementById('resultat').value='';">empty</button><br>
+
 <script type="text/javascript">
+//ajout d'un bloc de Regex
 var addReg=(function(){
-	var nbElement=1;
+	var nbElement=0;
 	return function(){
-		var text='<hr><label>regexp:<input id="regexp'+nbElement+'"></label> <label>flag:<input id="flag'+nbElement+'" value="gi"></label><br>\n<label>replace:<input id="replace'+nbElement+'"></label><br>';
+		var text='<hr><label>regexp:<input id="regexp'+nbElement+'"></label>';
+		text+='<label>flag:<input id="flag'+nbElement+'" value="gi"></label><br>';
+		text+='<label title="\\n, \\r and \\t should be writen §n, §r and §t">replace:<input id="replace'+nbElement+'"></label>';
+		text+='<label style="display:none;" title="each line represents an occurence. Motif should be separated by ~~">Incremental Replace:<textarea id="iReplace'+nbElement+'" placeholder="each line represents an occurence. Motif should be separated by ~~. When all occurence are used, it comes back to the first. Exemple:"></textarea></label>';
+		text+='<label> use incremental string replace:<input id="modeReplace'+nbElement+'" type="checkbox" onchange="var e1=this.parentNode.previousSibling;if(this.checked){e1.style.display=\'inline\';e1.previousSibling.style.display=\'none\';e1.lastChild.focus();}else{e1.style.display=\'none\';e1.previousSibling.style.display=\'inline\';}"></label>';
+		text+='<label> use incremental value :<input id="modeIncReplace'+nbElement+'" type="checkbox" onchange="this.parentNode.nextSibling.style.display=this.checked?\'inline\':\'none\';"></label>';
+		text+='<aside style="display:none;font-style:italic;font-size:0.8em;">The incremental value should be encapsuled by §! and !§. Example: to start from 0, you should write §!0!§</aside>';
+		text+='<br>';
 		nbElement++;
 		var element=document.createElement("div");
 		element.innerHTML=text;
@@ -28,25 +51,200 @@ var addReg=(function(){
 	};
 })();
 
-function doReplace(){
-	var source =document.getElementById("source").value;
-	var rgx =document.getElementById("regexp0").value;
-	var flg =document.getElementById("flag0").value;
-	var rplc =document.getElementById("replace0").value;
-	var Regex=new RegExp(rgx,flg);
-	var rslt = source.replace(Regex,rplc);
-	
-	var i=1;
-	while(rgx=document.getElementById("regexp"+i)){
-		rgx = rgx.value;
-		flg = document.getElementById("flag"+i).value;
-		rplc = document.getElementById("replace"+i).value;
-		Regex = new RegExp(rgx,flg);
-		rslt = rslt.replace(Regex,rplc);
-		i++;
-	}
-	document.getElementById("resultat").value=rslt;
+function prepareReplace(){
+	//permet d'afficher que c'est en cours de traitement
+	document.getElementById("loading").style.display="block";
+	//window.setTimeout(doReplace,10);
+	doReplace();
 }
+
+function doReplace(){
+	var rslt = document.getElementById("source").value,
+		rgx=document.getElementById("regexp0"),
+		flg,rplc,Regex,
+		i=0,
+		modeValueInc;
+	
+	do{
+		modeValueInc = document.getElementById("modeIncReplace"+i).checked;
+		rgx = rgx.value;
+		if(!rgx) continue; // il n'y a pas de valeur donnée à cet regexp
+		flg = document.getElementById("flag"+i).value;
+		if(document.getElementById("modeReplace"+i).checked){
+			//mode remplacement incrémental
+			if(modeValueInc) console.warn("Value incremental is not yet implemented with this option");
+			rplc=function(){
+				var liste=document.getElementById("iReplace"+i).value.split(/\r\n|\n|\r/),
+					index=0;
+				return function(motif){
+					if(arguments.length>3){
+						var i=1,
+							li=arguments.length-2,
+							motifs=liste[index++%liste.length].split("~~");
+						do{
+							if(arguments[i]) motif=motif.replace(arguments[i],motifs[i-1]||"");
+						}while(++i<li);
+						return motif;
+					}else{
+						return liste[index++%liste.length];
+					}
+				}
+			}();
+		}else{
+			//mode remplacement normal
+			rplc = document.getElementById("replace"+i).value.replace(/§n/g,"\n").replace(/§r/g,"\r").replace(/§t/g,"\t");
+			if(modeValueInc){
+				//mode valeur incrémentale
+				rplc = function(r){
+					var values = r.match(/§!([\s\S]+?)!§/g) || [];
+					values.forEach(function(v,i){
+						values[i]=v.replace(/^§!|!§$/g,"");
+						if(!isNaN(values[i])){
+							values[i] = parseFloat(values[i]);
+						}
+					});
+					var nb=0;
+					var mtf = r.replace(/§!([\s\S]+?)!§/g,function(){return "§!"+(nb++);});
+					console.debug(values);
+					return function(motif){
+						var rslt = mtf;
+						if(arguments.length>3){
+							var arg = arguments;
+							rslt = rslt.replace(/\$([1-9])/g,function(m,nb){return arg[nb*1];});
+						}
+						//effectue les remplacements incrémentaux
+						rslt = rslt.replace(/§!(\d+)/g,function(m,nb){return values[nb*1]++;});
+						return rslt;
+					};
+				}(rplc);
+			}
+		}
+		try{
+			Regex = new RegExp(rgx,flg);
+		}catch(e){
+			alert("There is an error to build the regexp #"+(i+1)+". Reason is:\n"+e);
+		}
+		rslt = rslt.replace(Regex,rplc);
+	}while(rgx=document.getElementById("regexp"+(++i)));
+	document.getElementById("resultat").value=rslt;
+
+	document.getElementById("loading").style.display="none";
+}
+
+function saveReg(){
+	var rslt=[],
+		rgx=document.getElementById("regexp0"),
+		flg,mode,rplc,inc,
+		i=0;
+	
+	do{
+		rgx = rgx.value;
+		if(!rgx) continue; // il n'y a pas de valeur donnée à cet regexp
+		flg = document.getElementById("flag"+i).value;
+		if(mode=document.getElementById("modeReplace"+i).checked){
+			rplc = document.getElementById("iReplace"+i).value;
+		}else{
+			rplc = document.getElementById("replace"+i).value;
+		}
+		inc=document.getElementById("modeIncReplace"+i).checked;
+		rslt.push({rgx:rgx,flg:flg,mode:mode,inc:inc,replace:rplc});
+	}while(rgx=document.getElementById("regexp"+(++i)));
+	document.getElementById("manageCode").value=JSON.stringify(rslt);
+	document.getElementById("infoSave").style.visibility="visible";
+}
+
+function loadReg(data){
+	document.getElementById("infoSave").style.visibility="hidden";
+	data=data||document.getElementById("manageCode").value;
+	var obj={};
+	
+	//transformation en objet
+	if(typeof data === "string"){
+		try{
+			obj=JSON.parse(data);
+		}catch(e){
+			alert("Load has failed.\n"+e);
+			return false;
+		}
+	}else if(typeof data === "object"){
+		obj=data;
+	}else{
+		alert("Load has failed.\nData type is not supported");
+		return false;
+	}
+	
+	//application des données
+	if(obj instanceof Array){
+		var i=0,li=obj.length,elem;
+		while(i<li){
+			if(!(elem=document.getElementById("regexp"+i))){
+				addReg();
+				elem=document.getElementById("regexp"+i);
+			}
+			elem.value=obj[i].rgx;
+			if(obj[i].mode){
+				document.getElementById("modeReplace"+i).checked=true;
+				document.getElementById("iReplace"+i).value=obj[i].replace;
+				document.getElementById("replace"+i).value="";
+			}else{
+				document.getElementById("modeReplace"+i).checked=false;
+				document.getElementById("iReplace"+i).value="";
+				document.getElementById("replace"+i).value=obj[i].replace;
+			}
+			document.getElementById("modeIncReplace"+i).checked=obj[i].inc;
+			document.getElementById("flag"+i).value=obj[i++].flg;
+		}
+		while(elem=document.getElementById("regexp"+i)){
+			elem.value="";
+			document.getElementById("iReplace"+i).value="";
+			document.getElementById("replace"+i).value="";
+			document.getElementById("flag"+(i++)).value="gi";
+		}
+	}else{
+		alert("Load has failed.\nData format is not supported");
+		return false;
+	}
+}
+
+function loadSourceFile(event,cible){
+//chargement d'un fichier dans la zone source
+	var file=cible.files[0],
+		reader = new FileReader();
+	
+	if(!file.type.match(/text.*/) &&
+		!confirm("This file Format seems not to be text ("+(file.type||"unknown format")+").\nIn this case it could not be read.\n\n Are you sure to load this file ?")
+	){
+		return false;
+    }
+	
+	reader.onload = function(e) {
+		document.getElementById("source").value=e.target.result;
+	};
+	
+	if(file.size>10000000){
+		alert(["fichier trop gros: ",file.size/100000,"Mo"].join(''));
+		//http://www.html5rocks.com/en/tutorials/file/dndfiles/
+		//https://developer.mozilla.org/en/DOM/FileReader#readAsText%28%29
+	}else{
+		reader.readAsText(file);
+	}
+}
+
+window.onload=function(){
+	addReg;
+	if(!window.File || !window.FileReader){
+		//le javascript ne supporte pas les API File ou FileReader
+		document.getElementById("sourceFile").display="none";
+	}
+}
+
+
+//ajout des événements sur les éléments
+document.getElementById("saveReg").onclick = saveReg;
+document.getElementById("loadReg").onclick = loadReg;
+document.getElementById("sourceFile").lastChild.onchange = function(event){loadSourceFile(event,this);};
+document.getElementById("addReg").onclick = addReg;
+document.getElementById("doIt").onclick = prepareReplace;
 </script>
 </body>
 </html>

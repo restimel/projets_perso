@@ -1,0 +1,255 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<title>UTF-8 characters helper</title>
+<style>
+#corps table{
+	border:3px double;
+}
+#corps td{
+	border:1px solid;
+}
+#corps th{
+	font-size:0.7em;
+}
+#corps{
+	position: absolute;
+	width:100%;
+}
+</style>
+</head>
+<body>
+<div id="corps">
+	<h1>UTF-8 characters code</h1>
+	<label>
+		<input type="checkbox" id="hex" title="Les nombres précèdents sont entrés en héxadécimal"> Héxadécimal →
+	</label>
+	
+	Start:<input id="start" type="number" min="0" value="65">
+	End:<input id="end" type="number" min="1" value="122">
+	<input type="button" value="Display" onclick="display_symb()">
+	<!--&emsp;
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;-->
+	<span style="position:absolute;right:5em;">
+		<input type="text" id="search">
+		<button onclick="search_symb()">Search</button>
+	</span>
+	<br>
+	<label title="Search HTML code">
+		<input type="checkbox" id="syhtml" title="rechercher les codes HTML"> HTML
+	</label>
+	<hr>
+	<div id="display">
+	</div>
+
+	<div id="search"></div>
+</div>
+<script type="text/javascript">
+function display_symb(){
+	//console.time("debug_vitesse_all");
+	var base=document.getElementById("hex").checked?16:10;
+	var debut=parseInt(document.getElementById("start").value,base);
+	var end=parseInt(document.getElementById("end").value,base);
+	var syhtml=document.getElementById("syhtml").checked;
+	var txt="<table>";
+	txt+='<tr><th title="Decimal value">Decimal</th><th title="Hexadecimal value">Hexa.</th><th title="Octal value">Oct.</th><th title="Symbol">Sy</th>'+(syhtml?"<th>HTML</th>":"")+"</tr>";
+	for(var i=debut;i<=end;i++){
+		txt+="<tr><td>"+i+"</td><td>"+i.toString(16)+"</td><td>"+i.toString(8)+"</td><td id='source"+i+"'>&#"+i+";</td>"+(syhtml?"<td id='html"+i+"'><i>.</i></td>":"")+"</tr>";
+		//setTimeout((function(j){return function(){search_HTML(j);};})(i),1000);
+	}
+	txt+='<tr><th title="Decimal value">Decimal</th><th title="Hexadecimal value">Hexa.</th><th title="Octal value">Oct.</th><th title="Symbol">Sy</th>'+(syhtml?"<th>HTML</th>":"")+"</tr>";
+	txt+="</table>";
+	document.getElementById("display").innerHTML=txt;
+	if(syhtml) setTimeout(function(){search_HTML3(debut,end);},10);
+
+	/*var test=("&amp;µ£ù&euro;µ£ù&arf;µ£ù&gold;µ£ù&alf;µ£ù").split(/µ£ù/g);
+	console.log(test.length);*/
+}
+
+
+function remove(tab,index){
+	return tab.slice(0,index).concat(tab.slice(index+1,tab.length));
+}
+
+function search_HTML2(start,end,dl){
+	console.time(start+"-"+end+"»"+dl);
+
+	var dsearch=document.getElementById("search"),  convert=["","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"], a=1,b=1,b2="a",c=0,c2="",d=dl||0,d2=convert[d],i=start,elems=[];
+
+	while(i<=end){
+		elems[i]=[document.getElementById("html"+i),document.getElementById("source"+i).textContent];
+		i++;
+	}
+
+	while(c<27 || (c<53 && (d>26 || d==0))){
+		while(b<27 || (b<53 && (c>26 || c==0))){
+			while(a<27 || (a<53 && b>26)){
+				dsearch.innerHTML="&"+b2+convert[a]+";";
+				for(i=start;i<=end;i++){
+					if(elems[i][1]==dsearch.textContent){
+						elems[i][0].textContent="&"+b2+convert[a]+";";
+						elems=remove(elems,i);
+						console.log("%d %s longueur: %d",i,dsearch.textContent,elems.length);
+						end--;
+						if(start>end){
+							console.timeEnd(start+"-"+end+"»"+dl);
+							console.timeEnd("debug_vitesse_all");
+							console.log("là %d %d",start,end);
+							return;
+						}
+						i--;
+					}
+				}
+				a++;
+			}
+			b++;
+			b2=c2+convert[b];
+			a=1;
+		}
+		c++;
+		c2=d2+convert[c];
+		b=1;
+	}
+	d++;
+	if(d<53){
+		//console.log("a %d %s | b %d %s | c %d %s | d %d %s |#&&#| source %s | elem.innerHTML %s | elem.textContent %s",a,convert[a],b,convert[b],c,convert[c],d,convert[d],source,elem.innerHTML,elem.textContent);
+		//if(s=="…") elem.innerHTML="."; else elem.innerHTML="…";
+		setTimeout(function(){search_HTML2(start,end,d);},500);
+		for(i=start;i<=end;i++){
+			elems[i][0].textContent=d%2?"…":"..";
+		}
+	}else{
+		//elem.innerHTML="-";
+		for(i=start;i<=end;i++){
+			elems[i][0].textContent="-";
+		}
+		console.timeEnd("debug_vitesse_all");
+		console.log("ici");
+	}
+	console.timeEnd(start+"-"+end+"»"+dl);
+}
+
+function search_HTML3(start,end,el,dl,elements){
+	//console.time("HTML3 "+start+"-"+end+"»"+dl);
+
+	var dsearch=document.getElementById("search"),  convert=["","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"], a=1,b=1,b2="a",c=0,c2="",e=el||0,e2=convert[e],d=dl||0,d2=e2+convert[d],text="";
+
+	//console.time("boucle");
+	while(c<27 || (c<53 && (d>26 || d==0))){
+		while(b<27 || (b<53 && (c>26 || c==0))){
+			while(a<27 || (a<53 && b>26)){
+				text+="&"+b2+convert[a++]+";µ£ù";
+			}
+			b2=c2+convert[++b];
+			a=1;
+		}
+		c2=d2+convert[++c];
+		b=1;
+	}
+	//console.timeEnd("boucle");
+	//console.time("innerHTML");
+	dsearch.innerHTML=text;
+	//console.timeEnd("innerHTML");
+	var lhtml=text.split(/µ£ù/g),
+		ltxt=dsearch.textContent.split(/µ£ù/g),
+		li=ltxt.length,
+		i=0;
+	//console.log("tableau longueur: %d",ltxt.length);
+	var j=start,elems=[];
+
+	if(elements){
+		elems=elements;
+	}else{
+		while(j<=end){
+			elems[j]=[document.getElementById("html"+j),document.getElementById("source"+j).textContent];
+			j++;
+		}
+	}
+	//console.log("element longueur: %d",elems.length);
+
+	i=0;
+	//console.time("boucle2");
+	var symb;
+	liste_elements:for(j=start;j<=end;j++){
+		symb=elems[j][1];
+		i=0;
+		liste_symboles:while(i<li-1){
+			if(ltxt[i]==symb){
+				elems[j][0].textContent=lhtml[i];
+				elems=remove(elems,j);
+				end--;
+				if(start>end){
+					//console.timeEnd("HTML3 "+start+"-"+end+"»"+dl);
+					//console.timeEnd("debug_vitesse_all");
+					return;
+				}
+				continue liste_elements;
+			}
+			i++;
+		}
+	}
+	//console.timeEnd("boucle2");
+
+	d++;
+	if((d>26 && e<27 && e!=0) || d>52){
+		e++;
+		d=1;
+	}
+	if(e<53){
+		setTimeout(function(){search_HTML3(start,end,e,d,elems);},100);
+		for(i=start;i<=end;i++){
+			elems[i][0].textContent=d%2?"…":"..";
+		}
+	}else{
+		for(i=start;i<=end;i++){
+			elems[i][0].textContent="-";
+		}
+		//console.timeEnd("debug_vitesse_all");
+		//console.log("ici");
+	}
+	//console.timeEnd("HTML3 "+start+"-"+end+"»"+dl);
+}
+
+function search_symb(){
+	var liste_car=document.getElementById("search").value;
+	var result=[];
+	//créer le tableau de symbole
+	var i=0,li=liste_car.length;
+	while(i<li){
+		result[i]=[liste_car[i],liste_car.charCodeAt(i)];
+		i++;
+	}
+	//recherche
+	/*
+	var s_box=document.createElement("div");
+	document.body.appendChild(s_box);
+	var trouve=0;
+	var fin=100000;
+	var j;
+	i=0;
+	while(i<fin && trouve<li){
+		s_box.innerHTML="&#"+i+";";
+		for(j=0;j<li;j++){
+			if(s_box.textContent==result[j][0]){
+				result[j][1]=i;
+				trouve++;
+			}
+		}
+		i++;
+	}
+	document.body.removeChild(s_box);
+	*/
+
+	//affiche le resultat
+	var txt="<table>";
+	txt+="<tr><th>R</th><th>Décimal</th><th>Hexa.</th><th>Sy</th></tr>"
+	for(i=0;i<li;i++){
+		txt+="<tr><td>"+result[i][0]+"</td><td>"+result[i][1]+"</td><td>"+result[i][1].toString(16)+"</td><td>&#"+result[i][1]+";</td></tr>";
+	}
+	txt+="<tr><th>R</th><th>Décimal</th><th>Hexa.</th><th>Sy</th></tr>"
+	txt+="</table>";
+	document.getElementById("display").innerHTML=txt;
+}
+</script>
+</body>
+</html>

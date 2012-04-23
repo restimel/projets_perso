@@ -5,52 +5,99 @@
 	<title>JSON reader</title>
 	
 	<style>
+		#corps header{
+			font-weight : bold;
+			font-size : 1.5em;
+		}
 		.openObject{
 			display: block;
 			border: 1px solid black;
 			padding-left:5px;
+			margin-left:10px;
 			box-shadow: 5px 5px 5px 0px #CCCCCC,inset 0px -1px 1px 0px #000000;
 		}
 		.closeObject{
 			display:inline;
 		}
-		#objet header{
+		.objectContainer header{
 			color: #0000FF;
 			display: inline;
 			padding: 5px;
 			cursor: pointer;
+			font-size : 1em;
+		}
+		.objectPresentation{
+			margin-bottom : 2em;
 		}
 		
-		#javascript{
+		.objectPresentation input{
+			width : 100%;
+			margin-top: 1em;
+		}
+		#corps #javascript{
 			position: fixed;
 			top: 10px;
 			right: 10px;
 			padding: 5px;
 			box-shadow: 7px 7px 10px 5px #DDDDDD;
 		}
-		#javascript input{
+		#corps #javascript input{
 			height: 20px;
 			font-style: italic;
+			width: 95%;
+		}
+		#corps table{
+			border : 4px solid black;
+			border-collapse:collapse;
+		}
+		#corps th{
+			border : 1px solid black;
+			background-color : #AA33CC;
+			padding : 0.3em;
+		}
+		#corps td{
+			border : 1px solid black;
+			padding : 0.25em;
 		}
 	</style>
 </head>
 <body>
 
+<div id="corps">
 
+	<section>
+		<header>Code JSON</header>
+		<label>JSON:<textarea id="source" placeholder="Code JSON to analyze"></textarea></label>
+		<label>Human readable:<textarea id="source2" placeholder="output JSON with indentation"></textarea></label>
+	</section>
+	<hr style="width:50%">
+	<section class="objectPresentation">
+		<header>Objet hierarchy</header>
+		<div id="objet" class="objectContainer"></div>
+	</section>
+	<hr>
+	<section>
+		<header>2nd Code JSON</header>
+		<label>JSON:<textarea id="sourceBis" placeholder="Code JSON to analyze"></textarea></label>
+		<label>Human readable:<textarea id="sourceBis2" placeholder="output JSON with indentation"></textarea></label>
+	</section>
+	<hr style="width:50%">
+	<section class="objectPresentation">
+		<header>Objet hierarchy</header>
+		<div id="objetBis" class="objectContainer"></div>
+	</section>
+	<hr>
+	<section>
+		<header><label><input type="checkbox" id="comparaisonResultDoIt" checked/>Difference between JSON</header></label>
+		<div id="comparaisonResult" class="comparaisonResult"></div>
+	</section>
 
-<section>
-	<header>Code JSON</header>
-	<textarea id="source" onchange="jsonReader(this.value)"></textarea>
-</section>
-<hr>
-<section>
-	<header>Présentation de l'objet</header>
-	<div id="objet"></div>
-</section>
-<section id="javascript">
-	<header>Code javascript permettant d'accéder à cette valeur</header>
-	<input id="codeJS" title="OBJ. désigne l'objet créé par JSON" onchange="searchObj(this.value)">&nbsp;</output>
-</section>
+	<section id="javascript">
+		<header>Code javascript permettant d'accéder à cette valeur</header>
+		<input id="codeJS" title="OBJ. désigne l'objet créé par JSON">&nbsp;</output>
+	</section>
+
+</div>
 
 <script>
 
@@ -84,15 +131,7 @@ function writeObj(objet,element,str){
 		body=document.createElement("section");
 		body.className="openObject";
 		body.style.display="none";
-		if(/^[^_a-z]|[^a-z0-9_]/.test(x)){
-			if(isNaN(x)){
-				code=str+'["'+x.replace(/(["\\])/g,"\\$1")+'"]';
-			}else{
-				code=str+'['+x+']';
-			}
-		}else{
-			code=str+'.'+x;
-		}
+		code = str+attributeToString(x);
 		if(objet[x] === null){
 			elem.textContent=" (null)";
 		}else if(typeof objet[x] === "object"){
@@ -105,11 +144,13 @@ function writeObj(objet,element,str){
 				if(nb>0) titre.onclick=createLink(objet[x],body,code);
 			}
 		}else if(typeof objet[x] === "string"){
-			elem.textContent=" "+objet[x]+" (string ["+objet[x].length+"])";
+			elem.textContent=" \""+objet[x]+"\" (string ["+objet[x].length+"])";
 		}else{
 			elem.textContent=" "+objet[x]+" ("+typeof objet[x]+")";
 		}
-		elem.onmouseover=(function(msg){return function(){document.getElementById("codeJS").textContent=msg;};})(code);
+		elem.onmouseover=(function(msg){
+			return function(){document.getElementById("codeJS").value=msg;};
+			})(code);
 		element.appendChild(titre);
 		element.appendChild(elem);
 		element.appendChild(body);
@@ -263,7 +304,11 @@ function jsonVerify(str,inside,offset){
 				break;
 			default:
 				if(inside==="\"" || inside==="'"){
-					previous=current;
+					if(current!=="\n" && current!=="\r"){
+						previous=current;
+					}else{
+						return "Caractère "+(i+offset+1)+": le caractère saut de ligne ("+(current==="\n"?"\\n":"\\r")+") ne devrait pas placé dans une chaine de caractères. Il se situe dans l'objet "+inside+" position "+offset;
+					}
 				}else{
 					if("-1234567890".indexOf(current)!==-1 && ((inside==="{" && previous===":") || (inside==="[" && (previous==="," || previous==="[")))){
 						previous=current;
@@ -284,12 +329,12 @@ function jsonVerify(str,inside,offset){
 								if(previous==="nu")ok="nul";
 								if(previous==="nul")ok="null";
 								break;
-							case " ":
-								if(inside==="") ok=" ";
-								break;
+							case "\n":
+							case "\r":
 							case "\t":
-								if(inside==="") ok="\t";
-								break;
+							case " ":
+								ok=current;
+								continue;
 						}
 						if(ok){
 							previous=ok;
@@ -305,8 +350,8 @@ function jsonVerify(str,inside,offset){
 	else return "Pas de soucis détecté";
 }
 
-function jsonReader(str){
-	var element=document.getElementById("objet");
+function jsonReader(str,elem_id){
+	var element=document.getElementById(elem_id);
 	try{
 		var obj=JSON.parse(str);
 	}catch(e){
@@ -333,14 +378,256 @@ function jsonReader(str){
 	//elem.className="openObject";
 	writeObj(obj,elem,"OBJ");
 	element.appendChild(elem);
+	
+	var recherche = document.createElement("input");
+	recherche.type="text";
+	recherche.title=recherche.placeholder="SEARCH: list values. Values should be written like JS objects and be separated by | use * from any member; eg: arr[0]|arr[1]";
+	recherche.onchange = function(){
+		zone_recherche.innerHTML="";
+		if(this.value){
+			var liste = this.value.split("|");
+			var i=0, li=liste.length;
+			var rslt=[];
+			var searchComplet=[];
+			var search = [];
+			while(i<li){
+				rslt[i]=[];
+				searchComplet[i]=liste[i].split(/"\].|"\]$|"\]\["|\["|\./g);
+				search.push(searchComplet[i][0]);
+				i++;
+			}
+			function schMatch(o,lst){
+			//TODO le joker *
+				var i=0,end=lst.length;
+				while(++i<end && (typeof o[lst[i]] !== 'undefined')){
+					obj=obj[searchComplet[i][index]];
+				}
+				return index === end;
+			}
+			function sch(o){
+				var x,fromI;
+				for(x in o){
+					i=0;
+					while(search.indexOf(x,i) !== -1){
+						i = search.indexOf(x,i);
+						//TODO appelé schMatch quand ca marchera
+						var obj=o[x],index=0,end=searchComplet[i].length;
+						while(++index<end && (typeof obj[searchComplet[i][index]] !== 'undefined')){
+							obj=obj[searchComplet[i][index]];
+						}
+						if(index === end){
+							rslt[i].push(obj)
+						}
+						i++;
+					}
+					if(typeof o[x] === 'object'){
+						sch(o[x]);
+					}
+				}
+			}
+			sch(obj);
+			
+			var table = document.createElement("table");
+			var row = table.insertRow(-1);
+			var cel;
+			var i=0,li=liste.length;
+			while(i<li){
+				cel = document.createElement("th");
+				cel.textContent = liste[i++];
+				row.appendChild(cel);
+			}
+			
+			var i=0, li=rslt.length, j=0, lj = rslt[0].length;
+			while(j<lj){
+				row = table.insertRow(-1);
+				i=0;
+				while(i<li){
+					cel = row.insertCell(-1);
+					cel.textContent=typeof rslt[i][j] === "undefined" ? "":rslt[i][j];
+					i++;
+				}
+				j++;
+			}
+			
+			zone_recherche.appendChild(table);
+		}
+	};
+	element.appendChild(recherche);
+	var zone_recherche = document.createElement("div");
+	element.appendChild(zone_recherche);
+	
+	setTimeout(jsonCompare,50);
 }
 
-function searchObj(v){
-	var element=document.getElementById("objet");
-	alert("Aucun objet n'a été chargé pour l'instant");
+function searchObj(v,idObjet){
+	var element=document.getElementById(idObjet);
+	v=v.split(/"\].|"\]$|"\]\["|\["|\./g); //sépare tous les objets
+	alert("la recherche d'objet n'a pas encore été réalisé :(")
 	return false;
 };
 
+function readableJSON(str){
+	var txt="";
+	try{
+		var txt=JSON.stringify(JSON.parse(str),null,"\t");
+	}catch(e){
+		txt = "";
+	}
+	return txt;
+}
+
+function jsonCompare(){
+	var element=document.getElementById("comparaisonResult");
+	element.innerHTML="";
+
+	if(!document.getElementById("comparaisonResultDoIt").checked){
+		//element.textContent = "Comparison disabled";
+		return false;
+	}
+	
+	var obj1 = document.getElementById("objet");
+	var obj2 = document.getElementById("objetBis");
+	
+	//recherche obj1
+	if(obj1.firstChild && obj1.firstChild.nodeName === "SECTION"){
+		try{
+			obj1 = JSON.parse(document.getElementById("source2").value);
+		}catch(e){
+			obj1 = JSON.parse(document.getElementById("source").value);
+		}
+	}else{
+		obj1=null;
+	}
+	
+	//recherche obj2
+	if(obj2.firstChild && obj2.firstChild.nodeName === "SECTION"){
+		try{
+			obj2 = JSON.parse(document.getElementById("sourceBis2").value);
+		}catch(e){
+			obj2 = JSON.parse(document.getElementById("sourceBis").value);
+		}
+	}else{
+		obj2=null;
+	}
+	
+	if(obj1 && obj2){
+		var rslt = compareObject(obj1,obj2);
+		if(rslt){
+			element.appendChild(rslt);
+		}else{
+			element.textContent = "No difference detected";
+		}
+	}else{
+		element.textContent = "Not available while JSON codes are not readable";
+	}
+}
+
+function compareObject(obj1,obj2,path,table){
+	path = path || "";
+	table = table || null;
+	var x,liste=[];
+	for(x in obj1){
+		if(obj1.hasOwnProperty(x)){
+			liste.push(x);
+			if(typeof obj1[x] === typeof obj2[x]){
+				if(typeof obj1[x] === "object"){
+					table = compareObject(obj1[x],obj2[x],path+attributeToString(x),table);
+				}else{
+					if(obj1[x] !== obj2[x]){
+						table = addDifference(table,path+attributeToString(x), obj1[x]+" ("+(typeof obj1[x])+")", obj2[x]+" ("+(typeof obj2[x])+")");
+					}
+				}
+			}else{
+				table = addDifference(table,path+attributeToString(x), obj1[x]+" ("+(typeof obj1[x])+")", obj2[x]+" ("+(typeof obj2[x])+")");
+			}
+		}
+	}
+	
+	for(x in obj2){
+		if(obj2.hasOwnProperty(x)){
+			if(liste.indexOf(x) !== -1){
+				continue;
+			}
+			if(typeof obj1[x] === typeof obj2[x]){
+				if(typeof obj2[x] === "object"){
+					table = compareObject(obj1[x],obj2[x],path+attributeToString(x),table);
+				}else{
+					if(obj1[x] !== obj2[x]){
+						table = addDifference(table,path+attributeToString(x), obj1[x]+" ("+(typeof obj1[x])+")", obj2[x]+" ("+(typeof obj2[x])+")");
+					}
+				}
+			}else{
+				table = addDifference(table,path+attributeToString(x), obj1[x]+" ("+(typeof obj1[x])+")", obj2[x]+" ("+(typeof obj2[x])+")");
+			}
+		}
+	}
+	return table;
+}
+
+function addDifference(table,path,value1,value2){
+	var row,cel;
+	if(!table){
+		table = document.createElement("table");
+		row = table.insertRow(-1);
+		cel = document.createElement("th");
+		cel.textContent = "position";
+		row.appendChild(cel);
+		cel = document.createElement("th");
+		cel.textContent = "Value 1";
+		row.appendChild(cel);
+		cel = document.createElement("th");
+		cel.textContent = "Value 2";
+		row.appendChild(cel);
+	}
+	
+	row = table.insertRow(-1);
+	cel = row.insertCell(-1);
+	cel.textContent = path;
+	
+	cel = row.insertCell(-1);
+	cel.textContent = value1;
+	
+	cel = row.insertCell(-1);
+	cel.textContent = value2;
+	
+	return table;
+}
+
+function attributeToString(x){
+	var code = "";
+	if(/^[^_a-z]|[^a-z0-9_]/i.test(x)){
+		if(isNaN(x)){
+			code='["'+x.replace(/(["\\])/g,"\\$1")+'"]';
+		}else{
+			code='['+x+']';
+		}
+	}else{
+		code='.'+x;
+	}
+	return code;
+}
+
+
+//ajout des événéments aux éléments
+document.getElementById("source").onchange=function(event){
+	jsonReader(this.value,'objet');
+	document.getElementById('source2').value=readableJSON(this.value);
+};
+document.getElementById("source2").onchange=function(event){
+	jsonReader(this.value,'objet');
+	this.value=readableJSON(this.value);
+};
+document.getElementById("sourceBis").onchange=function(event){
+	jsonReader(this.value,'objetBis');
+	document.getElementById('sourceBis2').value=readableJSON(this.value);
+};
+document.getElementById("sourceBis2").onchange=function(event){
+	jsonReader(this.value,'objetBis');
+	this.value=readableJSON(this.value);
+};
+document.getElementById("codeJS").onchange=function(event){
+	searchObj(this.value,'objet');
+};
 </script>
 
 </body>

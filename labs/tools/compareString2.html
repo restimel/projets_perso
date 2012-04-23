@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf8">
+	<title>String Compare</title>
+	<style>
+		pre{
+			border: 1px dotted blue;
+		}
+		.ajout{
+			background-color: #F0FF80;
+		}
+		.suppression{
+			text-decoration: line-through;
+			background-color: #FFB2B2;
+		}
+		tr{
+			padding-bottom: 0.5em;
+		}
+	</style>
+	<label>Source 1: <textarea id="source1"></textarea></label>
+	<label>Source 2: <textarea id="source2"></textarea></label>
+	<br>
+	<label><input type="radio" name="typeRecherche" value="1" id="parCaractere"> Recherche caractère par caractère</label><br>
+	<label><input type="radio" name="typeRecherche" value="2" id="parLigne" checked> Recherche ligne par ligne</label><br>
+	<button id="btnCompare">Compare</button>
+	<hr>
+	<div id="resultat"></div>
+	<script>
+
+		document.getElementById("btnCompare").onclick=function(){
+			var typeRecherche = document.querySelector('input[name="typeRecherche"]:checked').value;
+			var reponse = compareSources(document.getElementById('source1').value,document.getElementById('source2').value,typeRecherche);
+			document.getElementById('resultat').innerHTML = displayChange(reponse);
+		};
+
+		function toCompare(source1,source2,mode,history){
+			this.s1 = source1;
+			this.s2 = source2;
+			this.mode = mode;
+			this.history = history;
+		}
+
+		toCompare.liste = [];
+
+		toCompare.prototype.search=function(){
+			switch(this.mode){
+				case "2":
+					var l1 = this.s1.split(/\r\n|\n|\r/);
+					var l2 = this.s2.split(/\r\n|\n|\r/);
+					var i=0,li=l1.length;
+					do{
+						if(l1[i] === l2[i]){continue;}
+						var txt1 = l1.filter(function(v,ind){return ind>i;}).join("\n");
+						var txt2 = l2.filter(function(v,ind){return ind>i;}).join("\n");
+						
+						//analyse supression
+						history=this.history.concat([{type:"-",position:i,old:l1[i],modif:""}]);
+						if(txt1 == l2[i]+"\n"+txt2){
+							return history;
+						}
+						toCompare.liste.push(new toCompare(txt1,l2[i]+"\n"+txt2,this.mode,history));
+						//analyse addition
+						history=this.history.concat([{type:"+",position:i,old:"",modif:l2[i]}]);
+						if(l1[i]+"\n"+txt1 == txt2){
+							return history;
+						}
+						toCompare.liste.push(new toCompare(l1[i]+"\n"+txt1,txt2,this.mode,history));
+						//analyse modification
+						var history=this.history.concat([{type:"~",position:i,old:l1[i],modif:l2[i]}]);
+						if(txt1 == txt2){
+							return history;
+						}
+						toCompare.liste.push(new toCompare(txt1,txt2,this.mode,history));
+						
+						return false;
+					}while(++i<li);
+					break;
+				default:
+					console.warn("not done yet :'(");
+			}
+			return null;
+		};
+
+		
+		function compareSources(s1,s2,mode){
+			var cas,reponse=[];
+			if(s1 !== s2){
+				toCompare.liste = [new toCompare(s1,s2,mode,[])];
+				do{
+					cas = toCompare.liste.shift();
+				}while(!(reponse=cas.search()));
+			}
+			return reponse;
+		}
+
+		function displayChange(history){
+			var html="";
+			if(history.length){
+				html += "<table>";
+				var i=0,li=history.length,ligne=1;
+				html+="<tr>";
+				html+="<th>ligne</th>";
+				html+="<th>modification</th>";
+				html+="</tr>";
+				do{
+					html+="<tr>";
+					ligne+=history[i].position;
+					html+="<td>"+ligne+"</td>";
+					html+="<td>";
+					html+='<div class="suppression">'+history[i].old+'</div>';
+					html+='<div class="ajout">'+history[i].modif+'</div>';
+					html+="</td>";
+					html+="</tr>";
+				}while(++i<li);
+				html += "</table>";
+			}else{
+				html += "Ces textes sont identiques.";
+			}
+			return html;
+		}
+		
+	</script>
+</head>
+<body>
+</html>
