@@ -1,0 +1,54 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+thème: objet<br>
+niveau: 2<br><br>
+<b>code:</b><br>
+<textarea rows="20" cols="100">
+<input id="input" value="toto">
+
+<script>
+
+function constructeur(value){
+	this.value = value;
+	this.donneValeur = function(){
+		alert(this.value);
+	};
+}
+
+var obj = new constructeur("mon objet");
+
+document.getElementById("input").onchange=obj.donneValeur;
+
+</script>
+</textarea>
+
+<hr>
+<b>Question:</b> Qu'est-ce qui s'affiche si on change la valeur de l'input?
+<ul>
+	<li>toto</li>
+	<li>mon objet</li>
+	<li>la nouvelle de l'input</li>
+	<li>rien</li>
+</ul>
+<hr>
+<br>
+<b>Résultat</b> <i>essayez vous-même</i>:
+<br>
+
+<input id="input" value="toto">
+<script>
+function constructeur(value){
+	this.value=value;
+	this.donneValeur = function(){
+		alert(this.value);
+	};
+}
+
+var obj = new constructeur("mon objet");
+document.getElementById("input").onchange=obj.donneValeur;
+</script>
+</body>
+</html>

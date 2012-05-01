@@ -1,0 +1,48 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+thème: portée<br>
+niveau: 5<br><br>
+<b>code:</b><br>
+<textarea rows="20" cols="100">
+<script>
+var foo = "abc";
+with({ foo: "def" }) {
+	function f() {
+	   alert(foo);
+	}
+	f();
+}
+</script>
+</textarea>
+
+<hr>
+<b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
+<ul>
+	<li>"abc"</li>
+	<li>"def"</li>
+	<li>"abc" ou "def" en fonction du navigateur</li>
+	<li>error</li>
+</ul>
+<hr>
+<br>
+<b>Résultat</b> <i>essayez vous-même</i>:
+<br>
+<input type="button" id="input" value="tester" onclick="test()">
+<script>
+function test(value){
+	var foo = "abc";
+	with({ foo: "def" }) {
+		function f() {
+		   alert(foo);
+		   // Selon les specifications ES5, cela devrait être 'abc'
+		}
+		f();
+	}
+}
+
+</script>
+</body>
+</html>

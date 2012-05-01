@@ -1,0 +1,51 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+thème: portée<br>
+niveau: 2<br><br>
+<b>code:</b><br>
+<textarea rows="20" cols="100">
+<script>
+var test=5;
+function essais(condition){
+	if(condition){
+		var test=10
+	}
+	alert(test);
+}
+
+essais(false);
+</script>
+</textarea>
+
+<hr>
+<b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
+<ul>
+	<li>rien</li>
+	<li>5</li>
+	<li>10</li>
+	<li>undefined</li>
+</ul>
+<hr>
+<br>
+<b>Résultat</b> <i>essayez vous-même</i>:
+<br>
+<input type="button" id="input" value="tester" onclick="test()">
+<script>
+function test(value){
+	var test=5;
+	function essais(condition){
+		if(condition){
+			var test=10
+		}
+		alert(test);
+	}
+
+	essais(false);
+}
+
+</script>
+</body>
+</html>
