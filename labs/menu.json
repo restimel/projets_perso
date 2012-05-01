@@ -59,6 +59,12 @@
 							"label":"lecteur JSON",
 							"info":"Petit outil permettant d'aider à la lecture et à la création de JSON.\nIl permet d'afficher un JSON de manière plus visible et indique où se trouve les erreurs dans la création d'un JSON.\nIl permet aussi de comparer deux JSON afin de voir les différences.",
 							"url":"./tools/jsonReader.htm"
+						},
+						{
+							"nom":"Symboles UTF8",
+							"label":"Symboles UTF8",
+							"info":"Petit outil permettant d'aider à trouver des caractères UTF-8.",
+							"url":"./tools/symbole.htm"
 						}
 					]
 				},

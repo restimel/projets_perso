@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Performance measurement</title>
+	<style>
+		li[id]{
+			cursor:pointer;
+		}
+		section#resultTest{
+			position: absolute;
+			left: 26em;
+			top: 2em;
+		}
+		menu#actionList{
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 22em;
+			height: 100%;
+			overflow: auto;
+		}
+		button#stopTest{
+			position: fixed;
+			right: 1em;
+			top: 20%;
+			visibility: hidden;
+		}
+		aside#zoneTest{
+			visibility:hidden;
+		}
+	</style>
+<script>
+function f(a,b){
+}
+alert(f.length);
+</script>
+</head>
+<body>
+
+<menu id="actionList">
+<command>
+	<label><input type="checkbox" id="autoLoop" checked>Choose loop automatically</label><br>
+	<label>Loop number: <input type="number" id="nbLoop" value="1000000" min="1" disabled></label>
+</command>
+<ul>
+	<li>
+		Array:
+		<ul>
+			<li id="arrCreate">Array creation</li>
+			<li id="arrAddElement">Array element creation</li>
+			<li id="arrRmvElement">Array element destuction</li>
+			<li id="arrReading">Array full scan</li>
+		</ul>
+	</li>
+	<li>
+		DOM :
+		<ul>
+			<li id="domAddEnd">Element creation at the end</li>
+			<li id="domAddStart">Element creation at the begining</li>
+			<li id="domSelector">Element reading</li>
+			<li id="domRemove">Element destruction</li>
+			<li id="domText">Text modification</li>
+		</ul>
+	</li>
+</ul>
+</menu>
+<section id="resultTest"></section>
+<button id="stopTest">Stop Test</button>
+<aside id="zoneTest"></aside>
+
+
+<script>
+var tests = {
+	arrCreate:{
+		name:"Creation of an Array",
+		preparation:null,
+		fList:[createArr1,createArr2,createArr1_5,createArr2_5,createArr1_5_nb,createArr1_5_str],
+		fName:["arr=[];","arr=new Array();",'arr=[1,"2",true,function(){},{}];','arr=new Array(1,"2",true,function(){},{});','arr=[1,2,3,4,5];','arr=["1","2","3","4","5"];'],
+		fPond:[1,1,1,1,1,1],
+		loop:1000000
+	},
+	arrAddElement:{
+		name:"Add element into an Array",
+		preparation:null,
+		fList:[addArr_inc,addArr_dec,addArr_incLength,addArr_push,addArr_unshift],
+		fName:['arr[i++]=1;','arr[i--]=1;','arr[arr.length]=1;','arr.push(1);','arr.unshift(1);'],
+		fPond:[1,0.2,1,1,0.01],
+		loop:1000000
+	},
+	arrRmvElement:{
+		name:"Remove an element from an Array",
+		preparation:addArr_incLength,
+		fList:[rmvArr_pop,rmvArr_shift,rmvArr_spliceEnd,rmvArr_splice0,rmvArr_delete],
+		fName:['arr.pop()','arr.shift()','arr.splice(i,1)','arr.splice(0,1)','delete arr[i] (*)result is different'],
+		fPond:[1,0.02,0.2,0.02,1],
+		loop:1000000
+	},
+	arrReading:{
+		name:"Read all elements of an Array",
+		preparation:addArr_incLength,
+		fList:[scanArr_inc,scanArr_dec,scanArr_dec2,scanArr_forEach,scanArr_forin],
+		fName:['r=arr[i++];','r=arr[i--];','r=arr[i--]; (including i increment)','arr.forEach(f);','for(x in arr)'],
+		fPond:[1,1,1,0.02,0.01],
+		loop:10000000
+	},
+	domAddEnd:{
+		name:"Add a new HTML element at the end",
+		preparation:initZoneTest,
+		fList:[domCreate_appendChild_simple,domCreate_appendChild2_simple,domCreate_innerHTML1_simple,domCreate_innerHTML2_simple,domCreate_appendChild_complexe,domCreate_innerHTML2_complexe],
+		fName:['span=document.createElement("span");el.appendChild(span);','el.appendChild(document.createElement("span"));','el.innerHTML+="&lt;span>&lt;/span>";','txt+="&lt;span>&lt;/span>";el.innerHTML=txt;','createElement();el.id;el.className;el.name;el.textContent;appendChild()','txt+="&lt;span id="test" class="testElement" name="nameTest">content&lt;/span>";innerHTML=txt;'],
+		fPond:[1,1,0.02,1,1,1],
+		loop:10000
+	},
+	domAddStart:{
+		name:"Add a new HTML element at the beginning",
+		preparation:initZoneTest,
+		fList:[domCreate_inserBefore_simple,domCreate_innerHTML3_simple,domCreate_innerHTML4_simple,domCreate_inserBefore_complexe,domCreate_innerHTML3_complexe],
+		fName:['span=document.createElement("span");el.insertbefore(span,prevSpan);','txt="&lt;span>&lt;/span>"+txt;el.innerHTML=txt;','el.innerHTML="&lt;span>&lt;/span>"+el.innerHTML','createElement();el.id;el.className;el.name;el.textContent;insertBefore()','txt="&lt;span id="test" class="testElement" name="nameTest">content&lt;/span>"+text;el.innerHTML=txt;'],
+		fPond:[1,1,0.02,1,1],
+		loop:10000
+	},
+	domSelector:{
+		name:"Access to an HTML element",
+		preparation:addZoneTest,
+		fList:[domRead_getElementById,domRead_querySelector_id,domRead_getElementsByName,domRead_querySelector_name,domRead_getElementsByTagName,domRead_querySelectors_tagName,domRead_getElementsByClassName,domRead_querySelectors_className],
+		fName:['getElementById("id")','querySelector("#id")','getElementsByName("name")','querySelector("*[name="name"]")','getElementsByTagName("name")','querySelectorAll("tagName")','getElementsByClassName("className")','querySelectorAll(".className")'],
+		fPond:[1,0.5,1,0.1,1,0.1,1,0.1],
+		loop:100000
+	}
+};
+
+var addEvent=function(){
+	var listeLi = document.querySelectorAll("li[id]"),i,li=listeLi.length;
+	for(i=0;i<li;i++){
+		listeLi[i].onclick=runTest;
+	}
+};
+
+var runningTest=-1;
+function runTest(event){
+	clearTimeout(runningTest);
+	event = event || window.event;
+	var cible = event.target.id;
+	if(!tests[cible]){
+		document.getElementById("resultTest").innerHTML="Action <i>"+cible+"</i> not available yet :(";
+		return;
+	}
+	var cTest = tests[cible],
+		fList = cTest.fList,
+		fName = cTest.fName,
+		fPond = cTest.fPond,
+		longueur = document.getElementById("autoLoop").checked?cTest.loop:parseInt(document.getElementById("nbLoop").value,10),
+		rslt = [],
+		currentTest=0,
+		nbFnct=fList.length
+		nbIteration = 5;
+	if(longueur>cTest.loop && !confirm("This test could take some time.\nYou asked for "+longueur+" loops and the maximum recommanded loops are "+cTest.loop+".\n\nAre you sure to run this test ?")){
+		document.getElementById("resultTest").innerHTML="Action <i>"+cible+"</i> was not run. Because the asked number of loop is too high. The maximum recommanded number of loop is "+cTest.loop;
+		return;
+	}
+	while(currentTest<nbFnct){
+		rslt[currentTest++]=[];
+	}
+	currentTest=0;
+	
+	function run(){
+		var prepare = cTest.preparation,
+			lng=Math.round(longueur*fPond[currentTest]);
+		if(prepare){
+			prepare = prepare(lng);
+		}
+		var timeStamp = Date.now();
+		fList[currentTest](lng,prepare);//test execution
+		rslt[currentTest].push(Date.now() - timeStamp);
+		
+		displayResult(rslt,cTest,longueur);
+		if(++currentTest>=nbFnct){
+			currentTest=0;
+			if(!(--nbIteration)){
+				document.getElementById("stopTest").style.visibility="hidden";
+				return;
+			}
+		}
+		runningTest=setTimeout(run,50);
+	}
+	
+	document.getElementById("stopTest").style.visibility="visible";
+	displayResult(rslt,cTest,longueur);
+	run();
+}
+
+//fonction d'affichage des résultats
+function displayResult(rslt,info,lng){
+	var elemTest = document.getElementById("resultTest"),
+		fName = info.fName,
+		fPond = info.fPond,
+		text = "",
+		i=0,
+		li=rslt.length,
+		calc,j,lj,tit;
+		text += "<h1>"+info.name+"</h1>";
+		
+		text += "<table>";
+		text += "<tr><th>Action</th><th>Total response time</th><th>Average unitary reponse time</th><th>iterations</th></tr>";
+		while(i<li){
+			j = 0;
+			lj = rslt[i].length;
+			calc = 0;
+			while(j<lj){
+				calc+=rslt[i][j++];
+			}
+			text += "<tr>";
+			text += "<td>"+fName[i]+"</td>";
+			text += "<td>"+(fPond[i]===1?Math.round(calc/lj):'<em>'+Math.round(calc/lj)+'</em>')+"</td>";
+			text += "<td>"+(calc/(lj*Math.round(lng*fPond[i])))+"</td>";
+			tit=(Math.round(lng*fPond[i])+"").replace(/^(\d{1,3})((?:\d{3})*)$/,function(m,d,f){return d+" "+f.replace(/(\d{3})/g,"$1 ");});
+			text += "<td>"+lj+" &times; "+(fPond[i]===1?tit:'<em style="color:red">'+tit+'<em style="color:red">')+"</td>";
+			text += "</tr>";
+			i++;
+		}
+		text += "</table>";
+		elemTest.innerHTML = text;
+};
+
+
+function initZoneTest(){
+	var zone = document.getElementById("zoneTest");
+	zone.innerHTML="";
+	return zone;
+}
+
+function addZoneTest(){
+	var zone = document.getElementById("zoneTest");
+	zone.innerHTML="";
+	zone = domCreate_innerHTML2_complexe(10,zone);
+	return zone.lastElementChild;
+}
+
+/**
+	Liste des fonctions de tests
+**/
+function createArr1(nbl){
+	var arr;
+	while(nbl--){
+		arr=[];
+	}
+	return arr;
+}
+
+function createArr2(nbl){
+	var arr;
+	while(nbl--){
+		arr=new Array();
+	}
+	return arr;
+}
+
+function createArr1_5(nbl){
+	var arr;
+	while(nbl--){
+		arr=[1,"2",true,function(){},{}];
+	}
+	return arr;
+}
+
+function createArr2_5(nbl){
+	var arr;
+	while(nbl--){
+		arr=new Array(1,"2",true,function(){},{});
+	}
+	return arr;
+}
+
+function createArr1_5_nb(nbl){
+	var arr;
+	while(nbl--){
+		arr=[1,2,3,4,5];
+	}
+	return arr;
+}
+
+function createArr1_5_str(nbl){
+	var arr;
+	while(nbl--){
+		arr=["1","2","3","4","5"];
+	}
+	return arr;
+}
+
+function addArr_push(nbl){
+	var arr=[];
+	while(nbl--){
+		arr.push(1);
+	}
+	return arr;
+}
+
+function addArr_unshift(nbl){
+	var arr=[];
+	while(nbl--){
+		arr.unshift(1);
+	}
+	return arr;
+}
+
+function addArr_inc(nbl){
+	var arr=[],i=0;
+	while(nbl--){
+		arr[i++]=1;
+	}
+	return arr;
+}
+
+function addArr_incLength(nbl){
+	var arr=[];
+	while(nbl--){
+		arr[arr.length]=1;
+	}
+	return arr;
+}
+
+function addArr_dec(nbl){
+	var arr=[];
+	while(nbl--){
+		arr[nbl]=1;
+	}
+	return arr;
+}
+
+function rmvArr_pop(nbl,arr){
+	var rslt;
+	while(nbl--){
+		rslt=arr.pop();
+	}
+	return arr;
+}
+
+function rmvArr_shift(nbl,arr){
+	var rslt;
+	while(nbl--){
+		rslt=arr.shift();
+	}
+	return arr;
+}
+
+function rmvArr_delete(nbl,arr){
+	var rslt;
+	while(nbl--){
+		delete arr[nbl];
+	}
+	return arr;
+}
+
+function rmvArr_spliceEnd(nbl,arr){
+	var rslt;
+	while(nbl--){
+		rslt=arr.splice(nbl,1);
+	}
+	return arr;
+}
+
+function rmvArr_splice0(nbl,arr){
+	var rslt;
+	while(nbl--){
+		rslt=arr.splice(0,1);
+	}
+	return arr;
+}
+
+function scanArr_inc(nbl,arr){
+	var rslt,i=0;
+	while(nbl--){
+		rslt=arr[i++];
+	}
+	return rslt;
+}
+
+function scanArr_dec(nbl,arr){
+	var rslt;
+	while(nbl--){
+		rslt=arr[nbl];
+	}
+	return rslt;
+}
+
+function scanArr_dec2(nbl,arr){
+	var rslt,i=0;
+	while(nbl--){
+		rslt=arr[nbl];
+		i++;
+	}
+	return rslt;
+}
+
+function scanArr_forEach(nbl,arr){
+	var rslt;
+	function f(v){
+		rslt=v;
+	}
+	arr.forEach(f);
+	return rslt;
+}
+
+function scanArr_forin(nbl,arr){
+	var rslt,x;
+	for(x in arr){
+		rslt=arr[x];
+	}
+	return rslt;
+}
+
+function domCreate_innerHTML1_simple(nbl,zone){
+	while(nbl--){
+		zone.innerHTML+="<span></span>";
+	}
+	return zone;
+}
+
+function domCreate_innerHTML2_simple(nbl,zone){
+	var text="";
+	while(nbl--){
+		text+="<span></span>";
+	}
+	zone.innerHTML=text;
+	return zone;
+}
+
+function domCreate_appendChild_simple(nbl,zone){
+	var elem;
+	while(nbl--){
+		elem = document.createElement("span");
+		zone.appendChild(elem);
+	}
+	return zone;
+}
+
+function domCreate_appendChild2_simple(nbl,zone){
+	while(nbl--){
+		zone.appendChild(document.createElement("span"));
+	}
+	return zone;
+}
+
+function domCreate_innerHTML2_complexe(nbl,zone){
+	var text="";
+	while(nbl--){
+		text+='<button id="test'+nbl+'" class="testElement" name="nameTest'+nbl+'">un peu de contenu</button>';
+	}
+	zone.innerHTML=text;
+	return zone;
+}
+
+function domCreate_appendChild_complexe(nbl,zone){
+	var elem;
+	while(nbl--){
+		elem = document.createElement("button");
+		elem.id='test'+nbl;
+		elem.className='testElement';
+		elem.name='nameTest'+nbl;
+		elem.textContent='un peu de contenu';
+		zone.appendChild(elem);
+	}
+	return zone;
+}
+
+function domCreate_innerHTML3_simple(nbl,zone){
+	var text="";
+	while(nbl--){
+		text='<span></span>'+text;
+	}
+	zone.innerHTML=text;
+	return zone;
+}
+
+function domCreate_innerHTML4_simple(nbl,zone){
+	var text="";
+	while(nbl--){
+		zone.innerHTML='<span></span>'+zone.innerHTML;
+	}
+	return zone;
+}
+
+function domCreate_innerHTML3_complexe(nbl,zone){
+	var text="";
+	while(nbl--){
+		text='<span id="test'+nbl+'" class="testElement" name="nameTest'+nbl+'">un peu de contenu</span>'+text;
+	}
+	zone.innerHTML=text;
+	return zone;
+}
+
+function domCreate_inserBefore_simple(nbl,zone){
+	var elem,oldElem=document.createElement("span");
+	zone.appendChild(oldElem);
+	while(nbl--){
+		elem = document.createElement("span");
+		zone.insertBefore(elem,oldElem);
+		oldElem=elem;
+	}
+	return zone;
+}
+
+function domCreate_inserBefore_complexe(nbl,zone){
+	var elem,oldElem=document.createElement("span");
+	zone.appendChild(oldElem);
+	while(nbl--){
+		elem = document.createElement("span");
+		elem.id='test'+nbl;
+		elem.className='testElement';
+		elem.name='nameTest'+nbl;
+		elem.textContent='un peu de contenu';
+		zone.insertBefore(elem,oldElem);
+		oldElem=elem;
+	}
+	return zone;
+}
+
+function domRead_getElementById(nbl,element){
+	var elem,id=element.id;
+	while(nbl--){
+		elem = document.getElementById(id);
+	}
+	return elem;
+}
+
+function domRead_getElementsByTagName(nbl,element){
+	var elem,tagName=element.tagName;
+	while(nbl--){
+		elem = document.getElementsByTagName(tagName);
+	}
+	return elem;
+}
+
+function domRead_getElementsByName(nbl,element){
+	var elem,name=element.name;
+	while(nbl--){
+		elem = document.getElementsByName(name);
+	}
+	return elem[0];
+}
+
+function domRead_getElementsByClassName(nbl,element){
+	var elem,clName=element.className;
+	while(nbl--){
+		elem = document.getElementsByClassName(clName);
+	}
+	return elem;
+}
+
+function domRead_querySelector_id(nbl,element){
+	var elem,id="#"+element.id;
+	while(nbl--){
+		elem = document.querySelector(id);
+	}
+	return elem;
+}
+
+function domRead_querySelector_name(nbl,element){
+	var elem,name='*[name="'+element.name+'"]';
+	while(nbl--){
+		elem = document.querySelector(name);
+	}
+	return elem;
+}
+
+function domRead_querySelectors_tagName(nbl,element){
+	var elem,name=element.tagName;
+	while(nbl--){
+		elem = document.querySelectorAll(name);
+	}
+	return elem;
+}
+
+function domRead_querySelectors_className(nbl,element){
+	var elem,clName='.'+element.className;
+	while(nbl--){
+		elem = document.querySelectorAll(clName);
+	}
+	return elem;
+}
+
+/**
+ fin de la liste de fonction de tests
+*/
+
+
+//initialisation
+addEvent();
+document.getElementById("stopTest").onclick=function(){
+	clearTimeout(runningTest);
+	this.style.visibility="hidden";
+};
+
+document.getElementById("autoLoop").onchange=function(){
+	document.getElementById('nbLoop').disabled=this.checked;
+};
+</script>
+</body>
+</html>
