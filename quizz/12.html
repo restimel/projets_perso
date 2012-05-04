@@ -3,28 +3,32 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 </head>
 <body>
-<aside style="display:none;">connaissances nécessaire: déclaration, contexte temporaire, portée</aside>
+<aside style="display:none;">connaissances nécessaire: déclaration, portée, contexte temporaire</aside>
 thème: portée<br>
 niveau: 5<br><br>
+<!--question proche des questions 6 et 7-->
 <b>code:</b><br>
 <textarea rows="20" cols="100">
 <script>
 var toto = "abc";
-with({ toto:"def" }) {
-	function f() {
+var f = function(){
+	alert("def");
+}
+with({ toto:"ghi" }) {
+	var f = function () {
 	   alert(toto);
 	}
-	f();
 }
+f();
 </script>
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li class="bonneReponse">"abc"</li>
+	<li>"abc"</li>
 	<li>"def"</li>
-	<li>"abcdef"</li>
+	<li class="bonneReponse">"ghi"</li>
 	<li>undefined</li>
 	<li>une erreur apparait</li>
 </ul>
@@ -36,15 +40,15 @@ with({ toto:"def" }) {
 <script>
 function test(value){
 	var toto = "abc";
-	with({ toto:"def" }) {
-		function f() {
-		   alert(toto);
-		   // Selon les specifications ES5, cela devrait être 'abc'
-		}
-		f();
+	var f = function(){
+		alert("def");
 	}
-	
-	alert("Attention !\nEn fait le résultat de ce code dépend du navigateur. Mais selon les spécifications ES5, ce code devrait afficher 'abc'");
+	with({ toto:"ghi" }) {
+		var f = function () {
+		   alert(toto);
+		}
+	}
+	f();
 }
 
 </script>

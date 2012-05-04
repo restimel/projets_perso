@@ -3,32 +3,27 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 </head>
 <body>
-<aside style="display:none;">connaissances nécessaire: opérateur</aside>
-thème: boucle<br>
-niveau: 0<br><br>
+<aside style="display:none;">connaissances nécessaire: opérateur, priorité</aside>
+thème: opération<br>
+niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100">
 <script>
-var i=1;
-while(i<10){
-	i++;
-	i++;
-}
-alert(i);
+	alert(typeof 1/0);
 </script>
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li>1</li>
-	<li>9</li>
-	<li>10</li>
-	<li class="bonneReponse">11</li>
-	<li>20</li>
-	<li>l'alert ne sera jamais appelée</li>
+	<li>"number"</li>
+	<li>"object"</li>
+	<li>"string"</li>
+	<li>"undefined"</li>
+	<li>Infinity</li>
+	<li class="bonneReponse">NaN</li>
+	<li>Il y a une erreur de syntaxe</li>
 </ul>
-<br>
 <hr>
 <br>
 <b>Résultat</b> <i>essayez vous-même</i>:
@@ -36,12 +31,7 @@ alert(i);
 <input type="button" id="input" value="tester" onclick="test()">
 <script>
 function test(value){
-	var i=1;
-	while(i<10){
-		i++;
-		i++;
-	}
-	alert(i);
+	alert(typeof 1/0);
 }
 
 </script>

@@ -99,7 +99,7 @@ var tests = {
 	arrReading:{
 		name:"Read all elements of an Array",
 		preparation:addArr_incLength,
-		fList:[scanArr_inc,scanArr_dec,scanArr_dec2,scanArr_forEach,scanArr_forin],
+		fList:[scanArr_inc,scanArr_dec,scanArr_dec2,scanArr_forEach,scanArr_forin],//scanArr_iterator1
 		fName:['r=arr[i++];','r=arr[i--];','r=arr[i--]; (including i increment)','arr.forEach(f);','for(x in arr)'],
 		fPond:[1,1,1,0.02,0.01],
 		loop:10000000
@@ -406,6 +406,14 @@ function scanArr_forin(nbl,arr){
 	var rslt,x;
 	for(x in arr){
 		rslt=arr[x];
+	}
+	return rslt;
+}
+
+function scanArr_iterator1(nbl,arr){
+	var rslt,x,it=Iterator(arr);
+	for(x in it){
+		rslt=x[1];
 	}
 	return rslt;
 }
