@@ -1,0 +1,185 @@
+input{
+	height:1.3em;
+
+}
+
+#affichage{
+	overflow:auto;
+	bottom:0px;
+	top:7.5em;
+	position: absolute;
+	width:100%;
+	left:0px;
+	padding-top: 3em;
+	padding-bottom: 7em;
+}
+
+section{
+	display:block;
+	border:1px dotted #000000;
+	padding: 0.3em;
+	position:relative;
+	height:7.5em;
+	box-shadow: inset -10px -10px 30px 2px #F5F5FF;
+}
+
+.rSection{
+	margin-top:1.5em;
+	background-color: rgba(210,200,100,0.4);
+}
+
+.rAction{
+	margin-top:0.5em;
+	background-color: rgba(0,127,255,0.6);
+}
+
+section input[type="number"]{
+	position: absolute;
+	left: 0.3em;
+	top: 3.5em;
+	width: 5em;
+}
+
+/*
+	Placement des inputs pour la section SECTION
+*/
+
+.rSection input[title~="Titre"]{
+	position: absolute;
+	left: 6.1em;
+	top: 3.5em;
+	width: 19em;
+	font-weight: bold;
+}
+
+.rSection input[type="date"]{
+	position: absolute;
+	left: 25.9em;
+	top: 3.5em;
+	width: 10em;
+}
+
+.rSection input[type="color"]{
+	position: absolute;
+	left: 25.9em;
+	top: 5.5em;
+	width: 10em;
+}
+
+.rSection div[title="Parcours"]{/*parcours*/
+	margin:0px;
+	padding:0px;
+	position: absolute;
+	left: 35.1em;
+	top: 0.3em;
+	width: 16em;
+	height: 7.2em;
+	border: 1px dotted blue;/*DEBUG*/
+}
+
+
+/*
+	Placement des inputs pour la section ACTION
+*/
+.rAction input[type="text"][title~="Titre"]{/*titre*/
+	position: absolute;
+	left: 6.1em;
+	top: 0.3em;
+	width: 14em;
+}
+
+.rAction input[type="dateTime"]{/*date*/
+	position: absolute;
+	/*left: 20.9em;*/
+	left: 23.2em;
+	top: 0.3em;
+	width: 17em;
+}
+
+.rAction>img{/*image*/
+	position: absolute;
+	left: 5em;
+	top: 2em;
+	max-width: 12em;
+	max-height: 5.5em;
+	margin: 0px;
+}
+.rAction>img:hover{/*image*/
+	position: absolute;
+	left: 0em;
+	top: -5em;
+	max-width: 48em;
+	max-height: 22em;
+	margin: 0px;
+	z-index:10;
+}
+
+.rAction>input[type="url"]{/*input source image*/
+	position: absolute;
+	left: 6.1em;
+	top: 3.5em;
+	width: 14em;
+}
+
+.rAction textarea{/*commentaires*/
+	position: absolute;
+	left: 23.2em;
+	top: 2.5em;
+	width: 21.3em;
+	height: 7em;
+}
+
+.rAction select{/*metaType*/
+	position: absolute;
+	left: 46.6em;
+	top: 0.3em;
+	width: 15em;
+}
+
+.rAction div[title="localisation"]{/*localisation*/
+	margin:0px;
+	padding:0px;
+	position: absolute;
+	left: 35.1em;
+	top: 2em;
+	width: 16em;
+	height: 5.5em;
+	border: 1px dotted blue;/*DEBUG*/
+}
+
+
+/**/
+.carteActive{
+	position: fixed !important;
+	top: 5% !important;
+	left: 5% !important;
+	width: 85% !important;
+	height: 85% !important;/*30em !important;*/
+	z-index: 1000;
+	border: 8px solid rgba(235,200,0,0.7) !important;
+	box-shadow: 5px 5px 30px 10px #101000;
+}
+
+.fenetre{
+	position:absolute;
+	top: 10%;
+	left:10%;
+	height: 20em;
+	width: 30em;
+	background-color: rgba(0,0,0,0.8);
+	border: 1em double rgba(0,0,0,0.3);
+	z-index: 10;
+	text-align:center;
+}
+.fenetre>textarea{
+	width: 39.5em;
+	height: 23.9em;
+	background-color: rgba(255,255,255,0.9);
+}
+.fenetre>.close{
+	position:absolute;
+	right:-0.5em;
+	top:-0.5em;
+	border-radius: 1em;
+	background-color: rgba(255,50,20,0.95);
+}
