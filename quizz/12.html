@@ -39,16 +39,16 @@ f();
 <input type="button" id="input" value="tester" onclick="test()">
 <script>
 function test(value){
+alert("err");
 	var toto = "abc";
-	var f = function(){
-		alert("def");
-	}
-	with({ toto:"ghi" }) {
-		var f = function () {
-		   alert(toto);
-		}
-	}
-	f();
+var f = function(){
+	alert("def");
+}
+function blb(){alert(toto);}
+with({ toto:"ghi" }) {
+	var f = blb;
+}
+f();
 }
 
 </script>

@@ -30,11 +30,6 @@
 			visibility:hidden;
 		}
 	</style>
-<script>
-function f(a,b){
-}
-alert(f.length);
-</script>
 </head>
 <body>
 
@@ -63,6 +58,12 @@ alert(f.length);
 			<li id="domText">Text modification</li>
 		</ul>
 	</li>
+	<li>
+		RegExp :
+		<ul>
+			<li id="regexpCreation">RegExp creation</li>
+		</ul>
+	</li>
 </ul>
 </menu>
 <section id="resultTest"></section>
@@ -77,7 +78,7 @@ var tests = {
 		preparation:null,
 		fList:[createArr1,createArr2,createArr1_5,createArr2_5,createArr1_5_nb,createArr1_5_str],
 		fName:["arr=[];","arr=new Array();",'arr=[1,"2",true,function(){},{}];','arr=new Array(1,"2",true,function(){},{});','arr=[1,2,3,4,5];','arr=["1","2","3","4","5"];'],
-		fPond:[1,1,1,1,1,1],
+		fPond:[1,1,0.5,0.5,1,1],
 		loop:1000000
 	},
 	arrAddElement:{
@@ -127,6 +128,22 @@ var tests = {
 		fName:['getElementById("id")','querySelector("#id")','getElementsByName("name")','querySelector("*[name="name"]")','getElementsByTagName("name")','querySelectorAll("tagName")','getElementsByClassName("className")','querySelectorAll(".className")'],
 		fPond:[1,0.5,1,0.1,1,0.1,1,0.1],
 		loop:100000
+	},
+	domRemove:{
+		name:"Remove HTML elements",
+		preparation:addZoneTest,
+		fList:[domRemove_innerHTML,domRemove_removeChild1,domRemove_removeChild2],
+		fName:['innerHTML=""','removeChild(firstChild)','removeChild(lastChild)],
+		fPond:[1,1,1],
+		loop:10000
+	},
+	regexpCreation:{
+		name:"Creation of a new RegExp",
+		preparation:null,
+		fList:[regexp_literal,regexp_string],
+		fName:['/toto/g','new RegExp("toto","g")'],
+		fPond:[1,1],
+		loop:200000
 	}
 };
 
@@ -586,6 +603,41 @@ function domRead_querySelectors_className(nbl,element){
 		elem = document.querySelectorAll(clName);
 	}
 	return elem;
+}
+
+function domRemove_removeChild1(nbl,element){
+	while(nbl--){
+		element.removeChild(element.firstChild);
+	}
+	return element;
+}
+
+function domRemove_removeChild2(nbl,element){
+	while(nbl--){
+		element.removeChild(element.lastChild);
+	}
+	return element;
+}
+
+function domRemove_innerHTML(nbl,element){
+	element.innerHTML="";
+	return element;
+}
+
+function regexp_literal(nbl){
+	var reg;
+	while(nbl--){
+		reg = /toto/g;
+	}
+	return reg;
+}
+
+function regexp_string(nbl){
+	var reg;
+	while(nbl--){
+		reg = new RegExp("toto","g");
+	}
+	return reg;
 }
 
 /**
