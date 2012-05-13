@@ -7,10 +7,16 @@
 		li[id]{
 			cursor:pointer;
 		}
-		section#resultTest{
+		section.test{
 			position: absolute;
 			left: 26em;
 			top: 2em;
+		}
+		section#resultTest{
+			display:block;
+		}
+		aside#zoneInfo{
+			display:block;
 		}
 		menu#actionList{
 			position: absolute;
@@ -66,8 +72,11 @@
 	</li>
 </ul>
 </menu>
-<section id="resultTest"></section>
-<button id="stopTest">Stop Test</button>
+<section class="test">
+	<article id="resultTest"></article>
+	<button id="stopTest">Stop Test</button>
+	<aside id="zoneInfo"></aside>
+</section>
 <aside id="zoneTest"></aside>
 
 
@@ -104,47 +113,27 @@ var tests = {
 		fName:['r=arr[i++];','r=arr[i--];','r=arr[i--]; (including i increment)','arr.forEach(f);','for(x in arr)'],
 		fPond:[1,1,1,0.02,0.01],
 		loop:10000000
-	},
-	domAddEnd:{
-		name:"Add a new HTML element at the end",
-		preparation:initZoneTest,
-		fList:[domCreate_appendChild_simple,domCreate_appendChild2_simple,domCreate_innerHTML1_simple,domCreate_innerHTML2_simple,domCreate_appendChild_complexe,domCreate_innerHTML2_complexe],
-		fName:['span=document.createElement("span");el.appendChild(span);','el.appendChild(document.createElement("span"));','el.innerHTML+="&lt;span>&lt;/span>";','txt+="&lt;span>&lt;/span>";el.innerHTML=txt;','createElement();el.id;el.className;el.name;el.textContent;appendChild()','txt+="&lt;span id="test" class="testElement" name="nameTest">content&lt;/span>";innerHTML=txt;'],
-		fPond:[1,1,0.02,1,1,1],
-		loop:10000
-	},
-	domAddStart:{
-		name:"Add a new HTML element at the beginning",
-		preparation:initZoneTest,
-		fList:[domCreate_inserBefore_simple,domCreate_innerHTML3_simple,domCreate_innerHTML4_simple,domCreate_inserBefore_complexe,domCreate_innerHTML3_complexe],
-		fName:['span=document.createElement("span");el.insertbefore(span,prevSpan);','txt="&lt;span>&lt;/span>"+txt;el.innerHTML=txt;','el.innerHTML="&lt;span>&lt;/span>"+el.innerHTML','createElement();el.id;el.className;el.name;el.textContent;insertBefore()','txt="&lt;span id="test" class="testElement" name="nameTest">content&lt;/span>"+text;el.innerHTML=txt;'],
-		fPond:[1,1,0.02,1,1],
-		loop:10000
-	},
-	domSelector:{
-		name:"Access to an HTML element",
-		preparation:addZoneTest,
-		fList:[domRead_getElementById,domRead_querySelector_id,domRead_getElementsByName,domRead_querySelector_name,domRead_getElementsByTagName,domRead_querySelectors_tagName,domRead_getElementsByClassName,domRead_querySelectors_className],
-		fName:['getElementById("id")','querySelector("#id")','getElementsByName("name")','querySelector("*[name="name"]")','getElementsByTagName("name")','querySelectorAll("tagName")','getElementsByClassName("className")','querySelectorAll(".className")'],
-		fPond:[1,0.5,1,0.1,1,0.1,1,0.1],
-		loop:100000
-	},
-	domRemove:{
-		name:"Remove HTML elements",
-		preparation:addZoneTest,
-		fList:[domRemove_innerHTML,domRemove_removeChild1,domRemove_removeChild2],
-		fName:['innerHTML=""','removeChild(firstChild)','removeChild(lastChild)],
-		fPond:[1,1,1],
-		loop:10000
-	},
-	regexpCreation:{
-		name:"Creation of a new RegExp",
-		preparation:null,
-		fList:[regexp_literal,regexp_string],
-		fName:['/toto/g','new RegExp("toto","g")'],
-		fPond:[1,1],
-		loop:200000
 	}
+};
+
+//constructeur permettant d'ajouter des actions
+function Action(id,name,preparation,loop){
+	this.name = name;
+	this.preparation = preparation;
+	this.fList = [];
+	this.fName = [];
+	this.fPond = [];
+	this.loop = loop;
+	var i="";
+	while(tests[id+i]){i++;}
+	tests[id+i]=this;
+}
+
+//ajout d'un test
+Action.prototype.add = function(f,name,pond){
+	this.fList.push(f);
+	this.fName.push(name);
+	this.fPond.push(pond||1);
 };
 
 var addEvent=function(){
@@ -228,7 +217,7 @@ function displayResult(rslt,info,lng){
 				calc+=rslt[i][j++];
 			}
 			text += "<tr>";
-			text += "<td>"+fName[i]+"</td>";
+			text += '<td onclick="displayFunc('+info.fList[i].name+')">'+fName[i]+"</td>";
 			text += "<td>"+(fPond[i]===1?Math.round(calc/lj):'<em>'+Math.round(calc/lj)+'</em>')+"</td>";
 			text += "<td>"+(calc/(lj*Math.round(lng*fPond[i])))+"</td>";
 			tit=(Math.round(lng*fPond[i])+"").replace(/^(\d{1,3})((?:\d{3})*)$/,function(m,d,f){return d+" "+f.replace(/(\d{3})/g,"$1 ");});
@@ -239,6 +228,10 @@ function displayResult(rslt,info,lng){
 		text += "</table>";
 		elemTest.innerHTML = text;
 };
+
+function displayFunc(f){
+	document.getElementById("zoneInfo").innerHTML = f.toString().replace(/\n/g,"<br>").replace(/\t/g,"&nbsp;&nbsp;");
+}
 
 
 function initZoneTest(){
@@ -252,6 +245,13 @@ function addZoneTest(){
 	zone.innerHTML="";
 	zone = domCreate_innerHTML2_complexe(10,zone);
 	return zone.lastElementChild;
+}
+
+function addFullZoneTest(nb){
+	var zone = document.getElementById("zoneTest");
+	zone.innerHTML="";
+	zone = domCreate_innerHTML2_complexe(nb,zone);
+	return zone;
 }
 
 /**
@@ -435,211 +435,6 @@ function scanArr_iterator1(nbl,arr){
 	return rslt;
 }
 
-function domCreate_innerHTML1_simple(nbl,zone){
-	while(nbl--){
-		zone.innerHTML+="<span></span>";
-	}
-	return zone;
-}
-
-function domCreate_innerHTML2_simple(nbl,zone){
-	var text="";
-	while(nbl--){
-		text+="<span></span>";
-	}
-	zone.innerHTML=text;
-	return zone;
-}
-
-function domCreate_appendChild_simple(nbl,zone){
-	var elem;
-	while(nbl--){
-		elem = document.createElement("span");
-		zone.appendChild(elem);
-	}
-	return zone;
-}
-
-function domCreate_appendChild2_simple(nbl,zone){
-	while(nbl--){
-		zone.appendChild(document.createElement("span"));
-	}
-	return zone;
-}
-
-function domCreate_innerHTML2_complexe(nbl,zone){
-	var text="";
-	while(nbl--){
-		text+='<button id="test'+nbl+'" class="testElement" name="nameTest'+nbl+'">un peu de contenu</button>';
-	}
-	zone.innerHTML=text;
-	return zone;
-}
-
-function domCreate_appendChild_complexe(nbl,zone){
-	var elem;
-	while(nbl--){
-		elem = document.createElement("button");
-		elem.id='test'+nbl;
-		elem.className='testElement';
-		elem.name='nameTest'+nbl;
-		elem.textContent='un peu de contenu';
-		zone.appendChild(elem);
-	}
-	return zone;
-}
-
-function domCreate_innerHTML3_simple(nbl,zone){
-	var text="";
-	while(nbl--){
-		text='<span></span>'+text;
-	}
-	zone.innerHTML=text;
-	return zone;
-}
-
-function domCreate_innerHTML4_simple(nbl,zone){
-	var text="";
-	while(nbl--){
-		zone.innerHTML='<span></span>'+zone.innerHTML;
-	}
-	return zone;
-}
-
-function domCreate_innerHTML3_complexe(nbl,zone){
-	var text="";
-	while(nbl--){
-		text='<span id="test'+nbl+'" class="testElement" name="nameTest'+nbl+'">un peu de contenu</span>'+text;
-	}
-	zone.innerHTML=text;
-	return zone;
-}
-
-function domCreate_inserBefore_simple(nbl,zone){
-	var elem,oldElem=document.createElement("span");
-	zone.appendChild(oldElem);
-	while(nbl--){
-		elem = document.createElement("span");
-		zone.insertBefore(elem,oldElem);
-		oldElem=elem;
-	}
-	return zone;
-}
-
-function domCreate_inserBefore_complexe(nbl,zone){
-	var elem,oldElem=document.createElement("span");
-	zone.appendChild(oldElem);
-	while(nbl--){
-		elem = document.createElement("span");
-		elem.id='test'+nbl;
-		elem.className='testElement';
-		elem.name='nameTest'+nbl;
-		elem.textContent='un peu de contenu';
-		zone.insertBefore(elem,oldElem);
-		oldElem=elem;
-	}
-	return zone;
-}
-
-function domRead_getElementById(nbl,element){
-	var elem,id=element.id;
-	while(nbl--){
-		elem = document.getElementById(id);
-	}
-	return elem;
-}
-
-function domRead_getElementsByTagName(nbl,element){
-	var elem,tagName=element.tagName;
-	while(nbl--){
-		elem = document.getElementsByTagName(tagName);
-	}
-	return elem;
-}
-
-function domRead_getElementsByName(nbl,element){
-	var elem,name=element.name;
-	while(nbl--){
-		elem = document.getElementsByName(name);
-	}
-	return elem[0];
-}
-
-function domRead_getElementsByClassName(nbl,element){
-	var elem,clName=element.className;
-	while(nbl--){
-		elem = document.getElementsByClassName(clName);
-	}
-	return elem;
-}
-
-function domRead_querySelector_id(nbl,element){
-	var elem,id="#"+element.id;
-	while(nbl--){
-		elem = document.querySelector(id);
-	}
-	return elem;
-}
-
-function domRead_querySelector_name(nbl,element){
-	var elem,name='*[name="'+element.name+'"]';
-	while(nbl--){
-		elem = document.querySelector(name);
-	}
-	return elem;
-}
-
-function domRead_querySelectors_tagName(nbl,element){
-	var elem,name=element.tagName;
-	while(nbl--){
-		elem = document.querySelectorAll(name);
-	}
-	return elem;
-}
-
-function domRead_querySelectors_className(nbl,element){
-	var elem,clName='.'+element.className;
-	while(nbl--){
-		elem = document.querySelectorAll(clName);
-	}
-	return elem;
-}
-
-function domRemove_removeChild1(nbl,element){
-	while(nbl--){
-		element.removeChild(element.firstChild);
-	}
-	return element;
-}
-
-function domRemove_removeChild2(nbl,element){
-	while(nbl--){
-		element.removeChild(element.lastChild);
-	}
-	return element;
-}
-
-function domRemove_innerHTML(nbl,element){
-	element.innerHTML="";
-	return element;
-}
-
-function regexp_literal(nbl){
-	var reg;
-	while(nbl--){
-		reg = /toto/g;
-	}
-	return reg;
-}
-
-function regexp_string(nbl){
-	var reg;
-	while(nbl--){
-		reg = new RegExp("toto","g");
-	}
-	return reg;
-}
-
 /**
  fin de la liste de fonction de tests
 */
@@ -656,5 +451,7 @@ document.getElementById("autoLoop").onchange=function(){
 	document.getElementById('nbLoop').disabled=this.checked;
 };
 </script>
+<script src="./modulePerf/dom.js"></script>
+<script src="./modulePerf/regexp.js"></script>
 </body>
 </html>

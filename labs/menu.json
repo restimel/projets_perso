@@ -27,7 +27,22 @@
 							"url":"./tools/box_shadow.html"
 						}
 					]
-				},{
+				},
+				{
+					"nom":"JavaScript",
+					"label":"JavaScript",
+					"info":"Cette section regroupe des outils permettant d'aider à la conception de codes javscript",
+					"url":"",
+					"menu":[
+						{
+							"nom":"Performance JavaScript",
+							"label":"Performance JavaScript",
+							"info":"Synthèses et comparaison de nombreuses actions de base en javascript.<br>Le but est de pouvoir comparer différentes techniques et choisir la plus performante.",
+							"url":"./tools/perf.html"
+						}
+					]
+				},
+				{
 					"nom":"Texte",
 					"label":"Manipulation de textes",
 					"info":"Cette section regroupe des outils permettant de manipuler du texte.<br/>Quelques soit le travail en informatique, le texte est l'élément de base. Avoir les bons outils permet de gagner souvent beaucoup de temps.",
