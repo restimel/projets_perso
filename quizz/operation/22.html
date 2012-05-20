@@ -1,0 +1,60 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+<aside style="display:none;">connaissances nécessaire: addition</aside>
+thème: opération<br>
+niveau: 0<br><br>
+<b>code:</b><br>
+<textarea rows="20" cols="100" id="question">
+var number1 = "2", number2 = "3", resultat;
+resultat = number1 + number2;
+alert(resultat);
+</textarea>
+
+<hr>
+<b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
+<ul>
+	<li>5</li>
+	<li>6</li>
+	<li class="bonneReponse">23</li>
+	<li>NaN</li>
+	<li>undefined</li>
+	<li>ERROR</li>
+</ul>
+<hr>
+<br>
+<b>Résultat</b> <i>essayez vous-même</i>:
+<br>
+<input type="button" id="input" value="tester" onclick="test()">
+
+<details style="margin-top:3em;border:1px solid black;display:block;">
+	<summary>Explication</summary>
+</details>
+
+<script>
+function test(){
+	var code = document.getElementById("question").value;
+	if(!/alert\(/.test(code)){
+		alert("ok");
+		code = code.replace(/(?:^|[\r\n])(?:[\r\n]|$)/g,"").replace(/(^|[\n\r;])([^;\r\n]+);?$/,"$1alert($2);");
+	}
+	alert(code);
+	try{
+		var f=new Function(code);
+	}catch(e){
+		alert("ERROR while creating test\n"+e.message);
+	}
+	if(f){
+		try{
+			f();
+		}catch(e){
+			alert("ERROR\n"+e.message);
+		}
+	}
+}
+</script>
+
+</body>
+</html>

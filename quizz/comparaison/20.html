@@ -1,0 +1,88 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+<aside style="display:none;">connaissances nécessaire: référence, objet, opérateur</aside>
+thème: comparaison<br>
+niveau: 1<br><br>
+<b>code:</b><br>
+<textarea rows="20" cols="100" id="question">
+	var s1 = new String("toto");
+	var s2 = new String("toto");
+	var r1 = /toto/g;
+	var r2 = /toto/g;
+	var compteur = 0;
+
+	if(s1 == s2) compteur++;
+	if(s1 === s2) compteur++;
+
+	if(r1 == r2) compteur++;
+	if(r1 === r2) compteur++;
+
+	if(s1 == r1) compteur++;
+	if(s1 === r1) compteur++;
+
+	alert(compteur);
+</textarea>
+
+<hr>
+<b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
+<ul>
+	<li class="bonneReponse">0</li>
+	<li>1</li>
+	<li>2</li>
+	<li>3</li>
+	<li>4</li>
+	<li>5</li>
+	<li>6</li>
+	<li>Il y a une erreur de syntaxe</li>
+</ul>
+<hr>
+<br>
+<b>Résultat</b> <i>essayez vous-même</i>:
+<br>
+<input type="button" id="input" value="tester" onclick="test()">
+
+
+<details style="margin-top:3em;border:1px solid black;display:block;">
+	<summary>Explication</summary>
+	Il faut bien comprendre les opérateurs de comparaison et ne pas oublier que <minicode type="javascript">alert(typeof new String("toto"))</minicode> vaut <minicode type="javascript">"object"</minicode> et non pas <minicode type="javascript">"string"</minicode>.
+
+	Avec des objets, les opérateurs d'égalité (que ce soit <minicode type="javascript">==</minicode> ou <minicode type="javascript">===</minicode>) ne retournent <minicode type="javascript">true</minicode> que si les deux opérandes font référence au même objet.
+
+	Or <minicode type="javascript">new String</minicode> crée une nouvelle instance. Ces variables ne sont donc pas égales.
+	C'est la même chose avec les RegExp (même écrit en littéral) car chaque objet possède son propre statut (positionnement du curseur, etc...). Ainsi les variables ne font pas référence au même objet bien que ceux-ci ont été écrit de la même manière.
+
+
+	<information>L'opérateur <minicode type="javascript">==</minicode> n'est pas transitif. On peut remarquer que <minicode type="javascript">"a" == "a"</minicode> et <minicode type="javascript">"a" == new String("a")</minicode> valent <minicode type="javascript">true</minicode>. Mais <minicode type="javascript">new String("a") == new String("a")</minicode> vaut <minicode type="javascript">false</minicode>.</information>
+
+
+	Pour plus d'information vous pouvez consulter les algorithmes définis par la spécification ECMAScript 5 aux sections 11.9.3 (pour l'égalité abstraite) et 11.9.6 (pour l'égalité stricte).
+</details>
+
+<script>
+function test(){
+	var code = document.getElementById("question").value;
+	if(!/alert\(/.test(code)){
+		alert("ok");
+		code = code.replace(/(?:^|[\r\n])(?:[\r\n]|$)/g,"").replace(/(^|[\n\r;])([^;\r\n]+);?$/,"$1alert($2);");
+	}
+	alert(code);
+	try{
+		var f=new Function(code);
+	}catch(e){
+		alert("ERROR while creating test\n"+e.message);
+	}
+	if(f){
+		try{
+			f();
+		}catch(e){
+			alert("ERROR\n"+e.message);
+		}
+	}
+}
+</script>
+
+</body>
+</html>

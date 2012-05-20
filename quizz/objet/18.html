@@ -7,8 +7,7 @@
 thème: objet<br>
 niveau: 2<br><br>
 <b>code:</b><br>
-<textarea rows="20" cols="100">
-<script>
+<textarea rows="20" cols="100" id="question">
 	function Type1(){}
 	Type1.prototype.affiche = function(){
 		return this.valeur;
@@ -23,7 +22,6 @@ niveau: 2<br><br>
 	var obj2 = new Type2();
 	alert(obj1.affiche());
 	alert(obj2.affiche());
-</script>
 </textarea>
 
 <hr>
@@ -42,24 +40,34 @@ niveau: 2<br><br>
 <b>Résultat</b> <i>essayez vous-même</i>:
 <br>
 <input type="button" id="input" value="tester" onclick="test()">
-<script>
-function test(value){
-	function Type1(){}
-	Type1.prototype.affiche = function(){
-		return this.valeur;
-	};
-	Type1.prototype.valeur = "type1";
-	
-	function Type2(){}
-	Type2.prototype = Type1.prototype;
-	Type2.prototype.valeur = "type2";
-	
-	var obj1 = new Type1();
-	var obj2 = new Type2();
-	alert(obj1.affiche());
-	alert(obj2.affiche());
-}
 
+
+<details style="margin-top:3em;border:1px solid black;display:block;">
+	<summary>Explication</summary>
+</details>
+
+<script>
+function test(){
+	var code = document.getElementById("question").value;
+	if(!/alert\(/.test(code)){
+		alert("ok");
+		code = code.replace(/(?:^|[\r\n])(?:[\r\n]|$)/g,"").replace(/(^|[\n\r;])([^;\r\n]+);?$/,"$1alert($2);");
+	}
+	alert(code);
+	try{
+		var f=new Function(code);
+	}catch(e){
+		alert("ERROR while creating test\n"+e.message);
+	}
+	if(f){
+		try{
+			f();
+		}catch(e){
+			alert("ERROR\n"+e.message);
+		}
+	}
+}
 </script>
+
 </body>
 </html>

@@ -1,0 +1,66 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+<aside style="display:none;">connaissances nécessaire: charCode, opérateur</aside>
+thème: condition<br>
+niveau: 1<br><br>
+<b>code:</b><br>
+<textarea rows="20" cols="100" id="question">
+alert("abc" < "VWXYZ");
+</textarea>
+
+<hr>
+<b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
+<ul>
+	<li>true</li>
+	<li class="bonneReponse">false</li>
+	<li>"abcVWYZ"</li>
+	<li>NaN</li>
+	<li>ERROR</li>
+</ul>
+<hr>
+<br>
+<b>Résultat</b> <i>essayez vous-même</i>:
+<br>
+<input type="button" id="input" value="tester" onclick="test()">
+
+
+<details style="margin-top:3em;border:1px solid black;display:block;">
+	<summary>Explication</summary>
+	Il s'agit en fait d'une question piège. L'opérateur <minicode type="javascript"><</minicode> appliqué à des chaines de caractères ne les compare pas alphabétiquement et non pas selon leur longueur mais selon la valeur des caractères composant la chaine (le <minicode type="javascript">charCode</minicode>).
+	Ainsi les premiers caractères de ces chaines (<minicode type="javascript">'a'</minicode> et <minicode type="javascript">'V'</minicode>) ont pour valeurs respectives <minicode type="javascript">97</minicode> et <minicode type="javascript">86</minicode>. En JavaScript la chaine "VWXYZ" se situe donc avant la chaine "abc".
+
+	Pour obtenir <minicode type="javascript">true</minicode>, il aurait fallu comparer des chaines ayant la même casse (par exemple <minicode type="javascript">alert("ABC"<"VWXYZ")</minicode> ou <minicode type="javascript">alert("abc"<"vwxyz")</minicode>). C'est pourquoi quand on ordonne des chaines les méthodes <minicode type="javascript">toUpperCase</minicode> ou <minicode type="javascript">toLowerCase</minicode> peuvent être très utile.
+
+	En JavaScript, l'opérateur de concaténation est le <minicode type="javascript">+</minicode> ainsi avec <minicode type="javascript">alert("abc" + "VWXYZ");</minicode> on obtient <minicode type="javascript">"abcVWXYZ"</minicode>
+
+	Pour obtenir <minicode type="javascript">NaN</minicode>, il aurait fallu utiliser un opérateur ne fonctionnant qu'avec des nombres.
+</details>
+
+<script>
+function test(){
+	var code = document.getElementById("question").value;
+	if(!/alert\(/.test(code)){
+		alert("ok");
+		code = code.replace(/(?:^|[\r\n])(?:[\r\n]|$)/g,"").replace(/(^|[\n\r;])([^;\r\n]+);?$/,"$1alert($2);");
+	}
+	alert(code);
+	try{
+		var f=new Function(code);
+	}catch(e){
+		alert("ERROR while creating test\n"+e.message);
+	}
+	if(f){
+		try{
+			f();
+		}catch(e){
+			alert("ERROR\n"+e.message);
+		}
+	}
+}
+</script>
+
+</body>
+</html>

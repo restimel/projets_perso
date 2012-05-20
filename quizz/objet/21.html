@@ -1,0 +1,90 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+<aside style="display:none;">connaissances nécessaire: référence, portée</aside>
+thème: objet<br>
+niveau: 2<br><br>
+<b>code:</b><br>
+<textarea rows="20" cols="100" id="question">
+var myNamespace = {
+  
+  subNamespace1: {
+    
+    function1: function() {
+    	var valeur = 0;
+      myNamespace.subNamespace2.function2();
+    },
+    valeur : 1
+    
+  },
+  
+  subNamespace2: {
+    
+    function2: function() {
+    	var valeur = 2;
+      alert(this.valeur);
+    },
+    valeur : 3
+    
+  },
+  valeur : 4
+  
+};
+myNamespace.subNamespace1.function1();
+</textarea>
+
+<hr>
+<b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
+<ul>
+	<li>0</li>
+	<li>1</li>
+	<li>2</li>
+	<li class="bonneReponse">3</li>
+	<li>4</li>
+	<li>undefined</li>
+	<li>ERROR</li>
+</ul>
+<hr>
+<br>
+<b>Résultat</b> <i>essayez vous-même</i>:
+<br>
+<input type="button" id="input" value="tester" onclick="test()">
+
+<script>
+function test(){
+	var code = document.getElementById("question").value;
+	if(!/alert\(/.test(code)){
+		alert("ok");
+		code = code.replace(/(?:^|[\r\n])(?:[\r\n]|$)/g,"").replace(/(^|[\n\r;])([^;\r\n]+);?$/,"$1alert($2);");
+	}
+	alert(code);
+	try{
+		var f=new Function(code);
+	}catch(e){
+		alert("ERROR while creating test\n"+e.message);
+	}
+	if(f){
+		try{
+			f();
+		}catch(e){
+			alert("ERROR\n"+e.message);
+		}
+	}
+}
+</script>
+
+<details style="margin-top:3em;border:1px solid black;display:block;">
+	<summary>Explication</summary>
+	<minicode type="javascript">identite</minicode> est un objet qui ne possède qu'une seule propriété : <minicode type="javascript">nom</minicode>.
+	Du coup la propriété <minicode type="javascript">prenom</minicode> n'existe pas, il retourne donc <minicode type="javascript">undefined</minicode>.
+
+	Pour obtenir <minicode type="javascript">"Jean Dupont"</minicode>, il aurait fallu écrire <minicode type="javascript">alert(identie.nom);</minicode>
+	Pour obtenir <minicode type="javascript">"Jean"</minicode>, il aurait fallu ajouter une propriété <minicode type="javascript">prenom</minicode> ayant pour valeur <minicode type="javascript">"Jean"</minicode> ; ou alors le récupérer depuis la propriété <minicode type="javascript">nom</minicode>, par exemple <minicode type="javascript">alert(identite.nom.split(" ")[0]);</minicode>
+	Et de même pour obtenir <minicode type="javascript">"Dupont"</minicode> (en utilisant l'index 1 à la place de 0).
+</details>
+
+
+</body>
+</html>

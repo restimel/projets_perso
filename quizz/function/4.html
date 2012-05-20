@@ -7,8 +7,7 @@
 thème: fonction<br>
 niveau: 3<br><br>
 <b>code:</b><br>
-<textarea rows="20" cols="100">
-<script>
+<textarea rows="20" cols="100" id="question">
 function affMessage(condition){
 	if(condition){
 		function leMessage(){
@@ -24,7 +23,6 @@ function affMessage(condition){
 
 affMessage(true);
 affMessage(false);
-</script>
 </textarea>
 
 <hr>
@@ -41,25 +39,34 @@ affMessage(false);
 <b>Résultat</b> <i>essayez vous-même</i>:
 <br>
 <input type="button" id="input" value="tester" onclick="test()">
+
+
+<details style="margin-top:3em;border:1px solid black;display:block;">
+	<summary>Explication</summary>
+</details>
+
 <script>
-function test(value){
-	function affMessage(condition){
-		if(condition){
-			function leMessage(){
-				alert("Bonjour");
-			}
-		}else{
-			function leMessage(){
-				alert("Bonsoir");
-			}
-		}
-		leMessage();
+function test(){
+	var code = document.getElementById("question").value;
+	if(!/alert\(/.test(code)){
+		alert("ok");
+		code = code.replace(/(?:^|[\r\n])(?:[\r\n]|$)/g,"").replace(/(^|[\n\r;])([^;\r\n]+);?$/,"$1alert($2);");
 	}
-
-	affMessage(true);
-	affMessage(false);
+	alert(code);
+	try{
+		var f=new Function(code);
+	}catch(e){
+		alert("ERROR while creating test\n"+e.message);
+	}
+	if(f){
+		try{
+			f();
+		}catch(e){
+			alert("ERROR\n"+e.message);
+		}
+	}
 }
-
 </script>
+
 </body>
 </html>
