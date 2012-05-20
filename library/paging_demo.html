@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>demo paging</title>
+</head>
+<body>
+<style>
+#liste{
+	width:500px;
+}
+</style>
+
+	<div id="liste" style="height:100px;overflow:auto;border:1px solid green;"></div>
+
+<script src="paging.js"></script>
+<script>
+	function remplir(nb){
+		this.textContent = "TOTO"+nb;
+		var img = document.createElement("img");
+		img.style.height="20px";
+		img.alt="mon image n°"+nb;
+		img.style.display = "block";
+		this.appendChild(img);
+	}
+	var liste = new PagingElement(document.getElementById("liste"),0,20,2);
+	var i = 100;
+	while(i--)
+		liste.add(remplir);
+	
+	liste.refresh();
+</script>
+</body>
+</html>
