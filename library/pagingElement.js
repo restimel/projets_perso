@@ -1,5 +1,9 @@
 /**
  * PagingElement API
+ *
+ * This work is licensed under a Creative Commons Attribution 3.0 Unported License
+ * http://creativecommons.org/licenses/by/3.0/
+ *
  * This object creates a list of elements inside another element.
  * These elements can be accessed by scrolling.
  * 
@@ -341,5 +345,13 @@ PagingElement.prototype.getPosition = function(d1,d2){
 **/
 PagingElement.prototype.refresh = function(){
 	this.source.onscroll({});
+};
+
+/**
+	permet de remettre à jour la taille de l'élément conteneur 
+**/
+PagingElement.prototype.resize = function(){
+	this.innerSize = this.source[this.config.clientSize]; //taille de l'espace affichable
+	this.refresh();
 };
 
