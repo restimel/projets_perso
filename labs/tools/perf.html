@@ -44,7 +44,7 @@
 	<label><input type="checkbox" id="autoLoop" checked>Choose loop automatically</label><br>
 	<label>Loop number: <input type="number" id="nbLoop" value="1000000" min="1" disabled></label>
 </command>
-<ul>
+<ul id="listeActions">
 	<li>
 		Array:
 		<ul>
@@ -52,22 +52,6 @@
 			<li id="arrAddElement">Array element creation</li>
 			<li id="arrRmvElement">Array element destuction</li>
 			<li id="arrReading">Array full scan</li>
-		</ul>
-	</li>
-	<li>
-		DOM :
-		<ul>
-			<li id="domAddEnd">Element creation at the end</li>
-			<li id="domAddStart">Element creation at the begining</li>
-			<li id="domSelector">Element reading</li>
-			<li id="domRemove">Element destruction</li>
-			<li id="domText">Text modification</li>
-		</ul>
-	</li>
-	<li>
-		RegExp :
-		<ul>
-			<li id="regexpCreation">RegExp creation</li>
 		</ul>
 	</li>
 </ul>
@@ -114,10 +98,11 @@ var tests = {
 		fPond:[1,1,1,0.02,0.01],
 		loop:10000000
 	}
-};
+},
+	themes=[];//liste des thèmes déjà chargés
 
 //constructeur permettant d'ajouter des actions
-function Action(id,name,preparation,loop){
+function Action(theme,id,title,name,preparation,loop){
 	this.name = name;
 	this.preparation = preparation;
 	this.fList = [];
@@ -127,6 +112,29 @@ function Action(id,name,preparation,loop){
 	var i="";
 	while(tests[id+i]){i++;}
 	tests[id+i]=this;
+	
+	var j=0,
+		lj=themes.length,
+		elem;
+	while(j<lj && themes[j].name !== theme){j++;}
+	if(j===lj){
+		elem=document.createElement("li")
+		var corps=document.createElement("ul");
+		elem.textContent = theme+" :";
+		elem.appendChild(corps);
+		document.getElementById("listeActions").appendChild(elem);
+		
+		themes[j] = {
+			name:theme,
+			elem : corps
+		}
+	}
+	
+	elem = document.createElement("li");
+	elem.textContent = title;
+	elem.id = id+i;
+	elem.onclick = runTest;
+	themes[j].elem.appendChild(elem);
 }
 
 //ajout d'un test
@@ -453,5 +461,6 @@ document.getElementById("autoLoop").onchange=function(){
 </script>
 <script src="./modulePerf/dom.js"></script>
 <script src="./modulePerf/regexp.js"></script>
+<script src="./modulePerf/number.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 
-var module = new Action("domAddEnd","Add a new HTML element at the end",initZoneTest,10000);
+var module = new Action("DOM","domAddEnd","Element creation at the end","Add a new HTML element at the end",initZoneTest,10000);
 module.add(domCreate_appendChild_simple,'span=document.createElement("span");el.appendChild(span);',1);
 module.add(domCreate_appendChild2_simple,'el.appendChild(document.createElement("span"));',1);
 module.add(domCreate_innerHTML1_simple,'el.innerHTML+="&lt;span>&lt;/span>";',0.02);
@@ -7,14 +7,14 @@ module.add(domCreate_innerHTML2_simple,'txt+="&lt;span>&lt;/span>";el.innerHTML=
 module.add(domCreate_appendChild_complexe,'createElement(); el.id; el.className; el.name; el.textContent; appendChild()',0.5);
 module.add(domCreate_innerHTML2_complexe,'txt+="&lt;span id="test" class="testElement" name="nameTest" >content&lt;/span>"; innerHTML=txt;',0.5);
 
-module = new Action("domAddStart","Add a new HTML element at the beginning",initZoneTest,10000);
+module = new Action("DOM","domAddStart","Element creation at the begining","Add a new HTML element at the beginning",initZoneTest,10000);
 module.add(domCreate_inserBefore_simple,'span=document.createElement("span");el.insertbefore(span,prevSpan);',1);
-module.add(domCreate_innerHTML3_simple,'txt="&lt;span>&lt;/span>"+txt;el.innerHTML=txt;',1);
+module.add(domCreate_innerHTML3_simple,'txt="&lt;span>&lt;/span>"+txt;el.innerHTML=txt;',0.1);
 module.add(domCreate_innerHTML4_simple,'el.innerHTML="&lt;span>&lt;/span>"+el.innerHTML',0.02);
 module.add(domCreate_inserBefore_complexe,'createElement(); el.id; el.className; el.name; el.textContent; insertBefore()',0.5);
 module.add(domCreate_innerHTML3_complexe,'txt="&lt;span id="test" class="testElement" name="nameTest" >content&lt;/span>" +text; el.innerHTML=txt;',0.5);
 	
-module = new Action("domSelector","Access to an HTML element",addZoneTest,100000);
+module = new Action("DOM","domSelector","Element reading","Access to an HTML element",addZoneTest,100000);
 module.add(domRead_getElementById,'getElementById("id")',1);
 module.add(domRead_querySelector_id,'querySelector("#id")',0.5);
 module.add(domRead_getElementsByName,'getElementsByName("name")',1);
@@ -24,10 +24,12 @@ module.add(domRead_querySelectors_tagName,'querySelectorAll("tagName")',0.1);
 module.add(domRead_getElementsByClassName,'getElementsByClassName("className")',1);
 module.add(domRead_querySelectors_className,'querySelectorAll(".className")',0.1);
 	
-module = new Action("domRemove","Remove HTML elements",addFullZoneTest,10000);
+module = new Action("DOM","domRemove","Element destruction","Remove HTML elements",addFullZoneTest,10000);
 module.add(domRemove_innerHTML,'innerHTML=""',1);
 module.add(domRemove_removeChild1,'removeChild(firstChild)',1);
 module.add(domRemove_removeChild2,'removeChild(lastChild)',1);
+
+module = new Action("DOM","domText","Text modification","Modification of content",null,10000);
 
 function domCreate_innerHTML1_simple(nbl,zone){
 	while(nbl--){

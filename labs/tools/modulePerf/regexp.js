@@ -1,5 +1,5 @@
 
-var module = new Action("regexpCreation","Creation of a new RegExp",null,200000);
+var module = new Action("RegExp","regexpCreation","RegExp creation","Creation of a new RegExp",null,200000);
 module.add(regexp_literal,'/toto/g',1);
 module.add(regexp_string,'new RegExp("toto","g")',1);
 
