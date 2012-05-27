@@ -136,14 +136,14 @@ game.prototype.del=function(x,y){
 }
 
 game.prototype.snapshot=function(){
-	var tab=[],lx=this.size,x=lx,ly=this.size,y,z,groupe=0;
-	while(x--){
+	var tab=[],lx=this.size,x=0,ly=this.size,y,z,groupe=0;
+	do{
 		tab[x]=[];
-		y=ly;
-		while(y--){
+		y=0;
+		do{
 			tab[x][y]=-1;
-		}
-	}
+		}while(++y<ly)
+	}while(++x<lx);
 	
 	x=lx;
 	while(x--){
@@ -198,12 +198,12 @@ Game_shot.prototype.estimate=function(){
 Game_shot.prototype.verify_move=function(id,direction){
 	var n_grille=this.tab.copy();
 	
-	var i=-1,li=this.tab.length,j,lj,pst;
+	var i=0,li=this.tab.length,j,lj,pst;
 	var thisPosition=this.position,position=thisPosition.copy();
-	while(++i<li){
-		j=-1;
+	do{
+		j=0;
 		lj=this.tab[i].length;
-		while(++j<lj){
+		do{
 			if(this.tab[i][j]===id){
 				switch(direction){
 					case 1: //à droite
@@ -257,18 +257,18 @@ Game_shot.prototype.verify_move=function(id,direction){
 					default: return false;
 				}
 			}
-		}
-	}
+		}while(++j<lj);
+	}while(++i<li);
 	return new Game_shot(n_grille,position,this.distanceC+1,this);
 };
 
 Game_shot.prototype.get_next=function(){
-	var result=[],i=-1,li=this.tab.length,j,lj,k,t,id,done=[0,1];
-	while(++i<li){
-		j=-1;
+	var result=[],i=0,li=this.tab.length,j,lj,k,t,id,done=[0,1];
+	do{
+		j=0;
 		lj=this.tab[i].length;
-		while(++j<lj){
-			if(done.indexOf(id=this.tab[i][j])===-1){
+		do{
+			if(!~done.indexOf(id=this.tab[i][j])){
 				k=1;
 				do{
 					if(t=this.verify_move(id,k)){
@@ -277,13 +277,23 @@ Game_shot.prototype.get_next=function(){
 				}while(k++<4);
 				done.push(id);
 			}
-		}
-	}
+		}while(++j<lj);
+	}while(++i<li);
 	return result;
 };
 
 
 Game_shot.prototype.compare=function(tab){
+	var lx=this.tab.length,ly=this.tab[0].length,x=0,y;
+	do{
+		y=0;
+		do{
+			if(this.tab[x][y]!==tab[x][y]) return false;
+		}while(++y<ly);
+	}while(++x<lx);
+	return true;
+};
+/*Game_shot.prototype.compare=function(tab){
 	var lx=this.tab.length,ly=this.tab[0].length,x=-1,y;
 	while(++x<lx){
 		y=0;
@@ -397,10 +407,10 @@ function search_A(tab,GS){
 	return null;
 }
 function search_B(tab,GS){
-	var i=-1,li=tab.length;
-	while(++i<li){
+	var i=0,li=tab.length;
+	do{
 		if(GS.compare(tab[i].tab)) return tab[i];
-	}
+	}while(++i<li);
 	return null;
 }
 
@@ -427,7 +437,7 @@ Groupe.prototype.add=function(blc){
 }
 Groupe.prototype.remove=function(blc){
 	var i=this.liste.indexOf(blc);
-	if(i!==-1) this.liste.splice(i,1);
+	if(~i) this.liste.splice(i,1);
 	
 	i=this.liste.length;
 	while(i--){
@@ -540,7 +550,7 @@ Array.prototype.getIndexOf=function(tab){
 	var i=0,li=this.length,str=tab.toString();
 	while(i<li){
 		if(this[i].toString()===str) return i;
-		i++
+		i++;
 	}
 	return -1;
 }
