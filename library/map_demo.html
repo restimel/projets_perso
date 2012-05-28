@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>demo map</title>
+</head>
+<body>
+<style>
+.carte{
+	width:500px;
+}
+</style>
+
+	<div id="carte1" class="carte"></div>
+	<div id="carte2" class="carte"></div>
+
+<script src="defaultMap.js"></script>
+<script src="googleMap.js"></script>
+<script>
+	var map1 = new DefaultMap(document.getElementById('carte1'),{});
+	var map2 = new GoogleMap(document.getElementById('carte2'),{center:[10,10],type:"Satellite"});
+</script>
+</body>
+</html>
