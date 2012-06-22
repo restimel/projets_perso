@@ -48,13 +48,15 @@ function GoogleMap(sourceElement,option){
 	
 		option.zoom = option.zoom || 10;
 		option.type = option.type || "Map";
-	
+		
 		var center = option.center;
-		this.map = new google.maps.Map(sourceElement, {
+		debug = {
 			zoom: option.zoom,
 			center: new google.maps.LatLng(center[0],center[1]),
-			mapTypeId: option.type
-		});
+			mapTypeId: GoogleMap.getGMapType(option.type)
+		};
+
+		this.map = new google.maps.Map(sourceElement, debug);
 		
 		this.center = option.center;
 		this.zoom = option.zoom;
@@ -75,12 +77,66 @@ function GoogleMap(sourceElement,option){
 		if(typeof option.ondblclick === "function"){
 			google.maps.event.addListener(this.map, "dblclick", callback(ondblclick,this));
 		}
+
 	}catch(e){
 		console.warn("Google Map could not be used. DefaultMap will be used instead.\n"+e.message);
 		return new DefaultMap(sourceElement,option);
 	}
 	this.resize();
 }
+
+
+/**
+ * Fonction permettant de connaitre le type en fonction du type de carte Google
+ */
+GoogleMap.getMapType = function(gType){
+	var type="";
+	switch(gType){
+		case google.maps.MapTypeId.HYBRID :
+			type = "Route+Satellite";
+			break;
+		case google.maps.MapTypeId.ROADMAP :
+			type = "Route";
+			break;
+		case google.maps.MapTypeId.SATELLITE :
+			type = "Satellite";
+			break;
+		case google.maps.MapTypeId.TERRAIN :
+			type = "Relief";
+			break;
+	}
+	return type;
+};
+
+/**
+ * Fonction permettant de connaitre le 'Google type' en fonction du type de carte
+ */
+GoogleMap.getGMapType = function(type){
+	var gType=null;
+	switch(type){
+		case "hybrid" :
+		case "Route+Satellite" :
+		case "route+satellite" :
+			gType = google.maps.MapTypeId.HYBRID;
+			break;
+		case "Route" :
+		case "route" :
+		case "roadmap" :
+			gType = google.maps.MapTypeId.ROADMAP;
+			break;
+		case "satellite" :
+		case "Satellite" :
+			gType = google.maps.MapTypeId.SATELLITE;
+			break;
+		case "Relief" :
+		case "relief" :
+		case "Terrain" :
+		case "terrain" :
+			gType = google.maps.MapTypeId.TERRAIN;
+			break;
+	}
+	return gType;
+};
 
 (function(){
 	//héritage
@@ -177,19 +233,11 @@ function GoogleMap(sourceElement,option){
 		},
 		type : {
 			get : function(){
-				switch(this.vType){
-					case google.maps.MapTypeId.SATELLITE :
-						return "Satellite";
-				}
-				return "";
+				return GoogleMap.getMapType(this.vType);
 			},
 			set : function(type){
-				switch(type){
-					case "Satellite" :
-						this.vType = google.maps.MapTypeId.SATELLITE;
-						break;
-				}
-				this.vType = type;
+				this.vType = GoogleMap.getGMapType(type);
+				this.map.setMapTypeId(this.vType);
 			},
 			enumerable : true,
 			configurable : false
@@ -303,14 +351,18 @@ function GoogleMap(sourceElement,option){
 		getAltitude : {
 			value : function(lat,long,f){
 				var latlng=new google.maps.LatLng(lat,long);
-				var getAltitude=new google.maps.ElevationService();
-				getAltitude.getElevationForLocations({locations:[latlng]}, function(results, elevationStatus){
-					if(elevationStatus==="OK"){
-						f(results[0].elevation);
-					}else{
-						f(null);
-					}
-				});
+				try{
+					var getAltitude=new google.maps.ElevationService();
+					getAltitude.getElevationForLocations({locations:[latlng]}, function(results, elevationStatus){
+						if(elevationStatus==="OK"){
+							f(results[0].elevation);
+						}else{
+							f(null);
+						}
+					});
+				}catch(e){
+					console.warn("Error while getting elevation from Google\n"+e.message);
+				}
 			},
 			writable : false,
 			enumerable : true,
