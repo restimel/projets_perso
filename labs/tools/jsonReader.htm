@@ -1,5 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
+<!--
+	This web file is a tool which helps to manipulate JSON object
+	Author : Benoit Mariat
+	Date : Dec 2011
+	Last update : June 2012 (search from joker token and found an object from its value)
+-->
 <head>
 	<meta charset="utf8">
 	<title>JSON reader</title>
@@ -93,7 +99,7 @@
 	</section>
 
 	<section id="javascript">
-		<header>Code javascript permettant d'accéder à cette valeur</header>
+		<header>JavaScript code to access an element</header>
 		<input id="codeJS" title="OBJ. désigne l'objet créé par JSON">&nbsp;</output>
 	</section>
 
@@ -172,10 +178,10 @@ function jsonVerify(str,inside,offset){
 					continue;
 				}
 				if(previous && "{}]\"';".indexOf(previous)!==-1){
-					return "Caractère "+(i+offset+1)+": le caractère { ne devrait pas être là";
+					return "Character "+(i+offset+1)+": character {  should not be there.";
 				}
 				if(inside==="{" && previous===","){
-					return "Caractère "+(i+offset+1)+": le caractère { ne devrait pas être devant , lorsqu'il est dans un objet (cet objet commence position "+offset+")";
+					return "Character "+(i+offset+1)+": character { should not be placed before , when it is in an object (this object begins position "+offset+")";
 				}
 				
 				msg=jsonVerify(str.substring(i+1),"{",i+offset+1);
@@ -192,10 +198,10 @@ function jsonVerify(str,inside,offset){
 					continue;
 				}
 				if(previous && "{}]\"';".indexOf(previous)!==-1){
-					return "Caractère "+(i+offset+1)+": le caractère [ ne devrait pas être là";
+					return "Character "+(i+offset+1)+": charactere [  should not be there";
 				}
 				if(inside==="{" && previous===","){
-					return "Caractère "+(i+offset+1)+": le caractère [ ne devrait pas être devant , lorsqu'il est dans un objet (cet objet commence position "+offset+")";
+					return "Character "+(i+offset+1)+": character [ should not be placed before , when it is in an object (this object begins position "+offset+")";
 				}
 				msg=jsonVerify(str.substring(i+1),"[",i+offset+1);
 				if(typeof msg ==="number"){
@@ -211,7 +217,7 @@ function jsonVerify(str,inside,offset){
 					continue;
 				}
 				if(previous && "{,:;".indexOf(previous)!==-1 || inside!=="["){
-					return "Caractère "+(i+offset+1)+": le caractère ] ne devrait pas être là";
+					return "Character "+(i+offset+1)+": character ]  should not be there.";
 				}
 				return i+offset;
 				break;
@@ -221,7 +227,7 @@ function jsonVerify(str,inside,offset){
 					continue;
 				}
 				if(previous && "[,:;".indexOf(previous)!==-1 || inside!=="{"){
-					return "Caractère "+(i+offset+1)+": le caractère } ne devrait pas être là.";
+					return "Character "+(i+offset+1)+": character } should not be there.";
 				}
 				return i+offset;
 				break;
@@ -238,7 +244,7 @@ function jsonVerify(str,inside,offset){
 					}
 				}else{
 					if(previous && "}]\"';".indexOf(previous)!==-1){
-						return "Caractère "+(i+offset+1)+": le caractère \" ne devrait pas être là";
+						return "Character "+(i+offset+1)+": character \" should not be there";
 					}
 					msg=jsonVerify(str.substring(i+1),"\"",i+offset+1);
 					if(typeof msg ==="number"){
@@ -262,7 +268,7 @@ function jsonVerify(str,inside,offset){
 					}
 				}else{
 					if(previous && "}]\"';".indexOf(previous)!==-1){
-						return "Caractère "+(i+offset+1)+": le caractère ' ne devrait pas être là";
+						return "Character "+(i+offset+1)+": caracter ' should not be there";
 					}
 					msg=jsonVerify(str.substring(i+1),"'",i+offset+1);
 					if(typeof msg ==="number"){
@@ -280,7 +286,7 @@ function jsonVerify(str,inside,offset){
 					continue;
 				}
 				if(previous && "{[,:;".indexOf(previous)!==-1 || !inside){
-					return "Caractère "+(i+offset+1)+": le caractère , ne devrait pas être là";
+					return "Character "+(i+offset+1)+": character , should not be there";
 				}
 				previous=",";
 				break;
@@ -290,7 +296,7 @@ function jsonVerify(str,inside,offset){
 					continue;
 				}
 				if(previous && "}]{[,:;".indexOf(previous)!==-1 || inside!=="{"){
-					return "Caractère "+(i+offset+1)+": le caractère : ne devrait pas être là. Objet position "+offset;
+					return "Character "+(i+offset+1)+": character : should not be there. In object "+inside+" position "+offset;
 				}
 				previous=":";
 				break;
@@ -299,7 +305,7 @@ function jsonVerify(str,inside,offset){
 				if(inside==="\"" || inside==="'"){
 					if(previous==="\\") previous=""; else previous="\\";
 				}else{
-					return "Caractère "+(i+offset+1)+": le caractère \\ ne devrait pas être là";
+					return "Character "+(i+offset+1)+": character \\ should not be there";
 				}
 				break;
 			default:
@@ -307,7 +313,7 @@ function jsonVerify(str,inside,offset){
 					if(current!=="\n" && current!=="\r"){
 						previous=current;
 					}else{
-						return "Caractère "+(i+offset+1)+": le caractère saut de ligne ("+(current==="\n"?"\\n":"\\r")+") ne devrait pas placé dans une chaine de caractères. Il se situe dans l'objet "+inside+" position "+offset;
+						return "Character "+(i+offset+1)+": character end of line ("+(current==="\n"?"\\n":"\\r")+") should not be in a string. In object "+inside+" position "+offset;
 					}
 				}else{
 					if("-1234567890".indexOf(current)!==-1 && ((inside==="{" && previous===":") || (inside==="[" && (previous==="," || previous==="[")))){
@@ -339,15 +345,15 @@ function jsonVerify(str,inside,offset){
 						if(ok){
 							previous=ok;
 						}else{
-							return "Caractère "+(i+offset+1)+": le caractère "+current+" ne devrait pas être là. Se situe dans l'objet "+inside+" position "+offset;
+							return "Character "+(i+offset+1)+": character "+current+" should not be there. In object "+inside+" position "+offset;
 						}
 						
 					}
 				}
 		}
 	}while(++i<li);
-	if(inside) return "Caractère "+(i+offset)+": Il manque la fin de l'objet, un caractère "+inside+" a été ouvert à la position "+offset+" et n'a pas été refermé";
-	else return "Pas de soucis détecté";
+	if(inside) return "Character "+(i+offset)+": End of object not found, character "+inside+" was open at position "+offset+" and was not closed";
+	else return "No problem detected";
 }
 
 function jsonReader(str,elem_id){
@@ -356,7 +362,7 @@ function jsonReader(str,elem_id){
 		var obj=JSON.parse(str);
 	}catch(e){
 		var msg=jsonVerify(str,"",0),pst=(/Caractère (\d+).+(?:position (\d+))/i).exec(msg);
-		element.innerHTML='<font color="red"><b>Erreur de formatage</b></font>: '+e+"<br>"+msg+"<br><br>";
+		element.innerHTML='<font color="red"><b>Format error</b></font>: '+e+"<br>"+msg+"<br><br>";
 		if(pst){
 			element.innerHTML+="<i>"+str.substring(0,pst[2]-1)+'<font color="blue">'+str.substring(pst[2]-1,pst[1]-1)+'</font><font color="red">'+str[pst[1]-1]+'</font>'+str.substring(pst[1])+"</i>";
 		}else{
@@ -370,7 +376,7 @@ function jsonReader(str,elem_id){
 		return false;
 	}
 	if(obj===null){
-		alert("Aucun objet JSON trouvé");
+		alert("No JSON object found");
 		return false;
 	}
 	element.innerHTML="";
@@ -381,8 +387,8 @@ function jsonReader(str,elem_id){
 	
 	var recherche = document.createElement("input");
 	recherche.type="text";
-	recherche.title=recherche.placeholder="SEARCH: list values. Values should be written like JS objects and be separated by | use * from any member; eg: arr[0]|arr[1]";
-	recherche.onchange = function(){
+	recherche.title=recherche.placeholder="SEARCH: list values. Values should be written like JS objects and be separated by | use * from any member use = to found a content value; eg: arr[0]|arr[*]=1";
+	recherche.onchange = function(){ //fonction de recherche
 		zone_recherche.innerHTML="";
 		if(this.value){
 			var liste = this.value.split("|");
@@ -392,41 +398,70 @@ function jsonReader(str,elem_id){
 			var search = [];
 			while(i<li){
 				rslt[i]=[];
-				searchComplet[i]=liste[i].split(/"\].|"\]$|"\]\["|\["|\./g);
+				searchComplet[i]=liste[i].replace(/([=])/,".$1.").split(/["']?\].|["']?\]\s*$|["']?\]\s*\[["']?|\[["']?|\./g);
+				if(searchComplet[i][searchComplet[i].length-1] == ""){
+					searchComplet[i].pop();
+				}
 				search.push(searchComplet[i][0]);
 				i++;
 			}
-			function schMatch(o,lst){
-			//TODO le joker *
-				var i=0,end=lst.length;
-				while(++i<end && (typeof o[lst[i]] !== 'undefined')){
-					obj=obj[searchComplet[i][index]];
+			function deepSch(obj,path,i,indice){ //recherche pour une colonne
+				var index=indice||0,end=searchComplet[i].length;
+				path = path || "";
+				if(typeof obj !== "undefined" && obj !== null){
+					while(++index<end && (typeof obj[searchComplet[i][index]] !== 'undefined')){
+						path+="["+searchComplet[i][index]+"]";
+						obj=obj[searchComplet[i][index]];
+					}
+				}else{
+					index++;
 				}
-				return index === end;
+				if(index === end){
+					rslt[i].push(obj)
+				}else{
+					//on vérifie si on est sur un caractère particulier
+					var car=searchComplet[i][index];
+					switch(searchComplet[i][index]){
+						case "*" : //on accepte tous les attributs
+							var x;
+							for(x in obj){
+								deepSch(obj[x],path+"["+x+"]",i,index);
+							}
+							break;
+						case "=" : //on recherche le contenu
+							if(obj==searchComplet[i][index+1] || searchComplet[i][index+1]==="*"){
+								rslt[i].push(path); //le chemin permettant d'obtenir cette valeur
+							}
+					}
+				}
+
 			}
-			function sch(o){
-				var x,fromI;
+			function sch(o,path){
+				var x,fromI,pth;
+				path=path||"OBJ";
 				for(x in o){
-					i=0;
-					while(search.indexOf(x,i) !== -1){
-						i = search.indexOf(x,i);
-						//TODO appelé schMatch quand ca marchera
-						var obj=o[x],index=0,end=searchComplet[i].length;
-						while(++index<end && (typeof obj[searchComplet[i][index]] !== 'undefined')){
-							obj=obj[searchComplet[i][index]];
-						}
-						if(index === end){
-							rslt[i].push(obj)
-						}
-						i++;
+					pth=path+"["+x+"]";
+					fromI=0;
+					while(~search.indexOf(x,fromI)){//tant qu'on trouve une occurence de x dans search
+						fromI = search.indexOf(x,fromI);
+						deepSch(o[x],pth,fromI,0);//recherche en profondeur car le debut correspond
+						fromI++;
+					}
+					fromI=0;
+					while(~search.indexOf("*",fromI)){//tant qu'on trouve un joker dans search
+						fromI = search.indexOf("*",fromI);
+						deepSch(o[x],pth,fromI,0);//recherche en profondeur car le debut correspond
+						fromI++;
 					}
 					if(typeof o[x] === 'object'){
-						sch(o[x]);
+						sch(o[x],pth);
 					}
 				}
 			}
-			sch(obj);
+			sch(obj); //recherche des éléments
 			
+			//affichage du résultat
+			//entete
 			var table = document.createElement("table");
 			var row = table.insertRow(-1);
 			var cel;
@@ -437,6 +472,7 @@ function jsonReader(str,elem_id){
 				row.appendChild(cel);
 			}
 			
+			//résultats
 			var i=0, li=rslt.length, j=0, lj = rslt[0].length;
 			while(j<lj){
 				row = table.insertRow(-1);
