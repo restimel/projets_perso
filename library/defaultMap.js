@@ -2,7 +2,8 @@
 function DefaultMap(sourceElement,option){
 	option = option || {};
 	this.position = [0,0,0];
-	this.markers = [];
+	this.markers = [];//interne
+	this.listPath = [];//interne
 	
 	this.center = option.center;
 	this.sourceElement = sourceElement;
@@ -132,8 +133,8 @@ function DefaultMap(sourceElement,option){
 			configurable : false
 		},
 		addPath : {
-			value : function(path,option){
-				this.path.push(path);
+			value : function(option){
+				this.listPath.push(option && option.path);
 			},
 			writable : false,
 			enumerable : true,
@@ -162,7 +163,7 @@ function DefaultMap(sourceElement,option){
 		getIcon : {
 			value : function(iconType){
 				var icon = "";
-				switch(icontype){
+				switch(iconType){
 					case 11:
 						icon="./images/croix_compostelle_icone.gif";
 						break;
@@ -224,5 +225,132 @@ function DefaultMap(sourceElement,option){
 	};
 	
 	Object.defineProperties(DefaultMap.prototype,properties);
+	
+	DefaultMap.Path = function(map,option){
+		this.map=map||{};
+		option || (option = {});
+		this.points=option.points || [this.map.center,this.map.center]; //liste des points du chemin
+		this.color=option.color||"#FF0000"; //couleur du tracé
+		this.opacity=option.opacity||0.8; //opacité du tracé
+		this.baseWidth=option.width||2; //épaisseur du tracé
+		
+		//propriétées interne
+		this.chemins=[];//liste des tracés utilisés
+		this.marqueurs=[];//liste des marqueurs utilisés
+		
+		//recalcule toutes les altitudes des points du chemin
+		if(option.recalcAltitude){
+			this.resetAltitude();
+		}
+		
+		//dessine le tracé
+		this.draw();
+	};
+	
+	properties = {
+		draw : {
+			value : function(){
+				
+			},
+			writable : false,
+			enumerable : true,
+			configurable : false
+		},
+		clear : {
+			/*
+			fonction permettant d'effacer le tracé
+			paramètre:
+				@pointer: paramètre indiquant ce qu'il y a à redessiner
+					false (ou undefined): tout redessiner
+					true : seulement les marqueurs d'édition
+					/[0-9]+/ : seulement le point en question
+			*/
+			value : function(pointer){
+				
+			},
+			writable : false,
+			enumerable : true,
+			configurable : false
+		},
+		resetAltitude : {
+			value : function(){
+				function setAltitude(position){
+					return function(altitude){
+						this.points[position][2] = altitude;
+					};
+				}
+				var i=0,li=this.points.length,point;
+				do{
+					point = this.points[i];
+					this.map.getAltitude(point[0],point[1],setAltitude(i));
+				}while(++i<li);
+			},
+			writable : false,
+			enumerable : true,
+			configurable : false
+		},
+		changeColor : {
+			value : function(){
+				this.color = color;
+				this.draw();
+			},
+			writable : false,
+			enumerable : true,
+			configurable : false
+		},
+		distance : {
+			value : function(){
+				function calc_distance(p1,p2){
+					/*
+					p[0]=lattitude
+					p[1]=longitude
+					*/
+					//equateur: 6 378,137 km
+					//polaire: 	6 356,7523142 km
+					var Rt=6370,conv=Math.PI/180,
+						lat1=p1[0]*conv,lat2=p2[0]*conv,lng=(p2[1]-p1[1])*conv,
+						d=Rt*Math.acos(Math.cos(lat1)*Math.cos(lat2)*Math.cos(lng)+Math.sin(lat1)*Math.sin(lat2));
+					if(typeof p1[2] === "number" && typeof p2[2] === "number"){
+						d=Math.sqrt(d*d+(p1[2]-p2[2])*(p1[2]-p2[2])/1000000);
+					}
+					return d;
+				}
+				var i=0,li=this.points.length,cumul=0;
+				do{
+					cumul+=calc_distance(this.points[i],this.points[++i]);
+				}while(i<li-1);
+				return cumul; //en km
+			},
+			writable : false,
+			enumerable : true,
+			configurable : false
+		},
+		getRect : {
+			value : function(){
+				var i=0,
+					li=this.points.length,
+					min=Math.min,
+					max=Math.max,
+					latMax=-Infinity,
+					latMin=Infinity,
+					lngMax=-Infinity,
+					lngMin=Infinity;
+				while(i<li){
+					latMin=min(latMin,this.points[i][0]);
+					latMax=max(latMax,this.points[i][0]);
+					lngMin=min(lngMin,this.points[i][1]);
+					lngMax=max(lngMax,this.points[i++][1]);
+				}
+				return [latMin,lngMin,latMax,lngMax];
+			},
+			writable : false,
+			enumerable : true,
+			configurable : false
+		}
+	};
+	
+	Object.defineProperties(DefaultMap.Path.prototype,properties);
+	
 })();
 
+var Map = DefaultMap;

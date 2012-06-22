@@ -182,7 +182,7 @@ PagingElement.prototype.remove = function(position){
 	}
 	
 	//suppression de l'élément de la liste
-	this.elements.splice(position,1);
+	return this.elements.splice(position,1);
 };
 
 /**
@@ -355,3 +355,15 @@ PagingElement.prototype.resize = function(){
 	this.refresh();
 };
 
+/**
+	permet de déplacer un élément
+**/
+PagingElement.prototype.move = function(oldPosition,newPosition){
+	if(oldPosition===newPosition) return;
+	var obj = this.remove(oldPosition);
+	if(oldPosition<newPosition){
+		newPosition--;
+	}
+	this.add(obj,newPosition);
+	this.refresh();
+};

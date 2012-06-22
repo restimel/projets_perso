@@ -23,7 +23,7 @@
 		img.style.display = "block";
 		this.appendChild(img);
 	}
-	var liste = new PagingElement(document.getElementById("liste"),0,20,2);
+	var liste = new PagingElement(document.getElementById("liste"),"vertical",20,2);
 	var i = 100;
 	while(i--)
 		liste.add(remplir);
