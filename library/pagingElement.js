@@ -96,6 +96,7 @@ function PagingElement(sourceElement,mode,defaultSize,marge){
 	};
 	this.source.appendChild(this.container);
 	this.source.scrollTop = 0;
+	this.source.style.overflow="auto";
 	
 	//pour les navigateur comme Opera il faut qu'il y ait un élément après le margin-bottom pour que le scroll existe
 	var fin = document.createElement("hr");
