@@ -21,17 +21,10 @@
 <script src="defaultMap.js"></script>
 <script src="googleMap.js"></script>
 <script>
-//	var map1 = new DefaultMap(document.getElementById('carte1'),{});
+	var map1 = new DefaultMap(document.getElementById('carte1'),{});
 	var map2 = new GoogleMap(document.getElementById('carte2'),{center:[10,10],type:"Satellite"});
 	
 	
-	var myOptions = {
-      zoom: 8,
-      center: new google.maps.LatLng(10, 10),
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-    map = new google.maps.Map(document.getElementById('carte1'),
-        myOptions);
 </script>
 </body>
 </html>
