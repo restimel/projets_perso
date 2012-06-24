@@ -30,7 +30,7 @@ var randoListe={
 	//gère l'affichage des objets
 		if(all){
 			//TODO A revoir
-console.warn('code to review');
+console.warn('code to review (display)');
 			var aff=this.zone;
 			aff.innerHTML="";
 			var i=0,li=this.liste.length;
@@ -44,11 +44,9 @@ console.warn('code to review');
 			}
 		}
 	},
-	view:function(index){//TODO A revoir: le but est de demander l'affichage d'un objet
-console.warn('code to review');
-		//if(index>=this.liste.length-1) index=this.liste.length-1;
-		//this.liste[index].element.scrollIntoView();
-		this.scrollList.refresh();
+	view:function(index){
+		this.scrollList.scrollTo(index);
+//		this.scrollList.refresh();
 	},
 	changePosition:function(oldPosition,newPosition,notExistInScrollList){
 		//permet de modifier la position d'un objet

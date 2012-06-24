@@ -12,6 +12,7 @@
 </style>
 
 	<div id="liste" style="height:100px;border:1px solid green;"></div>
+<button id="goto">goto 1000</button><br>
 
 <script src="pagingElement.js"></script>
 <script>
@@ -31,6 +32,8 @@
 		liste.add(remplir);
 	
 	liste.refresh();
+
+document.getElementById("goto").onclick=function(){liste.scrollTo(1000);};
 </script>
 </body>
 </html>

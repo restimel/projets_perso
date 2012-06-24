@@ -90,7 +90,7 @@ function PagingElement(sourceElement,mode,defaultSize,marge){
 		//lors d'un scroll on récupère la nouvelle position
 		var pos = that.source.scrollTop;
 		//on cherche la position des éléments correspondant au nouvel affichage
-		var range = that.getPosition(pos,pos+that.innerSize);
+		var range = that.getPositions(pos,pos+that.innerSize);
 		//gestion de l'affichage
 		that.range(range[0]-that.margin,range[1]+that.margin);
 	};
@@ -129,7 +129,7 @@ PagingElement.prototype.configV = {
 		@position : position de l'élément dans la liste (default: mis à la fin de la liste)
 **/
 PagingElement.prototype.add = function(fCreation,position){
-	if(typeof position !== "number" || isNaN(position)){
+	if(typeof position !== "number" || isNaN(position) || position>this.elements.length){
 		position = this.elements.length;
 	}
 	
@@ -183,7 +183,7 @@ PagingElement.prototype.remove = function(position){
 	}
 	
 	//suppression de l'élément de la liste
-	return this.elements.splice(position,1);
+	return this.elements.splice(position,1)[0];
 };
 
 /**
@@ -212,17 +212,19 @@ PagingElement.prototype.display = function(position,order){
 			this.container.style[this.config.marginBottom] = this.sizeBottom+"px";
 		}
 		
+		//mise à jour de la position des éléments affichés
+		if(this.positionTop>position){
+			this.positionTop = position;
+		}
+		if(this.positionBottom<position){
+			this.positionBottom = position;
+		}
+		
 		//ajout de l'élément au DOM
 		if(order){
 			this.container.insertBefore(element,this.container.firstChild);
-			if(this.positionTop>position){
-				this.positionTop = position;
-			}
 		}else{
 			this.container.appendChild(element);
-			if(this.positionBottom<position){
-				this.positionBottom = position;
-			}
 		}
 		
 		//mise à jour de la taille de l'élément
@@ -250,6 +252,12 @@ PagingElement.prototype.hide = function(position,order){
 			elem.position = false;
 			this.container.style[this.config.marginBottom] = this.sizeBottom+"px";
 			this.positionBottom--;
+		}
+		
+		if(this.positionTop>this.positionBottom){
+			//il n'y a plus aucun élément affiché
+			this.positionTop = Infinity;
+			this.positionBottom = -Infinity;
 		}
 		
 		//suppression des éléments DOM
@@ -319,7 +327,7 @@ PagingElement.prototype.range = function(from,to){
 		@d2 : distance en px du deuxième élément
 	(d1<=d2)
 **/
-PagingElement.prototype.getPosition = function(d1,d2){
+PagingElement.prototype.getPositions = function(d1,d2){
 	var position = 0,
 		dst = 0,
 		result = [null,null],
@@ -328,13 +336,13 @@ PagingElement.prototype.getPosition = function(d1,d2){
 	
 	//position de d1
 	while(dst<d1 && position<max){
-		dst += elements[position++].size
+		dst += elements[position++].size;
 	}
 	result[0] = position;
 	
 	//position de d2
 	while(dst<d2 && position<max){
-		dst += elements[position++].size
+		dst += elements[position++].size;
 	}
 	result[1] = position;
 	
@@ -345,6 +353,8 @@ PagingElement.prototype.getPosition = function(d1,d2){
 	permet de raffraichir l'affichage
 **/
 PagingElement.prototype.refresh = function(){
+	//TODO demander le réaffichage des éléments
+	//cacher tous les éléments puis les réafficher grâce à onscroll
 	this.source.onscroll({});
 };
 
@@ -360,11 +370,31 @@ PagingElement.prototype.resize = function(){
 	permet de déplacer un élément
 **/
 PagingElement.prototype.move = function(oldPosition,newPosition){
+	console.log(oldPosition+"→"+newPosition);
 	if(oldPosition===newPosition) return;
 	var obj = this.remove(oldPosition);
 	if(oldPosition<newPosition){
 		newPosition--;
 	}
-	this.add(obj,newPosition);
+	this.add(obj.creation,newPosition);
+	console.log(oldPosition+"→"+newPosition);
 	this.refresh();
+};
+
+/**
+	Permet de demander l'affichage d'un élément (donc scroll jusqu'à ce qu'il apparaisse)
+**/
+PagingElement.prototype.scrollTo = function(position){
+	var dst = 0,
+		pst = 0,
+		elements = this.elements,
+		max = elements.length;
+	
+	//recherche de la position en px de l'élément
+	while(pst<position && pst<max){
+		dst += elements[pst++].size;
+	}
+	
+	//on effectue le changement de position
+	this.scrollTop=dst;
 };

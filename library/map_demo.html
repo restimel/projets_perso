@@ -23,6 +23,10 @@
 <script>
 	var map1 = new DefaultMap(document.getElementById('carte1'),{});
 	var map2 = new GoogleMap(document.getElementById('carte2'),{center:[10,10],type:"Satellite"});
+	var map3 = new GoogleMap(document.createElement('div'),{center:[10,10],type:"Satellite"});
+	map3.sourceElement.className="carte";
+	document.body.appendChild(map3.sourceElement);
+	//map3.refresh();
 	
 	
 </script>

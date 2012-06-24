@@ -63,19 +63,19 @@ function GoogleMap(sourceElement,option){
 		this.type = option.type;
 		
 		if(typeof option.onclick === "function"){
-			google.maps.event.addListener(this.map, "click", callback(onclick,this));
+			google.maps.event.addListener(this.map, "click", option.onclick.bind(this));//callback(option.onclick,this)
 		}
 		if(typeof option.ondrag === "function"){
-			google.maps.event.addListener(this.map, "drag", callback(ondrag,this));
+			google.maps.event.addListener(this.map, "drag", callback(option.ondrag,this));
 		}
 		if(typeof option.ondragend === "function"){
-			google.maps.event.addListener(this.map, "dragend", callback(ondragend,this));
+			google.maps.event.addListener(this.map, "dragend", callback(option.ondragend,this));
 		}
 		if(typeof option.ondragstart === "function"){
-			google.maps.event.addListener(this.map, "dragstart", callback(ondragstart,this));
+			google.maps.event.addListener(this.map, "dragstart", callback(option.ondragstart,this));
 		}
 		if(typeof option.ondblclick === "function"){
-			google.maps.event.addListener(this.map, "dblclick", callback(ondblclick,this));
+			google.maps.event.addListener(this.map, "dblclick", callback(option.ondblclick,this));
 		}
 
 	}catch(e){
@@ -113,24 +113,21 @@ GoogleMap.getMapType = function(gType){
  */
 GoogleMap.getGMapType = function(type){
 	var gType=null;
-	switch(type){
+	switch(type.toLowerCase()){
 		case "hybrid" :
-		case "Route+Satellite" :
 		case "route+satellite" :
 			gType = google.maps.MapTypeId.HYBRID;
 			break;
-		case "Route" :
 		case "route" :
 		case "roadmap" :
+		case "plan" :
+		case "map" :
 			gType = google.maps.MapTypeId.ROADMAP;
 			break;
 		case "satellite" :
-		case "Satellite" :
 			gType = google.maps.MapTypeId.SATELLITE;
 			break;
-		case "Relief" :
 		case "relief" :
-		case "Terrain" :
 		case "terrain" :
 			gType = google.maps.MapTypeId.TERRAIN;
 			break;

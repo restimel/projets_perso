@@ -1,48 +1,52 @@
 /**
- * objet permettant de gérer les objets désignant des parcours
+ * API permettant de gérer les objets désignant des parcours
  */
 
 /**
  * Constructeur
  * 	pst (number): Position de l'objet dans la liste
- * 	chemin ([[]]): liste des points définissant le chemin
- *	date (string): date du parcours
- *	titre (string): titre du parcours
- *	color (string): couleur du tracé
+ * 	option (objet) : options permettant de définir le parcours
+ * 		chemin ([[]]): liste des points définissant le chemin
+ *		date (string): date du parcours
+ *		titre (string): titre du parcours
+ *		color (string): couleur du tracé
+ * 		comment (string): commentaire à propos de ce parcours
  */ 
-function Parcours(pst,chemin,date,titre,color,comment){
+function Parcours(pst,option){
 	//vérification et préparation des paramètres
 	if(typeof pst !== "number"){
 		pst = 0;
 	}
-	if(chemin instanceof Array){
-		if(chemin[0] instanceof Array){
-			if(chemin.length<2){
+	if(option.chemin instanceof Array){
+		if(option.chemin[0] instanceof Array){
+			if(option.chemin.length<2){
 				//un seul point a été donné
-				chemin[1]=chemin[0];
+				option.chemin[1]=option.chemin[0];
 			}//sinon c'est que ça doit être correct
 		}else{
 			//seul un point a été donné
-			chemin=[chemin,chemin];
+			option.chemin=[chemin,chemin];
 		}
 	}else{
-		chemin=[defaultValue.location,defaultValue.location];
+		option.chemin=[defaultValue.location,defaultValue.location];
 	}
-	if(typeof date !== "string"){
-		if(date instanceof Date){
-			date = date.toLocaleDateString();
+	if(typeof option.date !== "string"){
+		if(option.date instanceof Date){
+			option.date = this.getDateFromStr(option.date.toLocaleDateString());
 		}else{
-			date = defaultValue.date;
+			option.date = defaultValue.date;
 		}
+	}else{
+		option.date = this.getDateFromStr(option.date) || defaultValue.date;
 	}
-	if(typeof titre !== "string" || !titre){
-		titre = "Randonnée n°"+this.uid;
+	if(typeof option.titre !== "string" || !option.titre){
+		option.titre = "Randonnée n°"+this.uid;
 	}
-	if(typeof color !== "string" || !color){
-		color = "#FF0000";
+	if(typeof option.color !== "string" || !option.color){
+		option.color = "#FF0000";
 	}
-	if(typeof comment !== "string"){
-		comment = "";
+	if(typeof option.comment !== "string"){
+		option.comment = "";
 	}
 	
 	//création des membres
@@ -55,67 +59,50 @@ function Parcours(pst,chemin,date,titre,color,comment){
 				pst=position;
 				this.display();
 			},
-			enumerable : true,
-			configurable : false
+			enumerable : true, configurable : false
 		},
 		titre:{
-			value : titre,
-			writable : true,
-			enumerable : true,
-			configurable : false
+			value : option.titre,
+			writable : true, enumerable : true, configurable : false
 		},
 		date:{
 			get: function(){
-				return date;
+				return option.date;
 			},
 			set: function(dt){
-				console.debug("Date:"+dt);//TODO analyser le format
-				date=dt;
+				var date = this.getDateFromStr(dt);
+				if(!date) return;
+				defaultValue.date=option.date=date;
 			},
-			enumerable : true,
-			configurable : false
+			enumerable : true, configurable : false
 		},
 		chemin:{
-			value : chemin, //TODO copie de tableau
-			writable : false,
-			enumerable : true,
-			configurable : false
+			value : option.chemin, //TODO copie de tableau
+			writable : false, enumerable : true, configurable : false
 		},
 		color:{
-			value : color,
-			writable : true,
-			enumerable : true,
-			configurable : false
+			value : option.color,
+			writable : true, enumerable : true, configurable : false
 		},
 		comment:{
-			value : comment,
-			writable : true,
-			enumerable : true,
-			configurable : false
+			value : option.comment,
+			writable : true, enumerable : true, configurable : false
 		},
 		map:{
 			value : null,
-			writable : true,
-			enumerable : true,
-			configurable : false
+			writable : true, enumerable : true, configurable : false
 		},
 		parentElement:{
 			value:null,
-			writable : true,
-			enumerable : false,
-			configurable : false
+			writable : true, enumerable : false, configurable : false
 		},
 		currentMode:{
 			value:"editor_view",
-			writable : true,
-			enumerable : false,
-			configurable : false
+			writable : true, enumerable : false, configurable : false
 		},
 		uid:{
-			value:this.uid++,
-			writable : false,
-			enumerable : false,
-			configurable : false
+			value:Parcours.prototype.uid++,
+			writable : false, enumerable : false, configurable : false
 		}
 	};
 	
@@ -123,48 +110,9 @@ function Parcours(pst,chemin,date,titre,color,comment){
 }
 
 (function(){
-	if(typeof defaultValue !== "object"){
-		defaultValue = {};
-		Object.defineProperties(defaultValue,{
-			location:{
-				value : [45.0456,3.8849,null],
-				writable : true, enumerable : true, configurable : false
-			},
-			zoom:{
-				value : 10,
-				writable : true, enumerable : true, configurable : false
-			},
-			date:{
-				value : (new Date()).toLocaleDateString(),
-				writable : true, enumerable : true, configurable : false
-			},
-			color:{
-				get: function(){
-					//TODO
-					console.warn("get color: à écrire. Il devra récupérer la couleur HSL par défaut, la convertir en RGB (celle qui sera retournée) et modifier la couleur HSL par défaut");
-					return this.colorH;
-				},
-				set: function(color){
-					//TODO
-					console.warn("set color: à écrire. Il devra changer la couleur par défaut");
-					this.colorH=color;
-				},
-				enumerable : true, configurable : false
-			},
-			colorH:{
-				value:250,
-				writable : true, enumerable : false, configurable : false
-			},
-			colorS:{
-				value:250,
-				writable : true, enumerable : false, configurable : false
-			},
-			colorL:{
-				value:250,
-				writable : true, enumerable : false, configurable : false
-			}
-		});
-	}
+	//héritage
+	Parcours.prototype = new RandoListeItem(0);
+	Parcours.prototype.constructor = Parcours;
 
 	var membres = {
 		/**
@@ -186,9 +134,7 @@ function Parcours(pst,chemin,date,titre,color,comment){
 				};
 				return obj;
 			},
-			writable : false,
-			enumerable : true,
-			configurable : false
+			writable : false, enumerable : true, configurable : false
 		},
 		/**
 		 * méthode permettant d'afficher le contenu de cet élément
@@ -217,7 +163,51 @@ function Parcours(pst,chemin,date,titre,color,comment){
 					this.map = new Map(document.createElement("div"),{
 						center:this.chemin[0],
 						zoom:defaultValue.zoom,
-						onclick:function(){alert('todo');}
+						onclick:function(){
+							//gestion du mode édition du parcours
+							var element=that.map.sourceElement;
+							if(!element.className){
+								//le parcours n'est pas en mode édition
+ 								console.debug("passage en mode édition"+that.uid);
+								
+								element.className = "carteActive";
+								that.map.listPath[0].editable=true;
+								that.map.refresh();
+//								that.map.center=that.localisation;
+								if(that.map.listPath[0].points.length>2 || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0] || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0]){
+									that.map.fit();
+								}else{
+									var p1=that.map.listPath[0].points[0],
+									p2=that.map.listPath[0].points[that.map.listPath[0].points.length-1];
+									that.map.center=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2,(p1[2]+p2[2])/2];
+								}
+								var stop=false;
+								element.onmouseout=function(){
+									stop=setTimeout(function(){
+										if(stop){
+											element.className="";
+											that.map.listPath[0].editable=false;
+											that.map.refresh();
+											element.onmouseout=null;
+											element.onmouseover=null;
+//											that.map.center=that.localisation;
+											if(that.map.listPath[0].points.length>2 || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0] || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0]){
+												that.map.fit();
+											}else{
+												var p1=that.map.listPath[0].points[0];
+												var p2=that.map.listPath[0].points[1];
+												that.map.center=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2,(p1[2]+p2[2])/2];
+											}
+											that.parcours=that.map.listPath[0].points;
+										}
+									},1500);
+								};
+								element.onmouseover=function(){
+									clearTimeout(stop);
+									stop=false;
+								};
+							}
+						}
 					});
 				}
 				
@@ -235,7 +225,6 @@ function Parcours(pst,chemin,date,titre,color,comment){
 						position.min=0;
 						position.max=randoListe.liste.length;
 						position.value = this.position;
-						position.className = "position";
 						position.title="Ordre de positionnement";
 						position.onchange = function(){
 							if(that.position!=this.value){
@@ -248,7 +237,6 @@ function Parcours(pst,chemin,date,titre,color,comment){
 						titre.type="text";
 						titre.value = this.titre;
 						titre.placeholder=titre.title="intitulé du parcours";
-						titre.className = "titre";
 						titre.onchange = function(){that.titre=this.value;};
 						header.appendChild(titre);
 						
@@ -273,9 +261,18 @@ function Parcours(pst,chemin,date,titre,color,comment){
 						date.type="date";
 						date.value = this.date;
 						date.title = "Date de l'événement";
-						date.onchange = function(){that.date=this.value;};
-						date.className = "date";
+						date.onchange = function(){
+							that.date=this.value;
+							this.value=that.date;//pour afficher ce qui est réellement sauvegardé
+						};
 						section.appendChild(date);
+						
+						var color = document.createElement("input");
+						color.type="color";
+						color.value = this.color;
+						color.title = "Couleur du tracé";
+						color.onchange = function(){defaultValue.color=that.color=this.value;};
+						section.appendChild(color);
 						
 						
 						var commentaires = document.createElement("textarea");
@@ -289,12 +286,18 @@ function Parcours(pst,chemin,date,titre,color,comment){
 						//deuxième zone (carte)
 						section = document.createElement("section");
 						
-						var carte = document.createElement("div");
+						/*var carte = document.createElement("div");
 						carte.textContent = "TODO affichage carte";
-						section.appendChild(carte);
+						section.appendChild(carte);*/
+						section.appendChild(this.map.sourceElement);
 						
 						menu = document.createElement("menu");
 						menu.type = "toolbar";
+						
+						command = document.createElement("button");
+						command.textContent = "Refresh";
+						command.onclick = function(){that.map.refresh();};
+						menu.appendChild(command);
 						
 						command = document.createElement("button");
 						command.textContent = "Carte";
@@ -309,6 +312,7 @@ function Parcours(pst,chemin,date,titre,color,comment){
 						section.appendChild(menu);
 						
 						corps.appendChild(section);
+						corps.ondblclick=function(){that.display(parentElement,"editor_view");};
 						
 						//ajout au bloc parent
 						parentElement.appendChild(header);
@@ -324,6 +328,9 @@ function Parcours(pst,chemin,date,titre,color,comment){
 								break;
 							case "date":
 								date.focus();
+								break;
+							case "color":
+								color.focus();
 								break;
 							case "commentaire":
 								commentaires.focus();
@@ -367,18 +374,19 @@ function Parcours(pst,chemin,date,titre,color,comment){
 						var date = document.createElement("time");
 						date.datetime = this.date;
 						date.textContent = this.date;
+						date.ondblclick=function(){that.display(parentElement,"editor","date");event.stopPropagation();};
 						section.appendChild(date);
 						
 						var distance = document.createElement("output");
 						distance.value = this.distance+" km";
 						section.appendChild(distance);
 						
-//						this.comment = "Texte à changer qui ne sert pour l'instant qu'à tester les commentaires... à voir donc!";
 						var commentaires = document.createElement("details");
 						var debut = document.createElement("summary");
 						debut.textContent = this.comment.substr(0,30); //TODO améliorer cet affichage
 						commentaires.appendChild(debut);
 						commentaires.appendChild(document.createTextNode(this.comment.substr(30,this.comment.length)));
+						commentaires.ondblclick=function(event){that.display(parentElement,"editor","commentaire");event.stopPropagation();};
 						section.appendChild(commentaires);
 						
 						corps.appendChild(section);
@@ -394,6 +402,11 @@ function Parcours(pst,chemin,date,titre,color,comment){
 						menu.type = "toolbar";
 						
 						command = document.createElement("button");
+						command.textContent = "Refresh";
+						command.onclick = function(){that.map.refresh();};
+						menu.appendChild(command);
+						
+						command = document.createElement("button");
 						command.textContent = "Carte";
 						command.onclick = function(){alert("todo")};
 						menu.appendChild(command);
@@ -406,30 +419,25 @@ function Parcours(pst,chemin,date,titre,color,comment){
 						section.appendChild(menu);
 						
 						corps.appendChild(section);
+						corps.ondblclick=function(){that.display(parentElement,"editor");};
 						
 						//ajout au bloc parent
 						parentElement.appendChild(header);
 						parentElement.appendChild(corps);
 				}
-				this.map.refresh();
+				setTimeout(this.map.refresh.bind(this.map),10);
 			},
-			writable : false,
-			enumerable : true,
-			configurable : false
+			writable : false, enumerable : true, configurable : false
 		},
 		toString:{
 			value:function(){
 				return this.titre;
 			},
-			writable : false,
-			enumerable : false,
-			configurable : false
+			writable : false, enumerable : false, configurable : false
 		},
 		uid:{
 			value:1,
-			writable : true,
-			enumerable : false,
-			configurable : false
+			writable : true, enumerable : false, configurable : false
 		}
 	};
 	
