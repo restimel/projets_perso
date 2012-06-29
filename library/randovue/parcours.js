@@ -119,7 +119,7 @@ function Parcours(pst,option){
 		 * méthode permettant de récupérer les informations de cet élément
 		 */
 		getInfo:{
-			value:function(parentElement,mode){
+			value:function(){
 				var obj={
 					type:"parcours",
 					titre:this.titre,
@@ -158,62 +158,12 @@ function Parcours(pst,option){
 				
 				parentElement.innerHTML=""; //on efface le contenu existant
 				
-				//gestion de la carte
-				if(!this.map && mode!=="hide"){
-					this.map = new Map(document.createElement("div"),{
-						center:this.chemin[0],
-						zoom:defaultValue.zoom,
-						onclick:function(){
-							//gestion du mode édition du parcours
-							var element=that.map.sourceElement;
-							if(!element.className){
-								//le parcours n'est pas en mode édition
- 								console.debug("passage en mode édition"+that.uid);
-								
-								element.className = "carteActive";
-								that.map.listPath[0].editable=true;
-								that.map.refresh();
-//								that.map.center=that.localisation;
-								if(that.map.listPath[0].points.length>2 || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0] || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0]){
-									that.map.fit();
-								}else{
-									var p1=that.map.listPath[0].points[0],
-									p2=that.map.listPath[0].points[that.map.listPath[0].points.length-1];
-									that.map.center=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2,(p1[2]+p2[2])/2];
-								}
-								var stop=false;
-								element.onmouseout=function(){
-									stop=setTimeout(function(){
-										if(stop){
-											element.className="";
-											that.map.listPath[0].editable=false;
-											that.map.refresh();
-											element.onmouseout=null;
-											element.onmouseover=null;
-//											that.map.center=that.localisation;
-											if(that.map.listPath[0].points.length>2 || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0] || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0]){
-												that.map.fit();
-											}else{
-												var p1=that.map.listPath[0].points[0];
-												var p2=that.map.listPath[0].points[1];
-												that.map.center=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2,(p1[2]+p2[2])/2];
-											}
-											that.parcours=that.map.listPath[0].points;
-										}
-									},1500);
-								};
-								element.onmouseover=function(){
-									clearTimeout(stop);
-									stop=false;
-								};
-							}
-						}
-					});
-				}
 				
 				switch(mode){
+/*  "hide"  *******************************************************/
 					case "hide":
 						break;
+/*  "editor"  *****************************************************/
 					case "editor":
 						parentElement.className = "parcours_editor";
 						
@@ -286,10 +236,9 @@ function Parcours(pst,option){
 						//deuxième zone (carte)
 						section = document.createElement("section");
 						
-						/*var carte = document.createElement("div");
-						carte.textContent = "TODO affichage carte";
-						section.appendChild(carte);*/
-						section.appendChild(this.map.sourceElement);
+						var carte = document.createElement("div");
+						carte.appendChild(this.map.sourceElement);
+						section.appendChild(carte);
 						
 						menu = document.createElement("menu");
 						menu.type = "toolbar";
@@ -337,9 +286,72 @@ function Parcours(pst,option){
 								break;
 						}
 						break;
+/*  "editor_view"  *****************************************************/
 					case "editor_view":
 					default:
 						parentElement.className = "parcours_editor_view";
+						
+						//gestion de la carte
+						if(!this.map){
+							//la carte n'est pas encore chargée
+							this.map = new Map(document.createElement("div"),{
+								center:this.chemin[0],
+								zoom:defaultValue.zoom,
+								onclick:function(){
+									//gestion du mode édition du parcours
+									var element=that.map.sourceElement.parentNode;
+									if(!element.className){
+										//le parcours n'est pas en mode édition
+										console.debug("passage en mode édition"+that.uid);
+										
+										element.className = "carteActive";
+										that.map.listPath[0].editable=true;
+										that.map.refresh();
+										setTimeout(that.map.refresh.bind(that.map),600); //pour rafraichir après l'animation
+										//								that.map.center=that.localisation;
+										if(that.map.listPath[0].points.length>2 || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0] || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0]){
+											that.map.fit();
+										}else{
+											var p1=that.map.listPath[0].points[0],
+								p2=that.map.listPath[0].points[that.map.listPath[0].points.length-1];
+								that.map.center=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2,(p1[2]+p2[2])/2];
+										}
+										var stop=false;
+										element.onmouseout=function(){
+											console.debug("mouse out");
+											stop=setTimeout(function(){
+												if(stop){
+													element.className="";
+													that.map.listPath[0].editable=false;
+													that.map.refresh();
+													element.onmouseout=null;
+													element.onmouseover=null;
+													//											that.map.center=that.localisation;
+													if(that.map.listPath[0].points.length>2 || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0] || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0]){
+														that.map.fit();
+													}else{
+														var p1=that.map.listPath[0].points[0];
+														var p2=that.map.listPath[0].points[1];
+														that.map.center=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2,(p1[2]+p2[2])/2];
+													}
+													that.parcours=that.map.listPath[0].points;
+												}
+											},1500);
+										};
+										element.onmouseover=function(){
+											clearTimeout(stop);
+											stop=false;
+										};
+									}
+								}
+							});
+							this.map.sourceElement.className = "map";
+							//ajout du parcours
+							this.map.addPath({
+								chemin:this.chemin,
+								color:this.color
+							});
+						}
 						
 						//entete
 						var header = document.createElement("header");
@@ -394,9 +406,9 @@ function Parcours(pst,option){
 						//deuxième zone (carte)
 						section = document.createElement("section");
 						
-						//var carte = document.createElement("div");
-						//carte.textContent = "TODO affichage carte";
-						section.appendChild(this.map.sourceElement);
+						var carte = document.createElement("div");
+						carte.appendChild(this.map.sourceElement);
+						section.appendChild(carte);
 						
 						menu = document.createElement("menu");
 						menu.type = "toolbar";

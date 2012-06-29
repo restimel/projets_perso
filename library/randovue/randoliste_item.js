@@ -45,9 +45,10 @@ function RandoListeItem(pst,option){
 		 * méthode permettant de récupérer les informations de cet élément
 		 */
 		getInfo:{
-			value:function(parentElement,mode){
+			value:function(){
 				var obj={
 					type:"item",
+					titre:this.titre
 				};
 				return obj;
 			},
@@ -223,6 +224,12 @@ function RandoListeItem(pst,option){
 				return date;
 			},
 			writable : false, enumerable : true, configurable : false
+		},
+		toJSON:{
+			value:function(key){
+				return this.getInfo(key);
+			},
+			writable : false, enumerable : false, configurable : false
 		},
 		toString:{
 			value:function(){

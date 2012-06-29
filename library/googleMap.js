@@ -389,13 +389,25 @@ GoogleMap.getGMapType = function(type){
 	
 	Object.defineProperties(GoogleMap.prototype,properties);
 	
+	/**
+	 * Constructeur de chemin
+	 * 	@map (objet): référence à l'objet Map qui gère ce chemin
+	 * 	@option (objet): option permettant de gérer le chemin
+	 * 		points : liste des points correspondant au parcours
+	 * 		[chemin] : liste des points correspondant au parcours (idem que précédemment)
+	 * 		color : couleur du tracé
+	 * 		opacity : opacité du tracé
+	 * 		baseWidth : largeur du tracé
+	 * 		editable : définit la carte en mode édition (true:mode édition | false:mode normal)
+	 */
 	GoogleMap.Path = function(map,option){
 		this.map=map;
 		option || (option = {});
-		this.points=option.points || [map.center,map.center]; //liste des points du chemin
+		this.points=option.points || option.chemin || [map.center,map.center]; //liste des points du chemin
 		this.color=option.color||"#FF0000"; //couleur du tracé
 		this.opacity=option.opacity||0.8; //opacité du tracé
 		this.baseWidth=option.width||2; //épaisseur du tracé
+		this.editable = option.editable || false; //définit le mode d'affichage
 		
 		//propriétées interne
 		this.chemins=[];//liste des tracés utilisés
