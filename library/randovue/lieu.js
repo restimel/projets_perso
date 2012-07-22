@@ -535,12 +535,14 @@ function Lieu(pst,option){
 					var typeAffichage = document.createElement("output");
 					typeAffichage.value = "Décimal";
 					typeAffichage.onclick = function(){
+							
 						if(this.value === "Décimal"){
 							this.value = "Sexagésimal";
 							console.warn("TODO: affichage en sexagésimal");
 						}else{
 							this.value = "Décimal";
-							console.warn("TODO: affichage en décimal");
+							latValue.value = mapTools.convertCoordinate(latValue.value);
+							lngValue.value = mapTools.convertCoordinate(lngValue.value);
 						}
 					};
 					zoneGPS.appendChild(typeAffichage);

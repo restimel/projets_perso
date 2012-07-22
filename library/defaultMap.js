@@ -376,26 +376,83 @@ var mapTools = {
 		}
 		return d;//en km
 	},
+	/**
+	 * Convertion de coordonnées Sexagésimal,décimal en un autre format
+	 * 		@ str (string) : coordonée à convertir
+	 * 		@ output (string/number) : format de sortie de la coordonée
+	 *				- (0) "décimal" : 12.345 (default)
+	 * 				- (1) "sexagésimal" : 12°34'56.78"
+	 * 				- (2) "sexa-décimal" : 12°34.56
+	 */
 	convertCoordinate : function(str,output){
 		str = str+"";
-		var deg,match;
-		if(match=/^\s*(-)?(\d{1,3})\s*°\s*([0-6]?\d)\s*'\s*([0-6]?\d(?:\.\d+)?)\s*["']\s*$//.exec(str)){
-			//format d°m's"
+		var deg,match,d,m,s,neg,rslt;
+		if(match=/^\s*([-WESN]?)(\d{1,3})\s*[°\s]\s*([0-6]?\d)\s*['\s]\s*([0-6]?\d(?:\.\d+)?)\s*[\s"']+\s*([WESN]?)\s*$/.exec(str)){
+			//format d°m's" (sexagésimal)
 			deg = match[4]/3600 + match[3]/60 + parseFloat(match[2]);
-			if(match[1]){
+			if(~"-SW".indexOf(match[1])){
+				deg = -deg;
+			}
+			if(~"SW".indexOf(match[5])){
+				deg = -deg;
+			}
+		}else if(match=/^\s*([-WESN]?)(\d{1,3})\s*[°\s]\s*([0-6]?\d(?:\.\d+)?)\s*["'\s]+\s*([WESN]?)\s*$/.exec(str)){
+			//format d°f (sexagésimal-décimal)
+			deg = match[3]/60 + parseFloat(match[2]);
+			if(~"-SW".indexOf(match[1])){
+				deg = -deg;
+			}
+			if(~"SW".indexOf(match[4])){
+				deg = -deg;
+			}
+		}else if(match=/^\s*([WESN]?)(-?\d+(?:\.\d+)?))\s*[°"']?\s*([WESN]?)\s*$/.exec(str)){
+			//format décimal
+			deg = parseFloat(match[2]);
+			if(~"-SW".indexOf(match[1])){
+				deg = -deg;
+			}
+			if(~"SW".indexOf(match[3])){
 				deg = -deg;
 			}
 		}else{
 			//format non reconnu
-			//TODO retourner NaN
+			return NaN;
 		}
 		
 		switch(output){
+			case 1:
+			case "sexagésimal":
+			case "sexagesimal":
+				neg = deg<0?-1:1;
+				deg *= neg;
+				
+				m = (deg%0)*60;
+				d = neg*Math.floor(deg);
+				s = (m%0)*60;
+				m = Math.floor(m);
+				rslt = d+"°"+m+"'"+s+'"';
+				break;
+			case 2:
+			case "sexa-décimal":
+			case "sexa-decimal":
+			case "sexadécimal":
+			case "sexadecimal":
+				neg = deg<0?-1:1;
+				deg *= neg;
+				
+				m = (deg%0)*60;
+				d = neg*Math.floor(deg);
+				rslt = d+"°"+m;
+				break;
+			case 0:
+			case "décimal":
+			case "decimal":
 			default:
 				//format décimal
-				console.log("DEBUG: convertion "str+"→"+deg);
-				return deg;
+				rslt = deg;
 		}
+		console.log("DEBUG: convertion "+str+"→"+deg);
+		return rslt;
 	}
 };
 
