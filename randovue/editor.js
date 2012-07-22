@@ -673,7 +673,7 @@ function rAction(pst,localisation,date,metaType,zoom,src,chemin,titre,comment,do
 	option.textContent="Cheval";
 	optgroup.appendChild(option);
 	option=document.createElement("option");
-	option.value=85;
+	option.value=95;
 	option.textContent="Animal sauvage";
 	optgroup.appendChild(option);
 	option=document.createElement("option");
