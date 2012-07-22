@@ -25,11 +25,13 @@ function Parcours(pst,option){
 			}//sinon c'est que ça doit être correct
 		}else{
 			//seul un point a été donné
-			option.chemin=[chemin,chemin];
+			option.chemin=[option.chemin,option.chemin];
 		}
 	}else{
 		option.chemin=[defaultValue.location,defaultValue.location];
 	}
+	option.chemin = copyArray(option.chemin);
+	
 	if(typeof option.date !== "string"){
 		if(option.date instanceof Date){
 			option.date = this.getDateFromStr(option.date.toLocaleDateString());
@@ -77,8 +79,51 @@ function Parcours(pst,option){
 			enumerable : true, configurable : false
 		},
 		chemin:{
-			value : option.chemin, //TODO copie de tableau
-			writable : false, enumerable : true, configurable : false
+			get: function(){
+				return option.chemin;
+			},
+			set: function(path){
+				if(typeof path === "string"){
+					//identifier le type de texte (KML, sony, array)
+					if(/^[\s\r\n[]+(?:[-0-9.]+[,:/\s][-0-9.]+(?:[,:/\s][-0-9.]*)?(?:[\r\n\s;|[\]]+(?:,[\r\n\s[]+)?|$))+$/.exec(path)){
+						//array
+						path = path.split(/\s*[\r\n;|[\]]+(?:\s*,[\r\n\s[]+)?\s*/);
+						var i=0,li=path.length;
+						while(i<li){
+							if(path[i] === ""){
+								path.splice(i,1);
+								li--;
+								continue;
+							}	
+							path[i]=path[i].split(/[,:/\s]+/);
+							path[i].forEach(function(vl,ind,tab){tab[ind]=vl===""?null:parseFloat(vl,10);});
+							i++;
+						}
+					}else if(/^@Sonygps\/ver3.0\/wgs-84\//.exec(path)){
+						//format NMEA
+						//TODO http://www.gpsinformation.org/dale/nmea.htm
+					}else{
+						console.warn("format non reconnu !");//en faire un vrai message
+					}
+				}else if(path instanceof Array){
+					if(path[0] instanceof Array){
+						if(path.length<2){
+							//un seul point a été donné
+							option.chemin = copyArray(path);
+							option.chemin[1]=option.chemin[0];
+						}else{
+							//sinon c'est que ça doit être correct
+							option.chemin = copyArray(path);
+						}
+					}else{
+						//seul un point a été donné
+						if(typeof path[0] === "number"){
+							option.chemin=[copyArray(path),copyArray(path)];
+						}//sinon on ne fait rien car on ne sait pas gérer (générer une erreur?)
+					}
+				}
+			},
+			enumerable : true, configurable : false
 		},
 		color:{
 			value : option.color,
@@ -127,8 +172,8 @@ function Parcours(pst,option){
 					px:this.chemin[0][0],
 					py:this.chemin[0][1],
 					pa:this.chemin[0][2],
-					parcours:this.parcours,
-					distance:this.map.listPath[0].distance(),
+					parcours:this.chemin,
+					distance:this.map.listPath[0].distance(),//TODO distance locale
 					comment:this.comment,
 					color:this.color
 				};
@@ -162,6 +207,7 @@ function Parcours(pst,option){
 				switch(mode){
 /*  "hide"  *******************************************************/
 					case "hide":
+						parentElement = null;
 						break;
 /*  "editor"  *****************************************************/
 					case "editor":
@@ -236,29 +282,37 @@ function Parcours(pst,option){
 						//deuxième zone (carte)
 						section = document.createElement("section");
 						
-						var carte = document.createElement("div");
-						carte.appendChild(this.map.sourceElement);
-						section.appendChild(carte);
+						var chemin = document.createElement("textarea");
+						chemin.value = this.chemin.join("\n");
+						chemin.placeholder = chemin.title = "Liste des coordonées du parcours";
+						chemin.onchange = function(){
+							that.chemin = this.value;
+						};
+						section.appendChild(chemin);
 						
-						menu = document.createElement("menu");
-						menu.type = "toolbar";
-						
-						command = document.createElement("button");
-						command.textContent = "Refresh";
-						command.onclick = function(){that.map.refresh();};
-						menu.appendChild(command);
-						
-						command = document.createElement("button");
-						command.textContent = "Carte";
-						command.onclick = function(){alert("todo")};
-						menu.appendChild(command);
-						
-						command = document.createElement("button");
-						command.textContent = "Dénivelé";
-						command.onclick = function(){alert("todo")};
-						menu.appendChild(command);
-						
-						section.appendChild(menu);
+						var cheminFile = document.createElement("input");
+						cheminFile.type = "file";
+						cheminFile.title = "fichier contenant une description des coordonées du parcours";
+						cheminFile.onchange = function(event){
+							console.log("debug read File");
+							console.debug(this.files[0]);
+							for(var x in this.files[0]){
+								console.log(x);
+							}
+							console.log("moz:"+this.files[0].mozFullPath+"\nwebkit:"+this.files[0].webkitFullPath+"\nopera:"+this.files[0].oFullPath+"\nall:"+this.files[0].fullPath);
+							
+							if(this.files[0]){
+								var reader = new FileReader();
+								console.log(reader);
+								reader.onload=function(fl){
+									console.log("ok");
+									that.chemin = fl.target.result;
+								};
+								console.log(reader.readAsText);
+								console.log(reader.readAsText(this.files[0]));
+							}
+						};
+						section.appendChild(cheminFile);
 						
 						corps.appendChild(section);
 						corps.ondblclick=function(){that.display(parentElement,"editor_view");};
@@ -306,19 +360,25 @@ function Parcours(pst,option){
 										
 										element.className = "carteActive";
 										that.map.listPath[0].editable=true;
-										that.map.refresh();
-										setTimeout(that.map.refresh.bind(that.map),600); //pour rafraichir après l'animation
-										//								that.map.center=that.localisation;
+										//that.map.refresh();
+										//setTimeout(that.map.refresh.bind(that.map),600); //pour rafraichir après l'animation
+										//that.map.center=that.localisation;
 										if(that.map.listPath[0].points.length>2 || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0] || that.map.listPath[0].points[0][0]!==that.map.listPath[0].points[1][0]){
-											that.map.fit();
+											that.map.fit(); //TODO voir avec le else si c'est bien comme ca .... car il faut aussi faire un centrage ici
+											setTimeout(that.map.refresh.bind(that.map),600); //pour rafraichir après l'animation
 										}else{
 											var p1=that.map.listPath[0].points[0],
-								p2=that.map.listPath[0].points[that.map.listPath[0].points.length-1];
-								that.map.center=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2,(p1[2]+p2[2])/2];
+												p2=that.map.listPath[0].points[that.map.listPath[0].points.length-1];
+											//that.map.center=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2,(p1[2]+p2[2])/2];
+											setTimeout(function(){
+												that.map.refresh();
+												that.map.center=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2,(p1[2]+p2[2])/2];
+											},600); //pour rafraichir après l'animation
 										}
+										//that.map.listPath[0].draw();
+										
 										var stop=false;
 										element.onmouseout=function(){
-											console.debug("mouse out");
 											stop=setTimeout(function(){
 												if(stop){
 													element.className="";

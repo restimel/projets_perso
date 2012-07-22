@@ -1,143 +1,83 @@
 
-.parcours_editor,
-.parcours_editor_view{
-	background-color : rgba(200,200,250,0.5);
-	margin-bottom : 2em;
-	border : 1px solid #000;
-	-moz-box-shadow : 7px 17px 30px -10px #000000;
-	-webkit-box-shadow : 7px 17px 30px -10px #000000;
-	box-shadow : 7px 17px 30px -10px #000000;
+.cache{ /*Espace permettant de masquer l'arrière plan*/
+	position :  fixed;
+	top : 0;
+	left : 0;
+	bottom : 0;
+	right : 0;
+	cursor : not-allowed;
+	background-color : #433333;
+	opacity : 0.6;
+	z-index : 1;
+	box-shadow : inset 0px 0px 75px 10px #a5c6cf;
+	margin : 0;
+	padding : 0;
+	max-width : 100% !important;
+	max-height : 100% !important;
+	z-index : 10001;
 }
-.parcours_editor>header,
-.parcours_editor_view>header{
-	width : 100%;
-	-moz-box-shadow: inset 0px -50px 87px -20px #c45f1b;
-	-webkit-box-shadow: inset 0px -50px 87px -20px #c45f1b;
-	box-shadow: inset 0px -50px 87px -20px #c45f1b;
-	text-align: center;
-}
-.parcours_editor>header>*,
-.parcours_editor_view>header>*{
-	display : inline-block;
-	padding : 0px;
-	margin : 0px;
-}
-.parcours_editor_view>header>output{ /* affichage de la position de l'objet*/
-	float:left;
-	width:55px;
-	font-size:25px;
-	margin-top : 5px;
-	text-align:center;
-	color : #FFFFFF;
-	text-shadow: 1px 1px 2px #000000, 0px 0px 1em #000000;
-}
-.parcours_editor>header>input[type=number]{ /* édition de la position de l'objet*/
-	float:left;
-	width:55px;
-	font-size:27px;
-	text-align:center;
-	color : #FFFFFF;
-	text-shadow: 1px 1px 2px #000000, 0px 0px 1em #000000;
-	background-color : rgba(0,0,0,0);
-}
-.parcours_editor>header>input[type=text]{ /* édition du titre*/
-	width:80%;
-	font-size:28px;
-	font-weight:bold;
-/*	margin-top : 5px;*/
-	text-align:center;
-	background-color : rgba(0,0,0,0);
-}
-.parcours_editor>header>menu,
-.parcours_editor_view>header>menu{ /* affichage du passage en mode édition */
-	float:right;
-}
-.parcours_editor>header>menu>button,
-.parcours_editor_view>header>menu>button{ /* affichage du bouton de changement de mode*/
-	height:35px;
-	width:35px;
-	font-size:25px;
-	text-align:center;
+.cache~*{
+	z-index : 10002 !important;
 }
 
-.parcours_editor_view>article>aside{
-	display : inline-block;
-	vertical-align : top;
-	width : 35%;
-}
-.parcours_editor_view>article>section{
-	display : inline-block;
-	vertical-align : top;
-	width : 65%;
+/*
+ * Gestion des rotations d'images
+ */
+img.orientation1{
 }
 
-.parcours_editor>article>aside{
-	display : inline-block;
-	vertical-align : top;
-	width : 65%;
-}
-.parcours_editor>article>section{
-	display : inline-block;
-	vertical-align : top;
-	width : 35%;
+img.orientation2{
+	-moz-transform: scaleX(-1);
+	-webkit-transform: scaleX(-1);
+	-o-transform: scaleX(-1);
+	-ms-transform: scaleX(-1);
+	transform: scaleX(-1);
 }
 
-.parcours_editor>article>aside>*,
-.parcours_editor_view>article>aside>*{
-	display : block;
-	margin : 0.5em;
-	width:90%;
-}
-.parcours_editor>article>section>*,
-.parcours_editor_view>article>section>*{
-	display : block;
-	margin : 0.1em;
-}
-.parcours_editor>article>section>div,
-.parcours_editor_view>article>section>div{
-	border : 1px solid #000000;
-	height : 200px;
-	width : 100%;
-	-moz-transition-property: all; /*top,left,width,height*/
-	-moz-transition-duration: 0.5s;
-	-webkit-transition-property: all;
-	-webkit-transition-duration: 0.5s;
-	-o-transition-property: all;
-	-o-transition-duration: 0.5s;
-	-ms-transition-property: all;
-	-ms-transition-duration: 0.5s;
-	transition-property: all;
-	transition-duration: 0.5s;
-}
-.map{
-	width:100%;
-	height:100%;
-}
-.parcours_editor .carteActive,
-.parcours_editor_view .carteActive{
-	height : 500px;
-	width : 500px;
-	padding : 2.3em;
-	background-color : rgba(0,10,0,0.7);
-	border : none;
-	
-	top : 2em;
-	
-	z-index:10000;
-	position: absolute;
-	-moz-transition-property: all; /*top,left,width,height*/
-	-moz-transition-duration: 0.5s;
-	-webkit-transition-property: all;
-	-webkit-transition-duration: 0.5s;
-	-o-transition-property: all;
-	-o-transition-duration: 0.5s;
-	-ms-transition-property: all;
-	-ms-transition-duration: 0.5s;
-	transition-property: all;
-	transition-duration: 0.5s;
+img.orientation3{
+	-moz-transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	transform: rotate(180deg);
 }
 
-.parcours_editor>article>section>menu>button,
-.parcours_editor_view>article>section>menu>button{
-	border-radius : 1em;
+img.orientation4{
+	-moz-transform: scaleY(-1);
+	-webkit-transform: scaleY(-1);
+	-o-transform: scaleY(-1);
+	-ms-transform: scaleY(-1);
+	transform: scaleY(-1);
+}
+
+img.orientation5{
+	-moz-transform: rotate(90deg) scaleX(-1);
+	-webkit-transform: rotate(90deg) scaleX(-1);
+	-o-transform: rotate(90deg) scaleX(-1);
+	-ms-transform: rotate(90deg) scaleX(-1);
+	transform: rotate(90deg) scaleX(-1);
+}
+
+img.orientation6{
+	-moz-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+
+img.orientation7{
+	-moz-transform: scaleX(-1) rotate(90deg);
+	-webkit-transform: scaleX(-1) rotate(90deg);
+	-o-transform: scaleX(-1) rotate(90deg);
+	-ms-transform: scaleX(-1) rotate(90deg);
+	transform: scaleX(-1) rotate(90deg);
+}
+
+img.orientation8{
+	-moz-transform: rotate(-90deg);
+	-webkit-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	transform: rotate(-90deg);
 }

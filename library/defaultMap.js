@@ -132,6 +132,14 @@ function DefaultMap(sourceElement,option){
 			enumerable : true,
 			configurable : false
 		},
+		changeMarkerType : {
+			value : function(index,newType){
+				this.markers[index].type = this.getIcon(newType);
+			},
+			writable : false,
+			enumerable : true,
+			configurable : false
+		},
 		addPath : {
 			value : function(option){
 				this.listPath.push(option && option.path);
@@ -159,6 +167,15 @@ function DefaultMap(sourceElement,option){
 			writable : false,
 			enumerable : true,
 			configurable : false
+		},
+		getPlaceName : {
+			value : function(lat,long,f){
+				f(null);
+				return null;
+			},
+		writable : false,
+		enumerable : true,
+		configurable : false
 		},
 		getIcon : {
 			value : function(iconType){
@@ -300,22 +317,10 @@ function DefaultMap(sourceElement,option){
 		},
 		distance : {
 			value : function(){
-				function calc_distance(p1,p2){
-					/*
-					p[0]=lattitude
-					p[1]=longitude
-					*/
-					//equateur: 6 378,137 km
-					//polaire: 	6 356,7523142 km
-					var Rt=6370,conv=Math.PI/180,
-						lat1=p1[0]*conv,lat2=p2[0]*conv,lng=(p2[1]-p1[1])*conv,
-						d=Rt*Math.acos(Math.cos(lat1)*Math.cos(lat2)*Math.cos(lng)+Math.sin(lat1)*Math.sin(lat2));
-					if(typeof p1[2] === "number" && typeof p2[2] === "number"){
-						d=Math.sqrt(d*d+(p1[2]-p2[2])*(p1[2]-p2[2])/1000000);
-					}
-					return d;
-				}
-				var i=0,li=this.points.length,cumul=0;
+				var calc_distance=mapTools.distance,
+					i=0,
+					li=this.points.length,
+					cumul=0;
 				do{
 					cumul+=calc_distance(this.points[i],this.points[++i]);
 				}while(i<li-1);
@@ -354,3 +359,60 @@ function DefaultMap(sourceElement,option){
 })();
 
 var Map = DefaultMap;
+
+var mapTools = {
+	distance : function(p1,p2){
+		/*
+		 * p[0]=lattitude
+		 * p[1]=longitude
+		 */
+		//equateur: 6 378,137 km
+		//polaire: 	6 356,7523142 km
+		var Rt=6370,conv=Math.PI/180,
+			lat1=p1[0]*conv,lat2=p2[0]*conv,lng=(p2[1]-p1[1])*conv,
+			d=Rt*Math.acos(Math.cos(lat1)*Math.cos(lat2)*Math.cos(lng)+Math.sin(lat1)*Math.sin(lat2));
+		if(typeof p1[2] === "number" && typeof p2[2] === "number"){
+			d=Math.sqrt(d*d+(p1[2]-p2[2])*(p1[2]-p2[2])/1000000);
+		}
+		return d;//en km
+	},
+	convertCoordinate : function(str,output){
+		str = str+"";
+		var deg,match;
+		if(match=/^\s*(-)?(\d{1,3})\s*°\s*([0-6]?\d)\s*'\s*([0-6]?\d(?:\.\d+)?)\s*["']\s*$//.exec(str)){
+			//format d°m's"
+			deg = match[4]/3600 + match[3]/60 + parseFloat(match[2]);
+			if(match[1]){
+				deg = -deg;
+			}
+		}else{
+			//format non reconnu
+			//TODO retourner NaN
+		}
+		
+		switch(output){
+			default:
+				//format décimal
+				console.log("DEBUG: convertion "str+"→"+deg);
+				return deg;
+		}
+	}
+};
+
+if(typeof copyArray === "undefined"){
+	var copyArray = function(arr){
+		if(! arr instanceof Array){
+			return null;
+		}
+		var lst = [], i=0, li=arr.length;
+		while(i<li){
+			if(arr[i] instanceof Array){
+				lst[i] = copyArray(arr[i]);
+			}else{
+				lst[i] = arr[i];
+			}
+			i++;
+		}
+		return lst;
+	};
+}

@@ -50,13 +50,12 @@ function GoogleMap(sourceElement,option){
 		option.type = option.type || "Map";
 		
 		var center = option.center;
-		debug = {
+
+		this.map = new google.maps.Map(sourceElement, {
 			zoom: option.zoom,
 			center: new google.maps.LatLng(center[0],center[1]),
 			mapTypeId: GoogleMap.getGMapType(option.type)
-		};
-
-		this.map = new google.maps.Map(sourceElement, debug);
+		});
 		
 		this.center = option.center;
 		this.zoom = option.zoom;
@@ -133,6 +132,51 @@ GoogleMap.getGMapType = function(type){
 			break;
 	}
 	return gType;
+};
+
+/**
+ * permet de récupérer le nom d'un lieu
+ */
+GoogleMap.getPlaceName = function(lat,long,f){
+	var latlng=new google.maps.LatLng(lat,long);
+	try{
+		var getplaceName=new google.maps.Geocoder();
+		getplaceName.geocode({'latLng': latlng}, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				var txt = "", info=results[0].address_components,i=0,li=info.length;
+				var accept = ["street_number","route","locality"]; //cette liste pourrait être un paramètre
+				while(i<li){
+					if(~accept.indexOf(info[i].types[0])){
+						txt += " " + info[i].long_name;
+					}
+					i++;
+				}
+				txt=txt.substr(1);
+				f(results[0].formatted_address);// pour l'instant on retourne la valeur 'par défaut'
+			}else{
+				f(null);
+			}
+		});
+	}catch(e){
+		console.warn("Error while getting place name from Google\n"+e.message);
+	}
+};
+
+/**
+ * Fonction permettant de créer un calback en modifiant les arguments pour qu'ils reconnaissent la propriété localisation
+ */
+GoogleMap.callBackPosition = function(f,ctx){
+	return function(){
+		//recherche des arguments possédant une propriété latLng
+		for(var i=0,li=arguments.length;i<li;i++){
+			arg = arguments[i];
+			if(arg.latLng){
+				arg.localisation = [arg.latLng.lat(),arg.latLng.lng()]; //ajout d'une propriétée localisation
+			}
+		}
+		
+		f.apply(ctx,arguments);
+	};
 };
 
 (function(){
@@ -243,8 +287,8 @@ GoogleMap.getGMapType = function(type){
 			value : function(option){
 				option||(option={});
 				var center=this.center,
-					position_lat=option.lattitude||center[0],
-					position_long=option.longitude||center[1],
+					position_lat=option.lattitude||option.center[0]||center[0],
+					position_long=option.longitude||option.center[1]||center[1],
 					visible=option.visible===false?false:true,
 					title=option.title||"",
 					onclick=option.onclick,
@@ -265,23 +309,31 @@ GoogleMap.getGMapType = function(type){
 				var marker=new google.maps.Marker(obj);
 				//Gestion événements
 				if(typeof onclick === "function"){
-					google.maps.event.addListener(marker, "click", callback(onclick,marker));
+					google.maps.event.addListener(marker, "click", onclick.bind(marker));
 				}
 				if(typeof ondrag === "function"){
-					google.maps.event.addListener(marker, "drag", callback(ondrag,marker));
+					google.maps.event.addListener(marker, "drag", GoogleMap.callBackPosition(ondrag,marker));
 				}
 				if(typeof ondragend === "function"){
-					google.maps.event.addListener(marker, "dragend", callback(ondragend,marker));
+					google.maps.event.addListener(marker, "dragend", GoogleMap.callBackPosition(ondragend,marker));
 				}
 				if(typeof ondragstart === "function"){
-					google.maps.event.addListener(marker, "dragstart", callback(ondragstart,marker));
+					google.maps.event.addListener(marker, "dragstart", GoogleMap.callBackPosition(ondragstart,marker));
 				}
 				if(typeof ondblclick === "function"){
-					google.maps.event.addListener(marker, "dblclick", callback(ondblclick,marker));
+					google.maps.event.addListener(marker, "dblclick", ondblclick.bind(marker));
 				}
 				marker.type=option.type;
 				this.markers.push(marker);
 				return marker;
+			},
+			writable : false,
+			enumerable : true,
+			configurable : false
+		},
+		changeMarkerType : {
+			value : function(index,newType){
+				this.markers[index].setIcon(this.getIcon(newType));
 			},
 			writable : false,
 			enumerable : true,
@@ -365,6 +417,14 @@ GoogleMap.getGMapType = function(type){
 			enumerable : true,
 			configurable : false
 		},
+		getPlaceName : {
+			value : function(lat,long,f){
+				GoogleMap.getPlaceName(lat,long,f);
+			},
+			writable : false,
+			enumerable : true,
+			configurable : false
+		},
 		removeMarker : {
 			value : function(index){
 				this.markers[index].setMap(null);
@@ -402,16 +462,31 @@ GoogleMap.getGMapType = function(type){
 	 */
 	GoogleMap.Path = function(map,option){
 		this.map=map;
+		//valeurs par défaut
 		option || (option = {});
 		this.points=option.points || option.chemin || [map.center,map.center]; //liste des points du chemin
 		this.color=option.color||"#FF0000"; //couleur du tracé
 		this.opacity=option.opacity||0.8; //opacité du tracé
 		this.baseWidth=option.width||2; //épaisseur du tracé
-		this.editable = option.editable || false; //définit le mode d'affichage
+		option.editable = option.editable || false; //définit le mode d'affichage
 		
 		//propriétées interne
 		this.chemins=[];//liste des tracés utilisés
 		this.marqueurs=[];//liste des marqueurs utilisés
+		
+		var properties = {
+			editable : {
+				get : function(){
+					return option.editable;
+				},
+				set : function(b){
+					option.editable = !!b;
+					this.draw();
+				},
+				enumerable : true, configurable : false
+			}
+		};
+		Object.defineProperties(this,properties);
 		
 		//recalcule toutes les altitudes des points du chemin
 		if(option.recalcAltitude){
@@ -427,13 +502,13 @@ GoogleMap.getGMapType = function(type){
 	
 	properties = {
 		draw : {
-			value : function(){
+			value : function(pointer){
 				var i=0,li=this.points.length,trace=[],chemin;
 				if(this.editable){
 					var that=this;
 					function setAltitude(position){
 						return function(altitude){
-							this.points[position][2] = altitude;
+							that.points[position][2] = altitude;
 						};
 					}
 					function marker_moved(i){ //permet de bouger un point
@@ -478,6 +553,7 @@ GoogleMap.getGMapType = function(type){
 								map: that.map.map
 							});
 							google.maps.event.addListener(chemin, "rightclick",add_point());
+							google.maps.event.addListener(chemin, "click",add_point()); //TODO voir si utile à l'usage
 							that.chemins.splice(i,0,chemin);
 
 							that.draw(i);
