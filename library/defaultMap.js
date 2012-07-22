@@ -390,28 +390,37 @@ var mapTools = {
 		if(match=/^\s*([-WESN]?)(\d{1,3})\s*[°\s]\s*([0-6]?\d)\s*['\s]\s*([0-6]?\d(?:\.\d+)?)\s*[\s"']+\s*([WESN]?)\s*$/.exec(str)){
 			//format d°m's" (sexagésimal)
 			deg = match[4]/3600 + match[3]/60 + parseFloat(match[2]);
-			if(~"-SW".indexOf(match[1])){
+			if(match[1] && ~"-SW".indexOf(match[1])){
 				deg = -deg;
 			}
-			if(~"SW".indexOf(match[5])){
+			if(match[5] && ~"SW".indexOf(match[5])){
 				deg = -deg;
 			}
 		}else if(match=/^\s*([-WESN]?)(\d{1,3})\s*[°\s]\s*([0-6]?\d(?:\.\d+)?)\s*["'\s]+\s*([WESN]?)\s*$/.exec(str)){
 			//format d°f (sexagésimal-décimal)
 			deg = match[3]/60 + parseFloat(match[2]);
-			if(~"-SW".indexOf(match[1])){
+			if(match[1] && ~"-SW".indexOf(match[1])){
 				deg = -deg;
 			}
-			if(~"SW".indexOf(match[4])){
+			if(match[4] && ~"SW".indexOf(match[4])){
 				deg = -deg;
 			}
-		}else if(match=/^\s*([WESN]?)(-?\d+(?:\.\d+)?))\s*[°"']?\s*([WESN]?)\s*$/.exec(str)){
+		}else if(match=/^\s*([-WESN]?)\s*([0-3]?\d{1,2})([0-6]\d(?:\.\d+)?)\s*,?\s*([WESN]?)\s*$/.exec(str)){
+			//format df (sexagésimal-décimal)
+			deg = match[3]/60 + parseFloat(match[2]);
+			if(match[1] && ~"-SW".indexOf(match[1])){
+				deg = -deg;
+			}
+			if(match[4] && ~"SW".indexOf(match[4])){
+				deg = -deg;
+			}
+		}else if(match=/^\s*([WESN]?)(-?\d{1,3}(?:\.\d+)?)\s*[°"']?\s*([WESN]?)\s*$/.exec(str)){
 			//format décimal
 			deg = parseFloat(match[2]);
-			if(~"-SW".indexOf(match[1])){
+			if(match[1] && ~"-SW".indexOf(match[1])){
 				deg = -deg;
 			}
-			if(~"SW".indexOf(match[3])){
+			if(match[3] && ~"SW".indexOf(match[3])){
 				deg = -deg;
 			}
 		}else{
@@ -426,9 +435,9 @@ var mapTools = {
 				neg = deg<0?-1:1;
 				deg *= neg;
 				
-				m = (deg%0)*60;
+				m = (deg%1)*60;
 				d = neg*Math.floor(deg);
-				s = (m%0)*60;
+				s = (m%1)*60;
 				m = Math.floor(m);
 				rslt = d+"°"+m+"'"+s+'"';
 				break;
@@ -440,7 +449,7 @@ var mapTools = {
 				neg = deg<0?-1:1;
 				deg *= neg;
 				
-				m = (deg%0)*60;
+				m = (deg%1)*60;
 				d = neg*Math.floor(deg);
 				rslt = d+"°"+m;
 				break;
@@ -451,7 +460,6 @@ var mapTools = {
 				//format décimal
 				rslt = deg;
 		}
-		console.log("DEBUG: convertion "+str+"→"+deg);
 		return rslt;
 	}
 };

@@ -80,6 +80,8 @@ function Parcours(pst,option){
 		},
 		chemin:{
 			get: function(){
+				console.debug(this.uid);
+				console.debug(option.chemin);
 				return option.chemin;
 			},
 			set: function(path){
@@ -99,9 +101,32 @@ function Parcours(pst,option){
 							path[i].forEach(function(vl,ind,tab){tab[ind]=vl===""?null:parseFloat(vl,10);});
 							i++;
 						}
+						option.chemin = path; //sauvegarde des données
 					}else if(/^@Sonygps\/ver3.0\/wgs-84\//.exec(path)){
 						//format NMEA
 						//TODO http://www.gpsinformation.org/dale/nmea.htm
+						path = path.split(/\s*[\r\n]+\s*/);
+						var i=0,li=path.length,ligne,j=0,points=[];
+						//traitement pour chaque ligne
+						while(i<li){
+							ligne = path[i].split(",");
+							//TODO identifier des lignes déjà traitées
+							switch(ligne[0]){
+								case "$GPGGA":
+									points[j++]=[
+										mapTools.convertCoordinate(ligne[2]+","+ligne[3],"décimal"),
+										mapTools.convertCoordinate(ligne[4]+","+ligne[5],"décimal"),
+										ligne[9]
+									];
+									console.log(points[j-1]);
+									break;
+								default :
+									console.warn("ligne au format "+ligne[0]+" non connu");
+							}
+							i++;
+						}
+						option.chemin = points; //sauvegarde des données
+						console.debug(option.chemin);
 					}else{
 						console.warn("format non reconnu !");//en faire un vrai message
 					}
