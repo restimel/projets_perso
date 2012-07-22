@@ -1,0 +1,255 @@
+
+.lieu_editor,
+.lieu_editor_view{
+	background-color : rgba(200,200,250,0.5);
+	margin-bottom : 2em;
+	border : 1px solid #000;
+	-moz-box-shadow : 7px 17px 30px -10px #000000;
+	-webkit-box-shadow : 7px 17px 30px -10px #000000;
+	box-shadow : 7px 17px 30px -10px #000000;
+}
+.lieu_editor>header,
+.lieu_editor_view>header{
+	width : 100%;
+	-moz-box-shadow: inset 0px -50px 87px -20px #17601a;
+	-webkit-box-shadow: inset 0px -50px 87px -20px #17601a;
+	box-shadow: inset 0px -50px 87px -20px #17601a;
+	text-align: center;
+}
+.lieu_editor>header>*,
+.lieu_editor_view>header>*{
+	display : inline-block;
+	padding : 0px;
+	margin : 0px;
+}
+.lieu_editor_view>header>output{ /* affichage de la position de l'objet*/
+	float:left;
+	width:55px;
+	font-size:25px;
+	margin-top : 5px;
+	text-align:center;
+	color : #FFFFFF;
+	text-shadow: 1px 1px 2px #000000, 0px 0px 1em #000000;
+}
+.lieu_editor>header>input[type=number]{ /* édition de la position de l'objet*/
+	float:left;
+	width:55px;
+	font-size:27px;
+	text-align:center;
+	color : #FFFFFF;
+	text-shadow: 1px 1px 2px #000000, 0px 0px 1em #000000;
+	background-color : rgba(0,0,0,0);
+}
+.lieu_editor>header>input[type=text]{ /* édition du titre*/
+	width:80%;
+	font-size:28px;
+	font-weight:bold;
+/*	margin-top : 5px;*/
+	text-align:center;
+	background-color : rgba(0,0,0,0);
+}
+.lieu_editor>header>menu,
+.lieu_editor_view>header>menu{ /* affichage du passage en mode édition */
+	float:right;
+}
+.lieu_editor>header>menu>button,
+.lieu_editor_view>header>menu>button{ /* affichage du bouton de changement de mode*/
+	height:35px;
+	width:35px;
+	font-size:25px;
+	text-align:center;
+}
+
+.lieu_editor_view>article>figure{ /*zone image*/
+	display : inline-block;
+	vertical-align : top;
+	text-align : center;
+	width : 35%;
+	margin : 0px;
+}
+.lieu_editor_view>article>section{ /*zone informations */
+	display : inline-block;
+	vertical-align : top;
+	width : 35%;
+	margin : 0px;
+}
+.lieu_editor_view>article>aside{ /*zone plan */
+	display : inline-block;
+	vertical-align : top;
+	width : 30%;
+	margin : 0px;
+}
+
+/**TODO mode edition*/
+.lieu_editor>article>aside{
+	display : inline-block;
+	vertical-align : top;
+	width : 65%;
+}
+.lieu_editor>article>section{
+	display : inline-block;
+	vertical-align : top;
+	width : 35%;
+}
+
+.lieu_editor>article>figure>*,
+.lieu_editor_view>article>figure>*{ /*les éléments contenus dans la zone image*/
+	display : block;
+	margin : 0.1em;
+	max-width:90%;
+	vertical-align : middle;
+}
+
+.lieu_editor_view .zoom{ /*image de zoom cachée*/
+	position : fixed;
+	opacity : 0;
+	/*top : 1em;
+	left : 1em;*/
+	max-width : 0px;
+	max-height : 0px;
+	
+	-moz-transition-property: all; /*top,left,width,height*/
+	-moz-transition-duration: 0.5s;
+	-moz-transition-delay: 0.2s;
+	-webkit-transition-property: all;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-delay: 0.2s;
+	-o-transition-property: all;
+	-o-transition-duration: 0.5s;
+	-o-transition-delay: 0.2s;
+	-ms-transition-property: all;
+	-ms-transition-duration: 0.5s;
+	-ms-transition-delay: 0.2s;
+	transition-property: all;
+	transition-duration: 0.5s;
+	transition-delay: 0.2s;
+	top : 4%;
+	left : 4%;
+	z-index : 10000;
+}
+
+.zoom:hover,
+.lieu_editor_view>article>figure>img:hover~.zoom{ /*Grossissement de l'image de zoom*/
+	max-width:90%;
+	max-height:90%;
+	border : 1px solid #000000;
+	box-shadow : 0px 0px 40px 15px #000000,0px 0px 23px 8px #000000,0px 0px 10px 1px #000000;
+	opacity : 1;
+	vertical-align : middle;
+	
+	-moz-transition-property: all; /*top,left,width,height*/
+	-moz-transition-duration: 0.5s;
+	-moz-transition-delay: 0.5s;
+	-webkit-transition-property: all;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-delay: 0.5s;
+	-o-transition-property: all;
+	-o-transition-duration: 0.5s;
+	-o-transition-delay: 0.5s;
+	-ms-transition-property: all;
+	-ms-transition-duration: 0.5s;
+	-ms-transition-delay: 0.5s;
+	transition-property: all;
+	transition-duration: 0.5s;
+	transition-delay: 0.5s;
+}
+
+
+.lieu_editor_view>article>figure>.zoneExif{ /*espace d'affichage des données EXIF*/
+	border : 1px solid #000;
+	box-shadow : 0px 0px 10px 1px #000000;
+	position : absolute;
+	
+	z-index : 100;
+	
+	top : 0px;
+	height : 100%;
+	overflow : auto;
+}
+.lieu_editor_view .zoneExif thead{ /*entete du tablea des données EXIF*/
+	font-weight : bold;
+}
+.lieu_editor_view .zoneExif tbody tr:hover{ /*ligne d'une donnée EXIF*/
+	box-shadow: inset 0px -50px 87px -20px #b7b02a;
+	font-size : 1.5em;
+	cursor : pointer;
+}
+.lieu_editor_view .zoneExif td{
+	max-width : 40ex;
+	text-align : left;
+	text-overflow : ellipsis;
+}
+
+.lieu_editor_view .question{/* boite de dialog demandant ce qu'il faut faire de la donnée*/
+	z-index : 101;
+	
+	position : fixed;
+	top : 30%;
+	left : 30%;
+	
+	background-color : #CCCCFF;
+	border : 10px double #CC9999;
+	box-shadow : 0px 0px 15px 2px #000000;
+}
+
+.lieu_editor>article>section>*,
+.lieu_editor_view>article>section>*{ /*les éléments contenus dans la zone d'information*/
+	display : block;
+	margin : 0.5em;
+	width:90%;
+}
+
+.lieu_editor>article>aside>*,
+.lieu_editor_view>article>aside>*{/*les éléments contenus dans la zone plan*/
+	display : block;
+	margin : 0.1em;
+}
+.lieu_editor>article>aside>div,
+.lieu_editor_view>article>aside>div{ /*carte*/
+	border : 1px solid #000000;
+	height : 200px;
+	width : 100%;
+	margin: 0px;
+	-moz-transition-property: all; /*top,left,width,height*/
+	-moz-transition-duration: 0.5s;
+	-webkit-transition-property: all;
+	-webkit-transition-duration: 0.5s;
+	-o-transition-property: all;
+	-o-transition-duration: 0.5s;
+	-ms-transition-property: all;
+	-ms-transition-duration: 0.5s;
+	transition-property: all;
+	transition-duration: 0.5s;
+}
+.map{
+	width:100%;
+	height:100%;
+}
+.lieu_editor .carteActive,
+.lieu_editor_view .carteActive{ /*activation de la carte*/
+	height : 500px;
+	width : 500px;
+	padding : 2.3em;
+	background-color : rgba(0,10,0,0.7);
+	border : none;
+	
+	top : 2em;
+	
+	z-index:10000;
+	position: absolute;
+	-moz-transition-property: all; /*top,left,width,height*/
+	-moz-transition-duration: 0.5s;
+	-webkit-transition-property: all;
+	-webkit-transition-duration: 0.5s;
+	-o-transition-property: all;
+	-o-transition-duration: 0.5s;
+	-ms-transition-property: all;
+	-ms-transition-duration: 0.5s;
+	transition-property: all;
+	transition-duration: 0.5s;
+}
+
+.lieu_editor>article>section>menu>button,
+.lieu_editor_view>article>section>menu>button{
+	border-radius : 1em;
+}

@@ -45,9 +45,10 @@ function RandoListeItem(pst,option){
 		 * méthode permettant de récupérer les informations de cet élément
 		 */
 		getInfo:{
-			value:function(parentElement,mode){
+			value:function(){
 				var obj={
 					type:"item",
+					titre:this.titre
 				};
 				return obj;
 			},
@@ -90,9 +91,10 @@ function RandoListeItem(pst,option){
 		/**
 		* fonction permettant de récupérer la bonne date (format YYYY-MM-DD)
 		* 	strDate (string): string contenant la date
+		* 	bTime (boolean): indique si leretour doit contenir les Heures/minutes/sec
 		*/
 		getDateFromStr:{
-			value:function(strDate){
+			value:function(strDate,bTime){
 				var date="",
 					time="",
 					year="",
@@ -154,7 +156,7 @@ function RandoListeItem(pst,option){
 				}
 					
 				//analyse de la source
-				if(extract=/([0-3]?[0-9])[-_.,/\s\\]+([0-1]?[0-9])[-_.,/\s\\]+([0-9]{4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9]))?/.exec(strDate)){
+				if(extract=/([0-3]?[0-9])[-_.,/\s\\:]+([0-1]?[0-9])[-_.,/\s\\:]+([0-9]{4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9]))?/.exec(strDate)){
 					//25-09-2012 - 21:36:29 → dD-mM-YYYY ? hH:mM:sS
 					year=extract[3];
 					mounth=extract[2];
@@ -164,7 +166,7 @@ function RandoListeItem(pst,option){
 					sec=extract[6];
 				}
 				
-				else if(extract=/([0-1]?[0-9])[-_.,/\s\\]+([0-3]?[0-9])[-_.,/\s\\]+([0-9]{4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9]))?/.exec(strDate)){
+				else if(extract=/([0-1]?[0-9])[-_.,/\s\\:]+([0-3]?[0-9])[-_.,/\s\\:]+([0-9]{4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9]))?/.exec(strDate)){
 					//09-25-2012 - 21:36:29 → mM-dD-YYYY ? hH:mM:sS
 					year=extract[3];
 					mounth=extract[1];
@@ -174,7 +176,7 @@ function RandoListeItem(pst,option){
 					sec=extract[6];
 				}
 				
-				else if(extract=/([0-9]{2,4})[-_.,/\s\\]+([0-1]?[0-9])[-_.,/\s\\]+([0-3]?[0-9])(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9]))?/.exec(strDate)){
+				else if(extract=/([0-9]{2,4})[-_.,/\s\\:]+([0-1]?[0-9])[-_.,/\s\\:]+([0-3]?[0-9])(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9]))?/.exec(strDate)){
 					//2012-09-25 - 21:36:29 → yyYY-mM-dD ? hH:mM:sS
 					year=extract[1];
 					mounth=extract[2];
@@ -184,7 +186,7 @@ function RandoListeItem(pst,option){
 					sec=extract[6];
 				}
 				
-				else if(extract=/([0-3]?[0-9])[-_.,/\s\\]+([A-Za-zéûÉÛ]+)[-_.,/\s\\]+([0-9]{2,4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9]))?/.exec(strDate)){
+				else if(extract=/([0-3]?[0-9])[-_.,/\s\\:]+([A-Za-zéûÉÛ]+)[-_.,/\s\\:]+([0-9]{2,4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9]))?/.exec(strDate)){
 					//25 Sep 2012 21:36:29 → dD mounth yyYY ? hH:mM:sS
 					year=extract[3];
 					mounth=convertMonth(extract[2])+"";
@@ -194,15 +196,20 @@ function RandoListeItem(pst,option){
 					sec=extract[6];
 				}
 				
-				else if(extract=/([A-Za-zéûÉÛ]+)[-_.,/\s\\]+([0-3]?[0-9])[-_.,/\s\\]+([0-9]{2,4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9]))?/.exec(strDate)){
+				else if(extract=/([A-Za-zéûÉÛ]+)[-_.,/\s\\:]+([0-3]?[0-9])[-_.,/\s\\:]+([0-9]{2,4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9]))?/.exec(strDate)){
 					//September 25, 2012, 21:36:29 → dD mounth yyYY ? hH:mM:sS
-					//TODO gérer lamention AM/PM
+					//TODO gérer la mention AM/PM
 					year=extract[3];
 					mounth=convertMonth(extract[1])+"";
 					day=extract[2];
 					hour=extract[4];
 					min=extract[5];
 					sec=extract[6];
+				}
+				
+				else{
+					//date non identifiée
+					return null;
 				}
 
 				//date
@@ -218,11 +225,33 @@ function RandoListeItem(pst,option){
 				date=year+"-"+mounth+"-"+day;
 				
 				//time
+				hour=hour||"00";
+				if(hour.length<2){
+					hour="20"+hour;
+				}
+				min=min||"00";
+				if(min.length<2){
+					min="0"+min;
+				}
+				sec=sec||"00";
+				if(sec.length<2){
+					sec="0"+sec;
+				}
 				time=hour+":"+min+":"+sec;
 				
-				return date;
+				if(bTime){
+					return date+" "+time;
+				}else{
+					return date;
+				}
 			},
 			writable : false, enumerable : true, configurable : false
+		},
+		toJSON:{
+			value:function(key){
+				return this.getInfo(key);
+			},
+			writable : false, enumerable : false, configurable : false
 		},
 		toString:{
 			value:function(){

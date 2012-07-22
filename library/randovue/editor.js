@@ -23,10 +23,14 @@ function test(){
 	
 	document.body.appendChild(liste);
 	randoListe.defineZone(liste);
+	randoListe.add(new Lieu(0,{date:"2012-06-21",titre:"essais image",image:"./_DSC0037.JPG"}));
+	randoListe.add(new Lieu(0,{date:"2011-08-21",titre:"maison",image:"./DSC00141.JPG"}));
+	randoListe.add(new Lieu(0,{date:"2011-08-21",titre:"maison",image:"./DSC00076.JPG"}));
+	randoListe.add(new Lieu(0,{date:"2011-08-21",titre:"chat renversant",image:"./_DSC0045.JPG"}));
 	randoListe.add(new Parcours(0,{titre:"le titre",color:"#00FF00",comment:"un commentaire pour voir qui ne sert pour l'instant qu'à tester les commentaires... à voir donc!"}));
 	randoListe.add(new Parcours(1,{titre:"un deuxième titre",color:"#00FFFF"}));
-	randoListe.add(new Parcours(2,{titre:"un troisième titre",color:"#FFFF00"}),2);
-	randoListe.add(new Parcours(1,{date:"25/02/1981",titre:"un intrus",color:"#FF0000"}),1);
+	randoListe.add(new Parcours(2,{titre:"un troisième titre",color:"#FFFF00"}));
+	randoListe.add(new Parcours(1,{date:"25/02/1981",titre:"un intrus",color:"#FF0000"}),2);
 	randoListe.add(new Parcours(0,{date:"toto est en vacances",titre:"Hé ho ! Hé ho !, On rentre du boulot",color:"#FFF"}));
 	randoListe.add(new Parcours(0,{date:"3012-06-21",titre:"La fête de la musique dans l'avenir",color:"#0C0"}));
 	randoListe.add(new Parcours(0,{date:"3012-06-21",color:"#0CF"}));
@@ -36,7 +40,7 @@ function test(){
 	randoListe.add(new Parcours(0,{date:"2012-06-21",titre:"quelques éléments en plus pour cacher les premiers",color:"#000"}));
 	randoListe.add(new Parcours(0,{date:"2012-06-21",titre:"quelques éléments en plus pour cacher les premiers",color:"#000"}));
 	randoListe.add(new Parcours(0,{date:"2012-06-21",titre:"quelques éléments en plus pour cacher les premiers",color:"#000"}));
-	randoListe.add(new Parcours(0,{date:"2012-06-21",titre:"quelques éléments en plus pour cacher les premiers",color:"#000"}));
+	
 	var test=new Parcours(0,{});
 	randoListe.add(test);
 	randoListe.view(0);

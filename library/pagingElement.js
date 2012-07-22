@@ -125,10 +125,21 @@ PagingElement.prototype.configV = {
 /**
 	permet d'ajouter un élément à la liste
 		@fCreation : fonction appelée lors de l'affichage de l'élément permettant de remplir le contenu de l'élément
-			Cette fonction st appelée dans le contexte de l'élément affiché (le this fait référence à cet élément), et sa position est donnée en paramètre.
+			Cette fonction est appelée dans le contexte de l'élément affiché (le this fait référence à cet élément), et sa position est donnée en paramètre.
+		@fHide : fonction appelée lors du masquage de l'élément permettant de prévenir l'objet.
+			Cette fonction est appelée dans le contexte de l'élément affiché (le this fait référence à cet élément), et sa position est donnée en paramètre.
 		@position : position de l'élément dans la liste (default: mis à la fin de la liste)
 **/
-PagingElement.prototype.add = function(fCreation,position){
+PagingElement.prototype.add = function(fCreation,fHide,position){
+	if(typeof fCreation !== "function"){
+		fCreation = function(){};
+	}
+	if(typeof fHide !== "function"){
+		if(typeof fHide == "number" && typeof position === "undefined"){
+			position = fHide;
+		}
+		fHide = function(){};
+	}
 	if(typeof position !== "number" || isNaN(position) || position>this.elements.length){
 		position = this.elements.length;
 	}
@@ -137,6 +148,7 @@ PagingElement.prototype.add = function(fCreation,position){
 		size : this.defaultSize,
 		element : null,
 		creation : fCreation,
+		hide : fHide,
 		position : false //true→est considéré comme avant l'affichage, false→ est considéré comme après l'affichage
 	};
 	
@@ -242,6 +254,8 @@ PagingElement.prototype.display = function(position,order){
 PagingElement.prototype.hide = function(position,order){
 	var elem = this.elements[position];
 	if(elem.element){ //l'élément est bien actuellement affiché
+		elem.hide.call(elem.element,position); //appel de la fonction de masquage
+		
 		if(order){
 			this.sizeTop += elem.size;
 			elem.position = true;
@@ -370,14 +384,12 @@ PagingElement.prototype.resize = function(){
 	permet de déplacer un élément
 **/
 PagingElement.prototype.move = function(oldPosition,newPosition){
-	console.log(oldPosition+"→"+newPosition);
 	if(oldPosition===newPosition) return;
 	var obj = this.remove(oldPosition);
 	if(oldPosition<newPosition){
 		newPosition--;
 	}
-	this.add(obj.creation,newPosition);
-	console.log(oldPosition+"→"+newPosition);
+	this.add(obj.creation,obj.hide,newPosition);
 	this.refresh();
 };
 
