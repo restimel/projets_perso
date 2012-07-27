@@ -1,14 +1,10 @@
-                                                                     
-                                                                     
-                                                                     
-                                                                     
-                                                                     
-                                                                     
+
+
 function Denivele(chemin,color){
 	this.color = color || "#000033";
 	this.maxX = 1000;
 	this.maxY = 500;
-	this.margeX = 20;
+	this.margeX = 40;
 	this.margeY = 20;
 	this.width = this.maxX+this.margeX;
 	this.height = this.maxY+this.margeY;
@@ -20,8 +16,8 @@ function Denivele(chemin,color){
 
 Denivele.prototype.convert2D = function(chemin){
 	var distance = 0,
-	maxHeight = 0;
-	i = 1, li = chemin.length;
+		maxHeight = 0;
+		i = 1, li = chemin.length;
 	
 	//TODO remove points sans altitude
 	
@@ -37,25 +33,51 @@ Denivele.prototype.convert2D = function(chemin){
 	this.maxHeight = Math.ceil(maxHeight/10+1.4)*10;
 	
 	function calculDistance(p1,p2){
-		//calcul approximatif (utiliser le calcul de Map)
+	//calcul approximatif (utiliser le calcul de Map)
 		var dx = (p1[0] - p2[0]),
-		dy = (p1[1] - p2[1]),
-		dh = (p1[2] - p2[2]),
-		dst = Math.sqrt(dx*dx + dy*dy + dh*dh);
+			dy = (p1[1] - p2[1]),
+			dh = (p1[2] - p2[2]),
+			dst = Math.sqrt(dx*dx + dy*dy + dh*dh);
 		return dst;
 	}
 };
 
+Denivele.prototype.draw2 = function(x,y){
+	var i = 0,
+		li = this.points.length,
+		ctx2 = this.ctx2;
+	
+	ctx2.save();
+	
+	ctx2.clearRect(0,0,this.width,this.height);
+	
+	//label
+	ctx2.fillStyle = "rgba(100,0,0,1)";
+    ctx2.font='17px Helvetica';
+	
+	ctx2.textAlign = "center";
+	ctx2.textBaseline = "top";
+	ctx2.fillText(x+" "+y, 100, 100);
+	ctx2.restore();
+};
+
 Denivele.prototype.draw = function(){
 	var i = 0,
-	li = this.points.length,
-	ctx = this.ctx,
-	tx = this.maxX/this.distance,
-	ty = this.maxY/this.maxHeight;
+		li = this.points.length,
+		ctx = this.ctx,
+		ctx2 = this.ctx2,
+		tx = this.maxX/this.distance,
+		ty = this.maxY/this.maxHeight,
+		x,y,
+		pi2 = Math.PI/2;
 	
 	ctx.save();
 	
 	ctx.clearRect(0,0,this.width,this.height);
+	
+	//label
+	ctx.fillStyle = "rgba(0,0,0,1)";
+    ctx.font='17px Helvetica';
 	
 	//ordonée
 	ctx.beginPath();
@@ -80,20 +102,48 @@ Denivele.prototype.draw = function(){
 	ctx.lineWidth = 0.2;
 	ctx.beginPath();
 	for(i=1;i<5;i++){
-		
-		ctx.moveTo(this.margeX,this.maxY - interval*i);
-		ctx.lineTo(this.width, this.maxY - interval*i);
-		
-		
+		y=this.maxY - interval*i;
+		ctx.moveTo(this.margeX, y);
+		ctx.lineTo(this.width, y);
+		//label ordonnée
+		ctx.save();
+		/*ctx.textAlign = "right"
+		ctx.textBaseline = "middle";*/
+		ctx.textAlign = "center";
+		ctx.textBaseline = "bottom";
+		ctx.translate(this.margeX, y);
+		ctx.rotate(-pi2);
+		ctx.fillText(Math.round(interval*i*10/ty)/10+"m", 0,0);
+		ctx.restore();
+		//label absisse
+		ctx.textAlign = "center";
+		ctx.textBaseline = "top";
+		ctx.fillText(Math.round(this.maxX*i/0.5/ty)/10+"m", this.maxX*i/5+this.margeX, this.maxY);
 	}
+	
+	ctx.font="15px Helvetica";
+	ctx.textAlign = "right";
+	//label ordonnée
+	ctx.save();
+	ctx.textBaseline = "bottom";
+	ctx.translate(this.margeX, this.maxY - interval*i);
+	ctx.rotate(-pi2);
+	ctx.fillText(Math.round(interval*i*10/ty)/10+"m", 0,0);
+	ctx.restore();
+	//label absisse
+	ctx.textBaseline = "top";
+	ctx.fillText(Math.round(this.maxX*i/50/ty)*10+"m", this.maxX*i/5+this.margeX, this.maxY);
+	
 	ctx.stroke();
 	ctx.restore();
 	
+	
+    
+	
 	//courbe
 	ctx.beginPath();
-	var x,y;
 	ctx.moveTo(this.margeX, this.maxY-(this.points[0][1]*ty));
-	
+
 	for(i=1;i<li;i++){
 		x=this.margeX+this.points[i][0]*tx;
 		y=this.maxY-(this.points[i][1]*ty);
@@ -105,7 +155,7 @@ Denivele.prototype.draw = function(){
 	ctx.lineCap = 'round';
 	//ctx.lineJoin = 'round';
 	/*ctx.strokeStyle = "rgba(0,0,100,0.1)";
-	c tx.lineWidth = 8.5;                     *
+	ctx.lineWidth = 8.5;
 	ctx.stroke();
 	ctx.strokeStyle = "rgba(0,0,100,0.4)";
 	ctx.lineWidth = 5.5;
@@ -114,24 +164,61 @@ Denivele.prototype.draw = function(){
 	ctx.shadowOffsetY = 3;
 	ctx.shadowBlur = 2;
 	ctx.shadowColor = "rgba(0, 0, 50, 0.6)";
-	
+  
 	ctx.strokeStyle = "rgba(100,100,250,1)";
 	ctx.lineWidth = 1.5;
 	ctx.stroke();
 	ctx.restore();
 	
 	
-	ctx.restore();	
+	ctx.restore();
+	
+	//la surcouche
+	this.draw2();
+	
 };
 
 Denivele.prototype.create = function(){
-	this.element = document.createElement("canvas");
-	this.element.width = this.width;
-	this.element.height = this.height;
-	this.ctx = this.element.getContext("2d");
-	this.draw();
+	var that = this;
+	this.element = document.createElement("div");
+	this.element.onresize = function(){console.log('resize element');};
+	
+	this.canvasFond = document.createElement("canvas");
+	this.canvasFond.style.cssText = "width: 100%; height:100%; top:0; left:0;";
+	this.canvasFond.onresize = function(){console.log('resize canvas1');};
+	this.canvasFond.width = this.width;
+	this.canvasFond.height = this.height;
+	this.ctx = this.canvasFond.getContext("2d");
+	this.element.appendChild(this.canvasFond);
+	
+	this.canvasAvant = document.createElement("canvas");
+	this.canvasAvant.style.cssText = "width: 100%; height:100%; top:0; left:0; position:absolute";
+	this.canvasAvant.onresize = function(){console.log('resize canvas2');};
+	this.canvasAvant.onmousemove = function(event){
+		that.draw2(event.pageX,event.pageY);
+	};
+	this.canvasAvant.width = this.width;
+	this.canvasAvant.height = this.height;
+	this.ctx2 = this.canvasAvant.getContext("2d");
+	this.element.appendChild(this.canvasAvant);
+	
+	setTimeout(this.resize.bind(this),50);
+	setTimeout(function(){that.element.parentNode.onresize = function(){console.log('resize parent');};},100); //DEBUG
+	
 	return this.element;
 };
+
+Denivele.prototype.resize = function(){
+	this.width = this.canvasFond.offsetWidth;
+	this.height = this.canvasFond.offsetHeight;
+	this.maxX = this.width - this.margeX;
+	this.maxY = this.height - this.margeY;
+	this.canvasFond.width = this.width;
+	this.canvasFond.height = this.height;
+	console.log(this.width+" "+this.height);
+	this.draw();
+};
+
 
 //DEBUG
 var debug_chemin=[
@@ -157,8 +244,8 @@ var debug_chemin=[
 	[43.1,6.5,123],
 	[43.2,6.512,131],
 	[43.1,6.515,108.5],
-	[43.1789,6.51555,116.16],
-	[43.14567,6.5152456,101]
+	[43.17892,6.51555,116.16],
+	[43.14567,6.5152456,10]
 ];
 var debug=new Denivele(debug_chemin);
 document.body.appendChild(debug.create());
