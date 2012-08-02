@@ -80,8 +80,6 @@ function Parcours(pst,option){
 		},
 		chemin:{
 			get: function(){
-				console.debug(this.uid);
-				console.debug(option.chemin);
 				return option.chemin;
 			},
 			set: function(path){
@@ -116,9 +114,8 @@ function Parcours(pst,option){
 									points[j++]=[
 										mapTools.convertCoordinate(ligne[2]+","+ligne[3],"décimal"),
 										mapTools.convertCoordinate(ligne[4]+","+ligne[5],"décimal"),
-										ligne[9]
+										parseFloat(ligne[9])
 									];
-									console.log(points[j-1]);
 									break;
 								default :
 									console.warn("ligne au format "+ligne[0]+" non connu");
@@ -126,7 +123,6 @@ function Parcours(pst,option){
 							i++;
 						}
 						option.chemin = points; //sauvegarde des données
-						console.debug(option.chemin);
 					}else{
 						console.warn("format non reconnu !");//en faire un vrai message
 					}
@@ -146,6 +142,12 @@ function Parcours(pst,option){
 							option.chemin=[copyArray(path),copyArray(path)];
 						}//sinon on ne fait rien car on ne sait pas gérer (générer une erreur?)
 					}
+				}
+				
+				//on effectue les changements sur la carte
+				if(this.map){
+					this.map.listPath[0].changePath(option.chemin);
+					this.map.fit();
 				}
 			},
 			enumerable : true, configurable : false

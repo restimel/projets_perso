@@ -1,6 +1,6 @@
 
 
-function Denivele(chemin,color){
+function Chart(chemin,color){
 	this.color = color || "#000033";
 	this.maxX = 1000;
 	this.maxY = 500;
@@ -14,7 +14,7 @@ function Denivele(chemin,color){
 	
 }
 
-Denivele.prototype.convert2D = function(chemin){
+Chart.prototype.convert2D = function(chemin){
 	var distance = 0,
 		maxHeight = 0;
 		i = 1, li = chemin.length;
@@ -42,7 +42,7 @@ Denivele.prototype.convert2D = function(chemin){
 	}
 };
 
-Denivele.prototype.draw2 = function(x,y){
+Chart.prototype.draw2 = function(x,y){
 	var i = 0,
 		points = this.points,
 		li = points.length,
@@ -128,7 +128,7 @@ Denivele.prototype.draw2 = function(x,y){
 	ctx2.restore();
 };
 
-Denivele.prototype.draw = function(){
+Chart.prototype.draw = function(){
 	var i = 0,
 		li = this.points.length,
 		ctx = this.ctx,
@@ -244,13 +244,14 @@ Denivele.prototype.draw = function(){
 	
 };
 
-Denivele.prototype.create = function(){
+Chart.prototype.create = function(){
 	var that = this;
 	this.element = document.createElement("div");
+	this.element.style.cssText ="position:relative;width:100%;height:100%;";
 	this.element.onresize = function(){console.log('resize element');};
 	
 	this.canvasFond = document.createElement("canvas");
-	this.canvasFond.style.cssText = "width: 100%; height:100%; top:0; left:0;";
+	this.canvasFond.style.cssText = "width: 100%; height:100%; top:0; left:0; position:absolute;";
 	this.canvasFond.onresize = function(){console.log('resize canvas1');};
 	this.canvasFond.width = this.width;
 	this.canvasFond.height = this.height;
@@ -258,7 +259,7 @@ Denivele.prototype.create = function(){
 	this.element.appendChild(this.canvasFond);
 	
 	this.canvasAvant = document.createElement("canvas");
-	this.canvasAvant.style.cssText = "width: 100%; height:100%; top:0; left:0; position:absolute";
+	this.canvasAvant.style.cssText = "width: 100%; height:100%; top:0; left:0; position:absolute; ";
 	this.canvasAvant.onresize = function(){console.log('resize canvas2');};
 	this.canvasAvant.onmousemove = function(event){
 		var x,y;
@@ -282,7 +283,7 @@ Denivele.prototype.create = function(){
 	return this.element;
 };
 
-Denivele.prototype.resize = function(){
+Chart.prototype.resize = function(){
 	this.width = this.canvasFond.offsetWidth;
 	this.height = this.canvasFond.offsetHeight;
 	this.maxX = this.width - this.margeX;
@@ -295,33 +296,3 @@ Denivele.prototype.resize = function(){
 };
 
 
-//DEBUG
-var debug_chemin=[
-	[42,5,100],
-	[42.1,5.5,101],
-	[42.2,5.512,111],
-	[42.1,5.515,105],
-	[42.1789,5.51575,125],
-	[42.14567,5.5152456,0],
-	[43,5,90],
-	[43.1,5.5,101],
-	[43.2,5.512,115],
-	[43.1,5.515,107],
-	[43.1789,5.51575,116],
-	[43.14567,5.6152456,101],
-	[42,5.9,129],
-	[42.1,6.4,95],
-	[42.2,6.412,72],
-	[42.1,6.515,102],
-	[42.1789,6.51575,95],
-	[42.14567,6.5152456,119],
-	[43,6,103],
-	[43.1,6.5,123],
-	[43.2,6.512,131],
-	[43.1,6.515,108.5],
-	[43.17892,6.51555,116.16],
-	[43.14567,6.5152456,20],
-	[43.14567,6.4152456,20]
-];
-var debug=new Denivele(debug_chemin);
-document.body.appendChild(debug.create());

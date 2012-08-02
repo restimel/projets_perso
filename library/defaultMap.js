@@ -150,14 +150,51 @@ function DefaultMap(sourceElement,option){
 		},
 		fit : {
 			value : function(location1,location2){
-				// permet de centrer la carte sur le rectangle délimité par location1 et location2
-				//location1: SW
-				//location2: NE
+				/**
+				 * permet de centrer la carte sur le rectangle délimité par location1 et location2
+				 * 		@location1 [lat,lng]: SW
+				 * 		@location2 [lat,lng]: NE
+				 * 
+				 * 		Si aucun n'est définit, les bords sont choisit en fonctions des chemins et marqueurs 
+				 */
+				var latMax=-Infinity,
+					latMin=Infinity,
+					lngMax=-Infinity,
+					lngMin=Infinity,
+					tmp,
+					max=Math.max,
+					min=Math.min;
+				if(!location1 || !location2){
+					//définit les bords en fonctions des chemins et marqueurs
+					var i,li;
+					//liste chemins
+					i=0,li=this.listPath.length;
+					while(i<li){
+						tmp=this.listPath[i++].getRect();
+						latMax=max(latMax,tmp[2]);
+						latMin=min(latMin,tmp[0]);
+						lngMax=max(lngMax,tmp[3]);
+						lngMin=min(lngMin,tmp[1]);
+					}
+					//liste des marqueurs
+					i=0,li=this.markers.length;
+					while(i<li){
+						tmp=this.markers[i++].getPosition();
+						latMax=max(latMax,tmp.lat());
+						latMin=min(latMin,tmp.lat());
+						lngMax=max(lngMax,tmp.lng());
+						lngMin=min(lngMin,tmp.lng());
+					}
+				}else{
+					latMax=max(location1[0],location2[0]);
+					latMin=min(location1[0],location2[0]);
+					lngMax=max(location1[1],location2[1]);
+					lngMin=min(location1[1],location2[1]);
+				}
+				
 				this.center = location1;
 			},
-			writable : false,
-			enumerable : true,
-			configurable : false
+			writable : false,enumerable : true,configurable : false
 		},
 		getAltitude : {
 			value : function(lat,long,f){
@@ -254,6 +291,27 @@ function DefaultMap(sourceElement,option){
 		//propriétées interne
 		this.chemins=[];//liste des tracés utilisés
 		this.marqueurs=[];//liste des marqueurs utilisés
+		
+		var properties = {
+			editable : {
+				get : function(){
+					return option.editable;
+				},
+				set : function(b){
+					option.editable = !!b;
+					this.draw();
+				},
+				enumerable : true, configurable : false
+			},
+			changePath : {
+				value : function(pth){
+					this.points = pth;
+					this.draw();
+				},
+				writable : false, enumerable : true, configurable : false
+			}
+		};
+		Object.defineProperties(this,properties);
 		
 		//recalcule toutes les altitudes des points du chemin
 		if(option.recalcAltitude){
