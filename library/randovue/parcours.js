@@ -99,9 +99,30 @@ function Parcours(pst,option){
 							path[i].forEach(function(vl,ind,tab){tab[ind]=vl===""?null:parseFloat(vl,10);});
 							i++;
 						}
+						option.chemin = path; //sauvegarde des données
 					}else if(/^@Sonygps\/ver3.0\/wgs-84\//.exec(path)){
 						//format NMEA
 						//TODO http://www.gpsinformation.org/dale/nmea.htm
+						path = path.split(/\s*[\r\n]+\s*/);
+						var i=0,li=path.length,ligne,j=0,points=[];
+						//traitement pour chaque ligne
+						while(i<li){
+							ligne = path[i].split(",");
+							//TODO identifier des lignes déjà traitées
+							switch(ligne[0]){
+								case "$GPGGA":
+									points[j++]=[
+										mapTools.convertCoordinate(ligne[2]+","+ligne[3],"décimal"),
+										mapTools.convertCoordinate(ligne[4]+","+ligne[5],"décimal"),
+										parseFloat(ligne[9])
+									];
+									break;
+								default :
+									console.warn("ligne au format "+ligne[0]+" non connu");
+							}
+							i++;
+						}
+						option.chemin = points; //sauvegarde des données
 					}else{
 						console.warn("format non reconnu !");//en faire un vrai message
 					}
@@ -121,6 +142,12 @@ function Parcours(pst,option){
 							option.chemin=[copyArray(path),copyArray(path)];
 						}//sinon on ne fait rien car on ne sait pas gérer (générer une erreur?)
 					}
+				}
+				
+				//on effectue les changements sur la carte
+				if(this.map){
+					this.map.listPath[0].changePath(option.chemin);
+					this.map.fit();
 				}
 			},
 			enumerable : true, configurable : false

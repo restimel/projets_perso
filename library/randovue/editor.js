@@ -5,11 +5,62 @@ function displayFooter(elem){
 	if(typeof elem === "string"){
 		elem=document.getElementById(elem);
 	}
+	if(typeof elem === "undefined" || elem === null){
+		elem = document.createElement("footer");
+		document.body.appendChild(elem);
+	}
 	elem.innerHTML="";
+	
+	var label = document.createElement("label");
+	label.textContent = "À partir de la position :";
 	
 	var position = document.createElement("input");
 	position.type="number";
 	position.title="Position de l'étape";
+	position.min = 0;
+	label.appendChild(position);
+	
+	elem.appendChild(label);
+	
+	var zone = document.createElement("fieldset");
+	label = document.createElement("legend");
+	label.textContent = "Ajouter une image";
+	zone.appendChild(label);
+	
+	var inputImg = document.createElement("input");
+	inputImg.type = "url";
+	inputImg.placeholder = "url d'une image";
+	zone.appendChild(inputImg);
+	
+	elem.appendChild(zone);
+	
+	label = document.createTextNode("ou");
+	elem.appendChild(label);
+	
+	zone = document.createElement("fieldset");
+	label = document.createElement("legend");
+	label.textContent = "Chargement de données";
+	zone.appendChild(label);
+	
+	var heavyLoad = document.createElement("textarea");
+	heavyLoad.placeholder = "Type de données chargeable dans cette zone:\n\t→ JSON provenant d'une sauvegarde randovue\n\t→ données KML permettant de décrire un parcours\n\t→ données NMEA (informations GPS) permettant de décrire un parcours\n\t→ liste d'url d'images (séparées par des sauts de lignes)";
+	zone.appendChild(heavyLoad);
+	elem.appendChild(zone);
+	
+	var addAction = document.createElement("button");
+	addAction.textContent = "Ajouter";
+	addAction.onclick =function(){
+		if(heavyLoad.value){
+			console.warn("TODO charger les données massivement");
+		}
+		if(inputImg.value){
+			console.warn("TODO créer un nouveau lieu");
+		}
+		if(!heavyLoad.value && !inputImg.value){
+			console.warn("TODO demander quelle type d'action ajouter");
+		}
+	};
+	elem.appendChild(addAction);
 }
 
 /**
@@ -44,6 +95,8 @@ function test(){
 	var test=new Parcours(0,{});
 	randoListe.add(test);
 	randoListe.view(0);
+	
+	displayFooter();
 
 }
 window.onload = test;

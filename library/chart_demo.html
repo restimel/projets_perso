@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>demo chart</title>
+	
+	<style>
+		figure>div{
+			width : 50%;
+			height : 300px;
+			border : 10px solid black;
+			
+		}
+	</style>
+</head>
+<body>
+<article>
+<h1>Parcours</h1>
+<figure>
+<div id="altitude"></div>
+<catpion>dénivelée en fonction de la distance</caption>
+</figure>
+
+<figure>
+<div id="vitesse"></div>
+<catpion>distance en fonction de l'heure</caption>
+</figure>
+</article>
+
+<script src="./chart.js"></script>
+<script>
+//DEBUG
+var denivele=[
+	[42,5,100],
+	[42.1,5.5,101],
+	[42.2,5.512,111],
+	[42.1,5.515,105],
+	[42.1789,5.51575,125],
+	[42.14567,5.5152456,0],
+	[43,5,90],
+	[43.1,5.5,101],
+	[43.2,5.512,115],
+	[43.1,5.515,107],
+	[43.1789,5.51575,116],
+	[43.14567,5.6152456,101],
+	[42,5.9,129],
+	[42.1,6.4,95],
+	[42.2,6.412,72],
+	[42.1,6.515,102],
+	[42.1789,6.51575,95],
+	[42.14567,6.5152456,119],
+	[43,6,103],
+	[43.1,6.5,123],
+	[43.2,6.512,131],
+	[43.1,6.515,108.5],
+	[43.17892,6.51555,116.16],
+	[43.14567,6.5152456,20],
+	[43.14567,6.4152456,20]
+];
+
+function marcheur(ctx,x,y){
+	var tx = this.maxX/this.distance,
+		ty = this.maxY/this.maxHeight;
+	ctx.save();
+	ctx.translate(this.margeX+x*tx,this.maxY-y*ty);
+	
+	//dessin marcheur
+	ctx.strokeStyle = "rgba(0,0,0,0.6)";
+	ctx.scale(0.7,0.7);
+	ctx.beginPath();
+	
+	//tete
+	ctx.arc(0, -35, 5, 0, 2 * Math.PI, false);
+	//jambes
+	ctx.moveTo(-10,0);
+	ctx.lineTo(0,-10);
+	ctx.lineTo(10,0);
+	//bras
+	ctx.moveTo(-20,-30);
+	ctx.lineTo(20,-30);
+	//corps
+	ctx.moveTo(0,-10);
+	ctx.lineTo(10,-30);
+	ctx.lineTo(-10,-30);
+	ctx.lineTo(0,-10);
+	
+	
+	//baton
+	ctx.moveTo(18,-32);
+	ctx.lineTo(17,0);
+	
+	ctx.stroke();
+	
+	ctx.restore();
+}
+
+var graphe1=new Chart(denivele,{mouseMove:marcheur,uniteX:"km",uniteY:"m"});
+document.getElementById("altitude").appendChild(graphe1.create());
+
+var graphe2=new Chart(denivele);
+document.getElementById("vitesse").appendChild(graphe2.create());
+
+</script>
+</body>
+</html>

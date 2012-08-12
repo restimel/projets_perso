@@ -139,7 +139,11 @@ function Lieu(pst,option){
 				return option.localisation[1];
 			},
 			set: function(position){
-				option.localisation[1]=position;
+				position = mapTools.convertCoordinate(position,"décimal");
+				if(isNaN(position)){
+					return NaN;
+				}
+				option.localisation[1] = position;
 				if(this.map){
 					this.map.moveMarker(0,option.localisation,true);
 				}
@@ -151,7 +155,11 @@ function Lieu(pst,option){
 				return option.localisation[0];
 			},
 			set: function(position){
-				option.localisation[0]=position;
+				position = mapTools.convertCoordinate(position,"décimal");
+				if(isNaN(position)){
+					return NaN;
+				}
+				option.localisation[0] = position;
 				if(this.map){
 					this.map.moveMarker(0,option.localisation,true);
 				}
@@ -535,12 +543,15 @@ function Lieu(pst,option){
 					var typeAffichage = document.createElement("output");
 					typeAffichage.value = "Décimal";
 					typeAffichage.onclick = function(){
+							
 						if(this.value === "Décimal"){
 							this.value = "Sexagésimal";
-							console.warn("TODO: affichage en sexagésimal");
+							latValue.value = mapTools.convertCoordinate(latValue.value,"sexagésimal");
+							lngValue.value = mapTools.convertCoordinate(lngValue.value,"sexagésimal");
 						}else{
 							this.value = "Décimal";
-							console.warn("TODO: affichage en décimal");
+							latValue.value = mapTools.convertCoordinate(latValue.value,"décimal");
+							lngValue.value = mapTools.convertCoordinate(lngValue.value,"décimal");
 						}
 					};
 					zoneGPS.appendChild(typeAffichage);

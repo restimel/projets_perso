@@ -150,14 +150,51 @@ function DefaultMap(sourceElement,option){
 		},
 		fit : {
 			value : function(location1,location2){
-				// permet de centrer la carte sur le rectangle délimité par location1 et location2
-				//location1: SW
-				//location2: NE
+				/**
+				 * permet de centrer la carte sur le rectangle délimité par location1 et location2
+				 * 		@location1 [lat,lng]: SW
+				 * 		@location2 [lat,lng]: NE
+				 * 
+				 * 		Si aucun n'est définit, les bords sont choisit en fonctions des chemins et marqueurs 
+				 */
+				var latMax=-Infinity,
+					latMin=Infinity,
+					lngMax=-Infinity,
+					lngMin=Infinity,
+					tmp,
+					max=Math.max,
+					min=Math.min;
+				if(!location1 || !location2){
+					//définit les bords en fonctions des chemins et marqueurs
+					var i,li;
+					//liste chemins
+					i=0,li=this.listPath.length;
+					while(i<li){
+						tmp=this.listPath[i++].getRect();
+						latMax=max(latMax,tmp[2]);
+						latMin=min(latMin,tmp[0]);
+						lngMax=max(lngMax,tmp[3]);
+						lngMin=min(lngMin,tmp[1]);
+					}
+					//liste des marqueurs
+					i=0,li=this.markers.length;
+					while(i<li){
+						tmp=this.markers[i++].getPosition();
+						latMax=max(latMax,tmp.lat());
+						latMin=min(latMin,tmp.lat());
+						lngMax=max(lngMax,tmp.lng());
+						lngMin=min(lngMin,tmp.lng());
+					}
+				}else{
+					latMax=max(location1[0],location2[0]);
+					latMin=min(location1[0],location2[0]);
+					lngMax=max(location1[1],location2[1]);
+					lngMin=min(location1[1],location2[1]);
+				}
+				
 				this.center = location1;
 			},
-			writable : false,
-			enumerable : true,
-			configurable : false
+			writable : false,enumerable : true,configurable : false
 		},
 		getAltitude : {
 			value : function(lat,long,f){
@@ -254,6 +291,27 @@ function DefaultMap(sourceElement,option){
 		//propriétées interne
 		this.chemins=[];//liste des tracés utilisés
 		this.marqueurs=[];//liste des marqueurs utilisés
+		
+		var properties = {
+			editable : {
+				get : function(){
+					return option.editable;
+				},
+				set : function(b){
+					option.editable = !!b;
+					this.draw();
+				},
+				enumerable : true, configurable : false
+			},
+			changePath : {
+				value : function(pth){
+					this.points = pth;
+					this.draw();
+				},
+				writable : false, enumerable : true, configurable : false
+			}
+		};
+		Object.defineProperties(this,properties);
 		
 		//recalcule toutes les altitudes des points du chemin
 		if(option.recalcAltitude){
@@ -376,26 +434,91 @@ var mapTools = {
 		}
 		return d;//en km
 	},
+	/**
+	 * Convertion de coordonnées Sexagésimal,décimal en un autre format
+	 * 		@ str (string) : coordonée à convertir
+	 * 		@ output (string/number) : format de sortie de la coordonée
+	 *				- (0) "décimal" : 12.345 (default)
+	 * 				- (1) "sexagésimal" : 12°34'56.78"
+	 * 				- (2) "sexa-décimal" : 12°34.56
+	 */
 	convertCoordinate : function(str,output){
 		str = str+"";
-		var deg,match;
-		if(match=/^\s*(-)?(\d{1,3})\s*°\s*([0-6]?\d)\s*'\s*([0-6]?\d(?:\.\d+)?)\s*["']\s*$//.exec(str)){
-			//format d°m's"
+		var deg,match,d,m,s,neg,rslt;
+		if(match=/^\s*([-WESN]?)(\d{1,3})\s*[°\s]\s*([0-6]?\d)\s*['\s]\s*([0-6]?\d(?:\.\d+)?)\s*[\s"']+\s*([WESN]?)\s*$/.exec(str)){
+			//format d°m's" (sexagésimal)
 			deg = match[4]/3600 + match[3]/60 + parseFloat(match[2]);
-			if(match[1]){
+			if(match[1] && ~"-SW".indexOf(match[1])){
+				deg = -deg;
+			}
+			if(match[5] && ~"SW".indexOf(match[5])){
+				deg = -deg;
+			}
+		}else if(match=/^\s*([-WESN]?)(\d{1,3})\s*[°\s]\s*([0-6]?\d(?:\.\d+)?)\s*["'\s]+\s*([WESN]?)\s*$/.exec(str)){
+			//format d°f (sexagésimal-décimal)
+			deg = match[3]/60 + parseFloat(match[2]);
+			if(match[1] && ~"-SW".indexOf(match[1])){
+				deg = -deg;
+			}
+			if(match[4] && ~"SW".indexOf(match[4])){
+				deg = -deg;
+			}
+		}else if(match=/^\s*([-WESN]?)\s*([0-3]?\d{1,2})([0-6]\d(?:\.\d+)?)\s*,?\s*([WESN]?)\s*$/.exec(str)){
+			//format df (sexagésimal-décimal)
+			deg = match[3]/60 + parseFloat(match[2]);
+			if(match[1] && ~"-SW".indexOf(match[1])){
+				deg = -deg;
+			}
+			if(match[4] && ~"SW".indexOf(match[4])){
+				deg = -deg;
+			}
+		}else if(match=/^\s*([WESN]?)(-?\d{1,3}(?:\.\d+)?)\s*[°"']?\s*([WESN]?)\s*$/.exec(str)){
+			//format décimal
+			deg = parseFloat(match[2]);
+			if(match[1] && ~"-SW".indexOf(match[1])){
+				deg = -deg;
+			}
+			if(match[3] && ~"SW".indexOf(match[3])){
 				deg = -deg;
 			}
 		}else{
 			//format non reconnu
-			//TODO retourner NaN
+			return NaN;
 		}
 		
 		switch(output){
+			case 1:
+			case "sexagésimal":
+			case "sexagesimal":
+				neg = deg<0?-1:1;
+				deg *= neg;
+				
+				m = (deg%1)*60;
+				d = neg*Math.floor(deg);
+				s = (m%1)*60;
+				m = Math.floor(m);
+				rslt = d+"°"+m+"'"+s+'"';
+				break;
+			case 2:
+			case "sexa-décimal":
+			case "sexa-decimal":
+			case "sexadécimal":
+			case "sexadecimal":
+				neg = deg<0?-1:1;
+				deg *= neg;
+				
+				m = (deg%1)*60;
+				d = neg*Math.floor(deg);
+				rslt = d+"°"+m;
+				break;
+			case 0:
+			case "décimal":
+			case "decimal":
 			default:
 				//format décimal
-				console.log("DEBUG: convertion "str+"→"+deg);
-				return deg;
+				rslt = deg;
 		}
+		return rslt;
 	}
 };
 

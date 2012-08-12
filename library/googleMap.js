@@ -349,9 +349,13 @@ GoogleMap.callBackPosition = function(f,ctx){
 		},
 		fit : {
 			value : function(location1,location2){
-				// permet de centrer la carte sur le rectangle délimité par location1 et location2
-				//location1: SW
-				//location2: NE
+				/**
+				 * permet de centrer la carte sur le rectangle délimité par location1 et location2
+				 * 		@location1 [lat,lng]: SW
+				 * 		@location2 [lat,lng]: NE
+				 * 
+				 * 		Si aucun n'est définit, les bords sont choisit en fonctions des chemins et marqueurs 
+				 */
 				var latMax=-Infinity,
 					latMin=Infinity,
 					lngMax=-Infinity,
@@ -360,7 +364,7 @@ GoogleMap.callBackPosition = function(f,ctx){
 					max=Math.max,
 					min=Math.min;
 				if(!location1 || !location2){
-					//définiT les bords en fonctions des chemins et marqueurs
+					//définit les bords en fonctions des chemins et marqueurs
 					var i,li;
 					//liste chemins
 					i=0,li=this.listPath.length;
@@ -484,6 +488,14 @@ GoogleMap.callBackPosition = function(f,ctx){
 					this.draw();
 				},
 				enumerable : true, configurable : false
+			},
+			changePath : {
+				value : function(pth){
+					this.points = pth;
+					console.log("chgpth:"+pth.length);
+					this.draw();
+				},
+				writable : false, enumerable : true, configurable : false
 			}
 		};
 		Object.defineProperties(this,properties);
