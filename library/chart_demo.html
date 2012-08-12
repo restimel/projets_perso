@@ -57,7 +57,44 @@ var denivele=[
 	[43.14567,6.5152456,20],
 	[43.14567,6.4152456,20]
 ];
-var graphe1=new Chart(denivele);
+
+function marcheur(ctx,x,y){
+	var tx = this.maxX/this.distance,
+		ty = this.maxY/this.maxHeight;
+	ctx.save();
+	ctx.translate(this.margeX+x*tx,this.maxY-y*ty);
+	
+	//dessin marcheur
+	ctx.strokeStyle = "rgba(0,0,0,0.6)";
+	ctx.scale(0.7,0.7);
+	ctx.beginPath();
+	
+	//tete
+	ctx.arc(0, -35, 5, 0, 2 * Math.PI, false);
+	//jambes
+	ctx.moveTo(-10,0);
+	ctx.lineTo(0,-10);
+	ctx.lineTo(10,0);
+	//bras
+	ctx.moveTo(-20,-30);
+	ctx.lineTo(20,-30);
+	//corps
+	ctx.moveTo(0,-10);
+	ctx.lineTo(10,-30);
+	ctx.lineTo(-10,-30);
+	ctx.lineTo(0,-10);
+	
+	
+	//baton
+	ctx.moveTo(18,-32);
+	ctx.lineTo(17,0);
+	
+	ctx.stroke();
+	
+	ctx.restore();
+}
+
+var graphe1=new Chart(denivele,{mouseMove:marcheur,uniteX:"km",uniteY:"m"});
 document.getElementById("altitude").appendChild(graphe1.create());
 
 var graphe2=new Chart(denivele);

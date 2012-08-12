@@ -1,7 +1,8 @@
 
 
-function Chart(chemin,color){
-	this.color = color || "#000033";
+function Chart(chemin,option){
+	option = option || {};
+	this.color = option.color || "#000033";
 	this.maxX = 1000;
 	this.maxY = 500;
 	this.margeX = 40;
@@ -11,7 +12,10 @@ function Chart(chemin,color){
 	this.distance = 0;
 	this.maxHeight = 0; //TODO altitude négative
 	this.convert2D(chemin);
-	
+	this.mouseMove = option.mouseMove || null;
+	this.mouseClick = option.mouseClick || null;
+	this.uniteX = option.uniteX || "";
+	this.uniteY = option.uniteY || "";
 }
 
 Chart.prototype.convert2D = function(chemin){
@@ -71,6 +75,12 @@ Chart.prototype.draw2 = function(x,y){
 			b=points[i][1]-points[i][0]*a;
 			y = x*a + b;
 			
+			if(typeof this.mouseMove === "function"){
+				if(this.mouseMove.call(this,ctx2,x,y) === false){
+					return false;
+				}
+			}
+			
 			ctx2.save();
 			ctx2.translate(this.margeX+x*tx,this.maxY-y*ty);
 			
@@ -86,33 +96,7 @@ Chart.prototype.draw2 = function(x,y){
 			ctx2.lineTo(13,0);
 			ctx2.stroke();
 			
-			//dessin marcheur
 			
-			ctx2.strokeStyle = "rgba(0,0,0,0.6)";
-			ctx2.scale(0.7,0.7);
-			ctx2.beginPath();
-			
-			//tete
-			ctx2.arc(0, -35, 5, 0, 2 * Math.PI, false);
-			//jambes
-			ctx2.moveTo(-10,0);
-			ctx2.lineTo(0,-10);
-			ctx2.lineTo(10,0);
-			//bras
-			ctx2.moveTo(-20,-30);
-			ctx2.lineTo(20,-30);
-			//corps
-			ctx2.moveTo(0,-10);
-			ctx2.lineTo(10,-30);
-			ctx2.lineTo(-10,-30);
-			ctx2.lineTo(0,-10);
-			
-			
-			//baton
-			ctx2.moveTo(18,-32);
-			ctx2.lineTo(17,0);
-			
-			ctx2.stroke();
 			ctx2.restore();
 			
 			//label
@@ -121,7 +105,7 @@ Chart.prototype.draw2 = function(x,y){
 			
 			ctx2.textAlign = "center";
 			ctx2.textBaseline = "bottom";
-			ctx2.fillText("distance: "+(Math.round(x*100)/100)+"m  hauteur:"+(Math.round(y*100)/100)+"m", this.width/2, this.height);
+			ctx2.fillText("distance: "+(Math.round(x*100)/100)+this.uniteX+"  hauteur:"+(Math.round(y*100)/100)+this.uniteY, this.width/2, this.height);
 		}
     }
 	
@@ -180,12 +164,12 @@ Chart.prototype.draw = function(){
 		ctx.textBaseline = "bottom";
 		ctx.translate(this.margeX, y);
 		ctx.rotate(-pi2);
-		ctx.fillText(Math.round(interval*i*10/ty)/10+"m", 0,0);
+		ctx.fillText(Math.round(interval*i*10/ty)/10+this.uniteY, 0,0);
 		ctx.restore();
 		//label absisse
 		ctx.textAlign = "center";
 		ctx.textBaseline = "top";
-		ctx.fillText(Math.round(this.maxX*i/0.5/tx)/10+"m", this.maxX*i/5+this.margeX, this.maxY);
+		ctx.fillText(Math.round(this.maxX*i/0.5/tx)/10+this.uniteX, this.maxX*i/5+this.margeX, this.maxY);
 	}
 	
 	ctx.font="15px Helvetica";
@@ -195,11 +179,11 @@ Chart.prototype.draw = function(){
 	ctx.textBaseline = "bottom";
 	ctx.translate(this.margeX, this.maxY - interval*i);
 	ctx.rotate(-pi2);
-	ctx.fillText(Math.round(interval*i*10/ty)/10+"m", 0,0);
+	ctx.fillText(Math.round(interval*i*10/ty)/10+this.uniteY, 0,0);
 	ctx.restore();
 	//label absisse
 	ctx.textBaseline = "top";
-	ctx.fillText(Math.round(this.maxX*i/0.5/tx)/10+"m", this.maxX*i/5+this.margeX, this.maxY);
+	ctx.fillText(Math.round(this.maxX*i/0.5/tx)/10+this.uniteX, this.maxX*i/5+this.margeX, this.maxY);
 	
 	ctx.stroke();
 	ctx.restore();
@@ -272,6 +256,20 @@ Chart.prototype.create = function(){
 		}
 		that.draw2(x,y);
 	};
+	if(this.mouseClick){
+		this.canvasAvant.onclick = function(event){
+			var x,y;
+			if(typeof event.offsetX !== "undefined"){
+				x=event.offsetX;
+				y=event.offsetY;
+			}else{
+				x=event.layerX; //pas tout à fait la même chose => peut entrainer des bugs
+				y=event.layerY;
+			}
+			console.warn("todo: click on chart");
+			//that.draw2(x,y);
+		};
+	}
 	this.canvasAvant.width = this.width;
 	this.canvasAvant.height = this.height;
 	this.ctx2 = this.canvasAvant.getContext("2d");
@@ -291,7 +289,6 @@ Chart.prototype.resize = function(){
 	this.canvasFond.width = this.canvasAvant.width = this.width;
 	this.canvasFond.height = this.canvasAvant.height = this.height;
 	
-	console.log(this.width+" "+this.height);
 	this.draw();
 };
 
