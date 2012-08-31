@@ -114,5 +114,63 @@ console.warn('code to review (display)');
 			if(key === "zoom") return;
 			return value;
 		});
+	},
+	fromJSON:function(data){
+		//TODO
+		var chemin,dta;
+		
+		function parser(key,value){
+			if(!key){
+				if(value && typeof value === "object" && (value.type === "body" || value instanceof Array)){
+					return value;
+				}else{
+					return;
+				}
+			}else{
+				/*
+				if(value && typeof value === "object"){
+					if(value.type === "action"){
+						obj=new rAction(position,[value.px,value.py,value.pa],value.date,value.metaType,zoom,value.photo,chemin,value.titre,value.comment);
+						randoListe.add(obj,position++);
+					}else if(value.type === "section"){
+						obj=new rSection(position,value.parcours,value.date,value.titre,value.color);
+						randoListe.add(obj,position++);
+					}else{
+						return null;
+					}
+				}*/
+			}
+			return value;
+		}
+		function addActions(act){
+			//var obj=new rAction(position,[act.px,act.py,act.pa],act.date,act.metaType,zoom,act.photo,chemin,act.titre,act.comment,true);
+			act.chemin = chemin;
+			this.add(new Lieu(position,act),position++);
+		}
+		function addSections(sct){
+			//var obj=new rSection(position,sct.parcours,sct.date,sct.titre,sct.color);
+			//randoListe.add(obj,position++);
+			this.add(new Parcours(position,sct),position++);
+			chemin=sct.parcours;
+			var liste=sct.actions||sct.ssections,i=0,li=liste.length;
+			while(i<li){
+				if(liste[i].type==="action" || liste[i].type === "lieux") addActions(liste[i]);
+				else if(liste[i].type==="section" || liste[i].type === "parcours") addSections(liste[i]);
+				i++;
+			}
+		}
+		try{
+			dta=JSON.parse(data.value,parser);
+			var liste=sct.actions||sct.ssections,i=0,li=liste.length;
+			while(i<li){
+				if(liste[i].type==="action") addActions(liste[i]);
+				else if(liste[i].type==="section") addSections(liste[i]);
+				i++;
+			}
+		}catch(e){
+			dta=null;
+			return false;
+		}
+		return true;
 	}
 };

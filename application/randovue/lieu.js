@@ -49,7 +49,11 @@ function Lieu(pst,option){
 	if(option.localisation instanceof Array){
 		//ok
 	}else{
-		option.localisation=copyArray(defaultValue.location);
+		if(option.px || option.py){
+			option.localisation = [option.px||defaultValue.location[0],option.py||defaultValue.location[1],option.pa];
+		}else{
+			option.localisation=copyArray(defaultValue.location); //copie des valeurs par défaut
+		}
 	}
 	
 	if(typeof option.comment !== "string"){
@@ -58,6 +62,10 @@ function Lieu(pst,option){
 	
 	if(typeof option.metaType !== "number"){
 		option.metaType = 0;
+	}
+	
+	if(typeof option.image === "undefined" && option.photo){
+		option.image = option.photo;
 	}
 	
 	if(typeof option.zoom !== "number"){
@@ -288,6 +296,8 @@ function Lieu(pst,option){
 	if(typeof option.direction !== "number"){
 		this.direction = option.direction;
 	}
+	
+	
 	
 	if(option.image){
 		if(!option.dontReadEXIF){

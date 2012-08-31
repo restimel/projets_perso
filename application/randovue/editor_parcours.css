@@ -141,3 +141,11 @@
 .parcours_editor_view>article>section>menu>button{
 	border-radius : 1em;
 }
+
+footer{
+	position : absolute;
+	bottom : 0px;
+}
+footer>fieldset{
+	display:inline-block;
+}

@@ -158,6 +158,7 @@ Chart.prototype.create = function(){
 	var that = this;
 	this.element = document.createElement("div");
 	this.element.style.cssText ="position:relative;width:100%;height:100%;";
+	console.debug(this);
 	this.element.onresize = this.resize.bind(this);
 	
 	this.canvasFond = document.createElement("canvas");

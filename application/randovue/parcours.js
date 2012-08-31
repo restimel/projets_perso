@@ -17,6 +17,11 @@ function Parcours(pst,option){
 	if(typeof pst !== "number"){
 		pst = 0;
 	}
+	
+	if(typeof option.chemin === "undefined" && option.parcours){
+		option.chemin = option.parcours;
+	}
+	
 	if(option.chemin instanceof Array){
 		if(option.chemin[0] instanceof Array){
 			if(option.chemin.length<2){
@@ -179,6 +184,8 @@ function Parcours(pst,option){
 	};
 	
 	Object.defineProperties(this,membres);
+	
+	this.chemin = option.chemin;
 }
 
 (function(){
