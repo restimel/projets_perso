@@ -58,7 +58,26 @@ function addCourbe(graphe){
 	var strX = document.getElementById("equationX").value,
 		strY = document.getElementById("equationY").value,
 		color = "#00FF00";
-		
+	
+	function strToJS(motif,mot){
+		var result="";
+		switch(mot.toLowerCase()){
+			case "math.cos" :
+			case "cos" : 
+				result = "Math.cos(";
+				break;
+			case "math.sin" :
+			case "sin" : 
+				result = "Math.sin(";
+				break;
+			default: 
+				console.log(mot);
+				result ="(";
+		}
+		return result;
+	}
+	strY = strY.replace(/\b([a-zA-Z0-9._]+)\s*(\()/g,strToJS);
+	console.log(strY);
 	var x = new Function("t","return "+strX),
 		y = new Function("t","return "+strY);
 	listeGraphe.push([x,y]);
