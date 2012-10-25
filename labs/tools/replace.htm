@@ -38,17 +38,18 @@ var addReg=(function(){
 	return function(){
 		var text='<hr>';
 		text+='<label>regexp:<input id="regexp'+nbElement+'"></label>';
-		text+='<label>flag:<input id="flag'+nbElement+'" value="gi"></label>';
+		text+='<label>flag:<input id="flag'+nbElement+'" value="gi" placeholder="gimy"></label>';
 		text+='<aside style="float:right">';
 		text+='<input type="text" id="name'+nbElement+'" title="name to explain this regexp, this has no impact on RegExp" placeholder="name to explain this regexp" style="width:20em;"><br>';
-		text+='<label><input type="checkbox" id="active'+nbElement+'" title="Activate this RegExp" checked>Activate</label>';
+		text+='<label><input type="checkbox" id="active'+nbElement+'" title="Activate this RegExp" checked>Activate</label><br>';
+		text+='<div style="float:right;font-size:0.5em;">id:'+nbElement+'</div>';
 		text+='</aside>';
 		text+='<br>';
 		text+='<label title="\\n, \\r and \\t should be writen §n, §r and §t">replace:<input id="replace'+nbElement+'"></label>';
-		text+='<label style="display:none;" title="each line represents an occurence. Motif should be separated by ~~">Incremental Replace:<textarea id="iReplace'+nbElement+'" placeholder="each line represents an occurence. Motif should be separated by ~~. When all occurence are used, it comes back to the first. Exemple:"></textarea></label>';
-		text+='<label> use incremental string replace:<input id="modeReplace'+nbElement+'" type="checkbox" onchange="var e1=this.parentNode.previousSibling;if(this.checked){e1.style.display=\'inline\';e1.previousSibling.style.display=\'none\';e1.lastChild.focus();}else{e1.style.display=\'none\';e1.previousSibling.style.display=\'inline\';}"></label>';
-		text+='<label> use incremental value :<input id="modeIncReplace'+nbElement+'" type="checkbox" onchange="this.parentNode.nextSibling.style.display=this.checked?\'inline\':\'none\';"></label>';
-		text+='<aside style="display:none;font-style:italic;font-size:0.8em;">The incremental value should be encapsuled by §! and !§. Example: to start from 0, you should write §!0!§</aside>';
+		text+='<label style="display:none;" title="each line represents an occurence. Motif should be separated by ~~">Incremental&nbsp;Replace:<textarea id="iReplace'+nbElement+'" placeholder="each line represents an occurence. Motif should be separated by ~~. When all occurence are used, it comes back to the first. Exemple:"></textarea></label> ';
+		text+='<label>use&nbsp;incremental&nbsp;string&nbsp;replace:<input id="modeReplace'+nbElement+'" type="checkbox" onchange="var e1=this.parentNode.previousSibling;if(this.checked){e1.style.display=\'inline\';e1.previousSibling.style.display=\'none\';e1.lastChild.focus();}else{e1.style.display=\'none\';e1.previousSibling.style.display=\'inline\';}"></label> ';
+		text+='<label>use&nbsp;incremental&nbsp;value:<input id="modeIncReplace'+nbElement+'" type="checkbox" onchange="this.parentNode.nextSibling.style.display=this.checked?\'inline\':\'none\';"></label>';
+		text+='<aside style="display:none;font-style:italic;font-size:0.8em;">The incremental value should be encapsuled by §! and !§. Example: to start from 0, you should write §!0!§</aside>';//doit être placé juste derrière le label de modeIncReplace
 		text+='<br>';
 		nbElement++;
 		var element=document.createElement("div");
@@ -198,7 +199,7 @@ function loadReg(data){
 			}
 			elem.value=obj[i].rgx;
 			document.getElementById("name"+i).value = obj[i].name || "";
-			document.getElementById("active"+i).checked = (obj[i].deactivated!="true");
+			document.getElementById("active"+i).checked = (obj[i].deactivated!=true);
 			if(obj[i].mode){
 				document.getElementById("modeReplace"+i).checked=true;
 				document.getElementById("iReplace"+i).value=obj[i].replace;
@@ -216,6 +217,10 @@ function loadReg(data){
 			document.getElementById("iReplace"+i).value="";
 			document.getElementById("replace"+i).value="";
 			document.getElementById("flag"+(i++)).value="gi";
+			document.getElementById("name"+i).value = "";
+			document.getElementById("active"+i).checked = true;
+			document.getElementById("modeReplace"+i).checked=false;
+			document.getElementById("modeIncReplace"+i).checked = false;
 		}
 	}else{
 		alert("Load has failed.\nData format is not supported");
