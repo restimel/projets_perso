@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf8">
@@ -22,7 +22,7 @@
 <button id="addReg" title="Add a new rule">+</button>
 <hr>
 
-<button id="doIt">Do it</button><br>
+<button id="doIt">Execute Replacement</button><br>
 <label>result:<textarea id="resultat" rows="20" cols="40" placeholder="text changed will be displayed here"></textarea></label>
 <button onclick="document.getElementById('resultat').value='';">empty</button><br>
 
@@ -36,8 +36,14 @@
 var addReg=(function(){
 	var nbElement=0;
 	return function(){
-		var text='<hr><label>regexp:<input id="regexp'+nbElement+'"></label>';
-		text+='<label>flag:<input id="flag'+nbElement+'" value="gi"></label><br>';
+		var text='<hr>';
+		text+='<label>regexp:<input id="regexp'+nbElement+'"></label>';
+		text+='<label>flag:<input id="flag'+nbElement+'" value="gi"></label>';
+		text+='<aside style="float:right">';
+		text+='<input type="text" id="name'+nbElement+'" title="name to explain this regexp, this has no impact on RegExp" placeholder="name to explain this regexp" style="width:20em;"><br>';
+		text+='<label><input type="checkbox" id="active'+nbElement+'" title="Activate this RegExp" checked>Activate</label>';
+		text+='</aside>';
+		text+='<br>';
 		text+='<label title="\\n, \\r and \\t should be writen §n, §r and §t">replace:<input id="replace'+nbElement+'"></label>';
 		text+='<label style="display:none;" title="each line represents an occurence. Motif should be separated by ~~">Incremental Replace:<textarea id="iReplace'+nbElement+'" placeholder="each line represents an occurence. Motif should be separated by ~~. When all occurence are used, it comes back to the first. Exemple:"></textarea></label>';
 		text+='<label> use incremental string replace:<input id="modeReplace'+nbElement+'" type="checkbox" onchange="var e1=this.parentNode.previousSibling;if(this.checked){e1.style.display=\'inline\';e1.previousSibling.style.display=\'none\';e1.lastChild.focus();}else{e1.style.display=\'none\';e1.previousSibling.style.display=\'inline\';}"></label>';
@@ -68,7 +74,8 @@ function doReplace(){
 	do{
 		modeValueInc = document.getElementById("modeIncReplace"+i).checked;
 		rgx = rgx.value;
-		if(!rgx) continue; // il n'y a pas de valeur donnée à cet regexp
+		if(!rgx) continue; // il n'y a pas de valeur donnée à cette regexp
+		if(!document.getElementById("active"+i).checked) continue; // la RegExp a été désactivée
 		flg = document.getElementById("flag"+i).value;
 		if(document.getElementById("modeReplace"+i).checked){
 			//mode remplacement incrémental
@@ -134,20 +141,22 @@ function doReplace(){
 function saveReg(){
 	var rslt=[],
 		rgx=document.getElementById("regexp0"),
-		flg,mode,rplc,inc,
+		flg,mode,rplc,inc,name,deactivated,
 		i=0;
 	
 	do{
 		rgx = rgx.value;
 		if(!rgx) continue; // il n'y a pas de valeur donnée à cet regexp
 		flg = document.getElementById("flag"+i).value;
+		name = document.getElementById("name"+i).value;
 		if(mode=document.getElementById("modeReplace"+i).checked){
 			rplc = document.getElementById("iReplace"+i).value;
 		}else{
 			rplc = document.getElementById("replace"+i).value;
 		}
 		inc=document.getElementById("modeIncReplace"+i).checked;
-		rslt.push({rgx:rgx,flg:flg,mode:mode,inc:inc,replace:rplc});
+		deactivated=!document.getElementById("active"+i).checked;
+		rslt.push({name:name,rgx:rgx,flg:flg,mode:mode,inc:inc,replace:rplc,deactivated:deactivated});
 	}while(rgx=document.getElementById("regexp"+(++i)));
 	document.getElementById("manageCode").value=JSON.stringify(rslt);
 	document.getElementById("infoSave").style.visibility="visible";
@@ -159,6 +168,14 @@ function loadReg(data){
 	var obj={};
 	
 	//transformation en objet
+	if(typeof data === "object"){
+		if(data instanceof Event){
+			data=document.getElementById("manageCode").value;
+		}else{
+			obj=data;
+		}
+	}
+	
 	if(typeof data === "string"){
 		try{
 			obj=JSON.parse(data);
@@ -166,8 +183,6 @@ function loadReg(data){
 			alert("Load has failed.\n"+e);
 			return false;
 		}
-	}else if(typeof data === "object"){
-		obj=data;
 	}else{
 		alert("Load has failed.\nData type is not supported");
 		return false;
@@ -182,6 +197,8 @@ function loadReg(data){
 				elem=document.getElementById("regexp"+i);
 			}
 			elem.value=obj[i].rgx;
+			document.getElementById("name"+i).value = obj[i].name || "";
+			document.getElementById("active"+i).checked = (obj[i].deactivated!="true");
 			if(obj[i].mode){
 				document.getElementById("modeReplace"+i).checked=true;
 				document.getElementById("iReplace"+i).value=obj[i].replace;
@@ -231,7 +248,7 @@ function loadSourceFile(event,cible){
 }
 
 window.onload=function(){
-	addReg;
+	addReg();
 	if(!window.File || !window.FileReader){
 		//le javascript ne supporte pas les API File ou FileReader
 		document.getElementById("sourceFile").display="none";
