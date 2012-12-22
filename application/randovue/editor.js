@@ -18,6 +18,7 @@ function displayFooter(elem){
 	position.type="number";
 	position.title="Position de l'étape";
 	position.min = 0;
+	poistion.value = 0;
 	label.appendChild(position);
 	
 	elem.appendChild(label);
@@ -29,7 +30,7 @@ function displayFooter(elem){
 	
 	var inputImg = document.createElement("input");
 	inputImg.type = "url";
-	inputImg.placeholder = "url d'une image";
+	inputImg.title=inputImg.placeholder = "url d'une image";
 	zone.appendChild(inputImg);
 	
 	elem.appendChild(zone);
@@ -43,7 +44,7 @@ function displayFooter(elem){
 	zone.appendChild(label);
 	
 	var heavyLoad = document.createElement("textarea");
-	heavyLoad.placeholder = "Type de données chargeable dans cette zone:\n\t→ JSON provenant d'une sauvegarde randovue\n\t→ données KML permettant de décrire un parcours\n\t→ données NMEA (informations GPS) permettant de décrire un parcours\n\t→ liste d'url d'images (séparées par des sauts de lignes)";
+	heavyLoad.title=heavyLoad.placeholder = "Type de données chargeable dans cette zone:\n\t→ JSON provenant d'une sauvegarde randovue\n\t→ données KML permettant de décrire un parcours\n\t→ données NMEA (informations GPS) permettant de décrire un parcours\n\t→ liste d'url d'images (séparées par des sauts de lignes)";
 	zone.appendChild(heavyLoad);
 	elem.appendChild(zone);
 	
@@ -51,7 +52,26 @@ function displayFooter(elem){
 	addAction.textContent = "Ajouter";
 	addAction.onclick =function(){
 		if(heavyLoad.value){
-			console.warn("TODO charger les données massivement");
+			//détection du tye de données
+			var result = "unknown";
+			//JSON
+			if(/^\s*[[{]/.exec(path)){
+				if(randoListe.fromJSON(path)===true){
+					result = "JSON";
+				}
+			}
+			//KML
+			
+			if(/^@[a-zA-Z]+\/ver\d+\.\d+\/wgs-84\//.exec(path)){ //@Sonygps/ver3.0/wgs-84/
+				//NMEA
+				//TODO ajouter vérification
+				randoListe.add(new Parcours(0,{chemin:path}));
+				result = "NMEA";
+			}
+			//liste images
+			
+			
+			console.log("chargement data : "+result);
 		}
 		if(inputImg.value){
 			console.warn("TODO créer un nouveau lieu");
@@ -63,10 +83,7 @@ function displayFooter(elem){
 	elem.appendChild(addAction);
 }
 
-/**
- * Tests
- */
-function test(){
+function editorInit(){
 	var liste = document.createElement("div");
 	liste.style.height = "400px";
 	liste.style.overflow = "auto";
@@ -74,6 +91,15 @@ function test(){
 	
 	document.body.appendChild(liste);
 	randoListe.defineZone(liste);
+	
+	displayFooter();
+}
+
+/**
+ * Tests
+ */
+function test(){
+	
 	randoListe.add(new Lieu(0,{date:"2012-06-21",titre:"essais image",image:"./_DSC0037.JPG"}));
 	randoListe.add(new Lieu(0,{date:"2011-08-21",titre:"maison",image:"./DSC00141.JPG"}));
 	randoListe.add(new Lieu(0,{date:"2011-08-21",titre:"maison",image:"./DSC00076.JPG"}));
@@ -96,7 +122,8 @@ function test(){
 	randoListe.add(test);
 	randoListe.view(0);
 	
-	displayFooter();
 
 }
-window.onload = test;
+
+window.addEventListener("load",editorInit,false);
+//window.addEventListener("load",test,false)

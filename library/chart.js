@@ -1,124 +1,54 @@
-
-
-function Chart(chemin,option){
+function Chart(option){
 	option = option || {};
-	this.color = option.color || "#000033";
 	this.maxX = 1000;
 	this.maxY = 500;
 	this.margeX = 40;
 	this.margeY = 40;
 	this.width = this.maxX+this.margeX;
 	this.height = this.maxY+this.margeY;
-	this.distance = 0;
-	this.maxHeight = 0; //TODO altitude négative
-	this.convert2D(chemin);
+	
+	this.plotsList = [];
+	
+	this.viewBox = [	0, //xMin
+						0, //xMax
+						0, //yMin
+						0 //yMax
+					];
 	this.mouseMove = option.mouseMove || null;
 	this.mouseClick = option.mouseClick || null;
 	this.uniteX = option.uniteX || "";
 	this.uniteY = option.uniteY || "";
 }
 
-Chart.prototype.convert2D = function(chemin){
-	var distance = 0,
-		maxHeight = 0;
-		i = 1, li = chemin.length;
-	
-	//TODO remove points sans altitude
-	
-	this.points = [[0,chemin[0][2]]];
-	maxHeight = Math.max(maxHeight,chemin[0][2]);
-	do{
-		distance += calculDistance(chemin[i-1],chemin[i]);
-		maxHeight = Math.max(maxHeight,chemin[i][2]);
-		this.points.push([distance,chemin[i][2]]);
-	}while(++i<li);
-	
-	this.distance = distance;
-	this.maxHeight = Math.ceil(maxHeight/10+1.4)*10;
-	
-	function calculDistance(p1,p2){
-	//calcul approximatif (TODO utiliser le calcul de Map)
-		var dx = (p1[0] - p2[0])*100,
-			dy = (p1[1] - p2[1])*100,
-			dh = (p1[2] - p2[2]),
-			dst = Math.sqrt(dx*dx + dy*dy + dh*dh);
-		return dst;
+Chart.prototype.add = function(plots){
+	if(!(plots instanceof ChartPlots)){
+		if(plots instanceof Array && plots.length && plots[0] instanceof Array){
+			plots = new ChartPlots(plots);
+		}else{
+			return null;
+		}
 	}
-};
+	var i=this.plotsList.push(plots),
+		box = this.plotsList[i-1].getBox();
+	this.viewBox[0] = Math.min(this.viewBox[0],box[0]);
+	this.viewBox[1] = Math.max(this.viewBox[1],box[1]);
+	this.viewBox[2] = Math.min(this.viewBox[2],box[2]);
+	this.viewBox[3] = Math.max(this.viewBox[3],box[3]);
+}
 
-Chart.prototype.draw2 = function(x,y){
-	var i = 0,
-		points = this.points,
-		li = points.length,
-		ctx2 = this.ctx2,
-		tx = this.maxX/this.distance,
-		ty = this.maxY/this.maxHeight,
-		dst=0,
-		a,b;
-
-	x-=this.margeX;
-	
-	
-	ctx2.save();
-	
-	ctx2.clearRect(0,0,this.width,this.height);
-	
-	if(x>0){// && y<this.maxY
-		//recherche de la position y
-		x = x/tx;
-		while(i<li && dst<x){
-			dst = points[i++][0];
-		}
-		if(x<dst){
-			i--;
-			a=(points[i-1][1]-points[i][1])/(points[i-1][0]-points[i][0]);
-			b=points[i][1]-points[i][0]*a;
-			y = x*a + b;
-			
-			if(typeof this.mouseMove === "function"){
-				if(this.mouseMove.call(this,ctx2,x,y) === false){
-					return false;
-				}
-			}
-			
-			ctx2.save();
-			ctx2.translate(this.margeX+x*tx,this.maxY-y*ty);
-			
-			//marqueur
-			ctx2.beginPath();
-			ctx2.fillStyle = "rgba(100,60,0,0.8)";
-			ctx2.arc(0, 0, 3.5, 0, 2 * Math.PI, false);
-			ctx2.fill();
-			
-			ctx2.beginPath();
-			ctx2.strokeStyle = "rgba(0,0,0,0.3)";
-			ctx2.moveTo(-13,0);
-			ctx2.lineTo(13,0);
-			ctx2.stroke();
-			
-			
-			ctx2.restore();
-			
-			//label
-			ctx2.fillStyle = "rgba(100,0,0,1)";
-			ctx2.font='17px Helvetica';
-			
-			ctx2.textAlign = "center";
-			ctx2.textBaseline = "bottom";
-			ctx2.fillText("distance: "+(Math.round(x*100)/100)+this.uniteX+"  hauteur:"+(Math.round(y*100)/100)+this.uniteY, this.width/2, this.height);
-		}
-    }
-	
-	ctx2.restore();
-};
+Chart.prototype.remove = function(index){
+	if(index>=0 && index<this.plotsList.length){
+		this.plotsList.splice(index,1);
+	}
+}
 
 Chart.prototype.draw = function(){
-	var i = 0,
-		li = this.points.length,
+	var i = this.viewBox[0],
+		li = this.plotsList.length,
 		ctx = this.ctx,
 		ctx2 = this.ctx2,
-		tx = this.maxX/this.distance,
-		ty = this.maxY/this.maxHeight,
+		tx = this.maxX/(this.viewBox[1]-this.viewBox[0]),
+		ty = this.maxY/(this.viewBox[3]-this.viewBox[2]),
 		x,y,
 		pi2 = Math.PI/2;
 	
@@ -192,34 +122,12 @@ Chart.prototype.draw = function(){
     
 	
 	//courbe
-	ctx.beginPath();
-	ctx.moveTo(this.margeX, this.maxY-(this.points[0][1]*ty));
-
-	for(i=1;i<li;i++){
-		x=this.margeX+this.points[i][0]*tx;
-		y=this.maxY-(this.points[i][1]*ty);
-		ctx.lineTo(x, y);
+	ctx.translate(this.margeX,this.maxY);
+	ctx.scale(1,-1);
+	li=this.plotsList.length;
+	for(i=0;i<li;i++){
+		this.plotsList[i].draw(ctx,tx,ty);
 	}
-	
-	ctx.save();
-	ctx.lineCap = 'round';
-	//ctx.lineJoin = 'round';
-	/*ctx.strokeStyle = "rgba(0,0,100,0.1)";
-	ctx.lineWidth = 8.5;
-	ctx.stroke();
-	ctx.strokeStyle = "rgba(0,0,100,0.4)";
-	ctx.lineWidth = 5.5;
-	ctx.stroke();*/
-	ctx.shadowOffsetX = 1;
-	ctx.shadowOffsetY = 3;
-	ctx.shadowBlur = 2;
-	ctx.shadowColor = "rgba(0, 0, 50, 0.6)";
-  
-	ctx.strokeStyle = "rgba(100,100,250,1)";
-	ctx.lineWidth = 1.5;
-	ctx.stroke();
-	ctx.restore();
-	
 	
 	ctx.restore();
 	
@@ -228,15 +136,34 @@ Chart.prototype.draw = function(){
 	
 };
 
+Chart.prototype.draw2 = function(x,y){
+	var i = 0,
+		li = this.plotsList.length,
+		ctx2 = this.ctx2;
+
+	ctx2.save();
+	ctx2.clearRect(0,0,this.width,this.height);
+	
+	ctx2.translate(this.margeX,this.maxY);
+	ctx2.scale(1,-1);
+	
+	for(i=0;i<li;i++){
+		this.plotsList[i].draw2(ctx2,x-this.margeX,y);
+	}
+	ctx2.restore();
+};
+
+
 Chart.prototype.create = function(){
 	var that = this;
 	this.element = document.createElement("div");
 	this.element.style.cssText ="position:relative;width:100%;height:100%;";
-	this.element.onresize = function(){console.log('resize element');};
+	console.debug(this);
+	this.element.onresize = this.resize.bind(this);
 	
 	this.canvasFond = document.createElement("canvas");
 	this.canvasFond.style.cssText = "width: 100%; height:100%; top:0; left:0; position:absolute;";
-	this.canvasFond.onresize = function(){console.log('resize canvas1');};
+	this.canvasFond.onresize = this.resize.bind(this);
 	this.canvasFond.width = this.width;
 	this.canvasFond.height = this.height;
 	this.ctx = this.canvasFond.getContext("2d");
@@ -244,7 +171,7 @@ Chart.prototype.create = function(){
 	
 	this.canvasAvant = document.createElement("canvas");
 	this.canvasAvant.style.cssText = "width: 100%; height:100%; top:0; left:0; position:absolute; ";
-	this.canvasAvant.onresize = function(){console.log('resize canvas2');};
+	this.canvasAvant.onresize = this.resize.bind(this);
 	this.canvasAvant.onmousemove = function(event){
 		var x,y;
 		if(typeof event.offsetX !== "undefined"){
@@ -276,7 +203,7 @@ Chart.prototype.create = function(){
 	this.element.appendChild(this.canvasAvant);
 	
 	setTimeout(this.resize.bind(this),50);
-	setTimeout(function(){that.element.parentNode.onresize = function(){console.log('resize parent');};},100); //DEBUG
+	setTimeout(function(){that.element.parentNode.onresize = function(){console.log('resize parent');that.resize();};},100); //DEBUG
 	
 	return this.element;
 };
@@ -291,5 +218,4 @@ Chart.prototype.resize = function(){
 	
 	this.draw();
 };
-
 
