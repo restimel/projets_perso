@@ -3,24 +3,26 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 </head>
 <body>
-<aside style="display:none;">connaissances nécessaire: méhode Array, conversion</aside>
+<aside style="display:none;">connaissances nécessaire: Array, attributs spécifique</aside>
 thème: Array<br>
-niveau: 1<br><br>
+niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var liste = [1024, 512, 32].sort();
-alert(liste.join(","));
+var liste = [0, 1, 2, 3];
+liste.length = 5;
+liste.push(4);
+alert(liste[4]);
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li>32,512,1024</li>
-	<li>32,1024,512</li>
-	<li>512,32,1024</li>
-	<li>512,1024,32</li>
-	<li class="bonneReponse">1024,32,512</li>
-	<li>1024,512,32</li>
+	<li>0</li>
+	<li>4</li>
+	<li>""</li>
+	<li>null</li>
+	<li>NaN</li>
+	<li class="bonneReponse">undefined</li>
 	<li>Il y a une erreur de syntaxe</li>
 </ul>
 <hr>
@@ -32,7 +34,7 @@ alert(liste.join(","));
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-	Le fonctionnement par défaut de Sort agit sur les string. Ainsi les number sont convertit en string et sont triés. Or 1 est avant 3 et donc 1024 avant 32.
+	push ajoute à un élément à la dernière position. La dernière position est indiquée par l'attribut length. Or celui-ci a été modifié. La valeur 4 est donc ajouté à l'index 5. Et la valeur située à l'index 4 est n'est toujours pas définie et vaut donc undefined.
 </details>
 
 <script>
