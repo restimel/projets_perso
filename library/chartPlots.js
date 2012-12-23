@@ -1,3 +1,26 @@
+/**
+ * ChartPlots est une classe permettant de gérer l'affichage et l'intéractivité d'une courbe. Elle complète la classe Chart
+ * 
+ * needed : Chart (not required for execution)
+ * 
+ * Constructor:
+ * 	new ChartPlots(plots,option);
+ * 		plots [Array]: liste des points de la courbe. [[x,y],…]
+ * 		option [object]:
+ * 			-  color [string] : couleur de la courbe (default : "rgba(100,100,250,1)")
+ * 			- mouseClick [function]: appelée lorsque l'utilisateur clique sur le graphe (à voir/sur le courbe)
+ * 				f(ctx,x,y) : this fait référence au ChartPlots déclencheur | ctx=contexte de dessins secondaire | x=coordonée X du click dans le canvas | y=coordonée Y du click dans le canvas
+ * 			- mouseMove [function]: appelée lorsque l'utilisateur se déplace sur le graphe
+ * 				f(ctx,x,y) : this fait référence au ChartPlots déclencheur | ctx=contexte de dessins secondaire | x=coordonée X du click dans le canvas | y=coordonée Y du click dans le canvas
+ * 
+ * Méthodes:
+ * 		- draw(ctx,tx,ty) : dessine la courbe (ctx: contexte de dessin, tx,ty: translation à effectuer avant de dessiner)
+ * 		- draw2(ctx,x,y) : dessine les interactions avec la courbe (ctx: contexte de dessin, x,y: coordonées de l'interaction)
+ * 		- click(ctx,x,y) : permet de gérer un click sur la courbe
+ * 		- getBox(xMin,xMax,extended) : permet d'obtenir la zone contenant la courbe
+ * 		- isOn(x,y,r) : indique si les coordonées x,y est proche de la courbe
+ **/
+
 function ChartPlots(plots,option){
 	if(plots instanceof Array && plots.length && plots[0] instanceof Array){
 		this.points = copyArray(plots);
@@ -11,6 +34,9 @@ function ChartPlots(plots,option){
 	this.mouseClick = option.mouseClick || null;
 }
 
+/**
+ * dessine la courbe dans le contexte
+ **/
 ChartPlots.prototype.draw = function(ctx,tx,ty){
 	var i,x,y,
 		li = this.points.length;
@@ -40,10 +66,16 @@ ChartPlots.prototype.draw = function(ctx,tx,ty){
 	this.ty = ty;
 };
 
+/**
+ * permet de dessiner les interactions avec la courbe
+ **/
 ChartPlots.prototype.draw2 = function(ctx,x,y){
 	var tx=this.tx,
 		ty=this.ty,
 		points = this.points;
+	
+//	console.log("isOn(%s,%s) : %s",x,y,this.isOn(x,y));
+	
 	if(x>0){// && y<this.maxY
 		//recherche de la position y
 		x = x/tx;
@@ -94,13 +126,48 @@ ChartPlots.prototype.draw2 = function(ctx,x,y){
 	
 };
 
-ChartPlots.prototype.getBox = function(xMin,xMax){
+/**
+ * gestion d'un click sur la courbe
+ **/
+ChartPlots.prototype.click = function(ctx,x,y){
+	if(typeof this.mouseClick === "function"){
+		if(this.mouseClick.call(this,ctx,x,y) === false){
+			return false;
+		}
+	}
+}
+
+/**
+ * permet d'obtenir les limites dans laquelle la courbe s'inscrit
+ * 	xMin : exclut les x inférieur à cette valeur
+ * 	xMax : exclut les x supérieur à cette valeur
+ * extended : retourne les limites en extrapolant pour obtenir les valeur xMin et xMax
+ * 
+ * retourne Array [xMin,xMax,yMin,yMax]
+ **/
+ChartPlots.prototype.getBox = function(xMin,xMax,extended){
+	function majBox(point){
+		box[0] = Math.min(point[0],box[0]);
+		box[1] = Math.max(point[0],box[1]);
+		box[2] = Math.min(point[1],box[2]);
+		box[3] = Math.max(point[1],box[3]);
+	}
+	function intersection(point,last,x1,x2){
+		var a = (last[1]-point[1])/(last[0]-point[0]),
+			b = point[1] - a*point[0];
+		majBox([x1,a*x1 + b]);
+		if(typeof x2 === "number"){
+			majBox([x2,a*x2 + b]);
+		}
+	}
 	var box = [
-			Infinity,
-			-Infinity,
-			Infinity,
-			-Infinity
+			Infinity, //xMin
+			-Infinity, //xMax
+			Infinity, //yMin
+			-Infinity //yMax
 		],
+		last = null, //dernier point étudié
+		lastIn = -1, //était dans l'interval
 		li = this.points.length,
 		i,point;
 	if(typeof xMin !== "number"){
@@ -112,25 +179,61 @@ ChartPlots.prototype.getBox = function(xMin,xMax){
 	for(i=0;i<li;i++){
 		point=this.points[i];
 		if(point[0]<xMin || point[0]>xMax){
+			if(extended){
+				if(point[0]<xMin && lastIn>=0){
+					intersection(point,last,xMin,lastIn>0?xMax:"");
+				}
+				if(point[0]>xMax && lastIn<=0){
+					intersection(point,last,xMax,lastIn<0?xMin:"");
+				}
+				lastIn = point[0]-xMin;
+				last = point;
+			}
 			continue;
 		}
-		box[0] = Math.min(point[0],box[0]);
-		box[1] = Math.max(point[0],box[1]);
-		box[2] = Math.min(point[1],box[2]);
-		box[3] = Math.max(point[1],box[3]);
+		if(extended){
+			if(lastIn!==0 && last){
+				intersection(point,last,last[0]<xMin?xMin:xMax);
+			}
+			lastIn = 0;
+			last = point;
+		}
+		majBox(point);
 	}
-	if(box[0]>box[1]){
+	/*if(box[0]>box[1]){
+		//aucun point trouvé
 		box[0] = xMin;
 		box[1] = xMax;
 	}
 	if(box[2]>box[3]){
-		box[2] = -Infinity;
-		box[3] = Infinity;
-	}
+		box[2] = Infinity;
+		box[3] = -Infinity;
+	}*/
 	return box;
 }
 
+/**
+ * Indique si les coordonées sont proche de la courbe
+ * 	x,y: coordonées
+ * 	r : rayon de marge
+ * 
+ * retourne true si les coordonée sont à moins de r de la courbe
+ **/
+ChartPlots.prototype.isOn = function(x,y,r){
+	r = r || 1;
+	x = x/this.tx;
+	y = y/this.ty;
+	var box = this.getBox(x-r,x+r,true);
+	if(y>box[2]-r && y<box[3]+r){
+		return true;
+	}else{
+		return false;
+	}
+}
 
+/**
+ * permet de créer une fonction de copie de tableau
+ **/
 if(typeof copyArray === "undefined"){
 	var copyArray = function(arr){
 		if(! arr instanceof Array){

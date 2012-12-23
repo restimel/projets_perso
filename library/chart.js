@@ -1,3 +1,41 @@
+/**
+ * Chart est une classe permettant de gérer l'affichage et l'intéractivité d'un graphe 
+ * 
+ * required : ChartPlots
+ * 
+ * Constructor:
+ * 	new Chart(option);
+ * 		option [object]: 
+ * 			- mouseClick [function]: appelée lorsque l'utilisateur clique sur le graphe
+ * 				f(e,x,y) : e=event | x=coordonée X du click dans le canvas | y=coordonée Y du click dans le canvas
+ * 			- mouseMove [function]: appelée lorsque l'utilisateur passe la souris au-dessus du graphe
+ * 				f(e,x,y) : e=event | x=coordonée X du click dans le canvas | y=coordonée Y du click dans le canvas
+ *			- uniteX [string]: nom de l'unité pour les absisses
+ *			- uniteY [string]: nom de l'unité pour les ordonnées
+ * 
+ * Méthodes:
+ * 		- add(plots) : ajoute une courbe (plots est soit un Array[[x,y],…] soit un ChartPlots)
+ * 		- remove(i) : supprime une courbe du graphe (i est l'index de la courbe a enlever)
+ * 		- draw() : dessine les courbes
+ * 		- draw2(x,y) : permet de dessiner les interactions avec les courbes (x,y : coordonées du point d'interaction dans le canvas)
+ * 		- create() : Créer le contexte de dessin (retourne l'élément à placer dans le document)
+ * 		- resize() : fonction permettant de remettre à jour les informations de tailles des éléments de dessin
+ **/
+ 
+if(typeof ChartPlots === "undefined"){
+	//chargement de la classe ChartPlots
+	(function(){
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.src = "./chartPlots.js";
+		script.async = true;
+		script.onload = function(){
+			script.parentNode.removeChild(script);
+		};
+		document.body.appendChild(script);
+	})();
+}
+
 function Chart(option){
 	option = option || {};
 	this.maxX = 1000;
@@ -7,7 +45,7 @@ function Chart(option){
 	this.width = this.maxX+this.margeX;
 	this.height = this.maxY+this.margeY;
 	
-	this.plotsList = [];
+	this.plotsList = []; //liste de tous les graphes à afficher
 	
 	this.viewBox = [	0, //xMin
 						0, //xMax
@@ -20,6 +58,9 @@ function Chart(option){
 	this.uniteY = option.uniteY || "";
 }
 
+/**
+ * Permet d'ajouter une courbe
+ **/
 Chart.prototype.add = function(plots){
 	if(!(plots instanceof ChartPlots)){
 		if(plots instanceof Array && plots.length && plots[0] instanceof Array){
@@ -36,12 +77,21 @@ Chart.prototype.add = function(plots){
 	this.viewBox[3] = Math.max(this.viewBox[3],box[3]);
 }
 
+/**
+ * supprime une courbe du graphe
+ * 		index : index de la courbe à enlever
+ * retourne le ChartPlots de la courbe enlevée ou null si non trouvé
+ **/
 Chart.prototype.remove = function(index){
 	if(index>=0 && index<this.plotsList.length){
-		this.plotsList.splice(index,1);
+		return this.plotsList.splice(index,1);
 	}
+	return null;
 }
 
+/**
+ * permet de dessiner l'espace de fond (les courbes)
+ */
 Chart.prototype.draw = function(){
 	var i = this.viewBox[0],
 		li = this.plotsList.length,
@@ -136,6 +186,10 @@ Chart.prototype.draw = function(){
 	
 };
 
+/**
+ * permet de dessiner les interactions avec les courbes
+ * 	x,y : coordonées du point d'interaction dans le canvas
+ **/
 Chart.prototype.draw2 = function(x,y){
 	var i = 0,
 		li = this.plotsList.length,
@@ -153,12 +207,15 @@ Chart.prototype.draw2 = function(x,y){
 	ctx2.restore();
 };
 
-
+/**
+ * création des éléments de dessin
+ * retourne l'élément parent contenant les éléments de dessin à placer dans le document
+ **/
 Chart.prototype.create = function(){
 	var that = this;
 	this.element = document.createElement("div");
 	this.element.style.cssText ="position:relative;width:100%;height:100%;";
-	console.debug(this);
+	//console.debug(this);
 	this.element.onresize = this.resize.bind(this);
 	
 	this.canvasFond = document.createElement("canvas");
@@ -181,22 +238,32 @@ Chart.prototype.create = function(){
 			x=event.layerX; //pas tout à fait la même chose => peut entrainer des bugs
 			y=event.layerY;
 		}
+		if(this.mouseMove){
+			if(this.mouseMove(event,x,y) === false){
+				return false;
+			}
+		}
 		that.draw2(x,y);
 	};
-	if(this.mouseClick){
-		this.canvasAvant.onclick = function(event){
-			var x,y;
-			if(typeof event.offsetX !== "undefined"){
-				x=event.offsetX;
-				y=event.offsetY;
-			}else{
-				x=event.layerX; //pas tout à fait la même chose => peut entrainer des bugs
-				y=event.layerY;
+	
+	this.canvasAvant.onclick = function(event){
+		var x,y;
+		if(typeof event.offsetX !== "undefined"){
+			x=event.offsetX;
+			y=event.offsetY;
+		}else{//pour Opera
+			x=event.layerX; //pas tout à fait la même chose => peut entrainer des bugs
+			y=event.layerY;
+		}
+		if(this.mouseClick){
+			if(this.mouseMove(event,x,y) === false){
+				return false;
 			}
-			console.warn("todo: click on chart");
-			//that.draw2(x,y);
-		};
-	}
+		}
+		console.warn("todo: click on chart");
+		//TODO appeler les méthodes click des ChartPlots
+	};
+	
 	this.canvasAvant.width = this.width;
 	this.canvasAvant.height = this.height;
 	this.ctx2 = this.canvasAvant.getContext("2d");
@@ -208,6 +275,9 @@ Chart.prototype.create = function(){
 	return this.element;
 };
 
+/**
+ * permet de mettre à jour les informations de taille concernant les éléments de dessin
+ **/
 Chart.prototype.resize = function(){
 	this.width = this.canvasFond.offsetWidth;
 	this.height = this.canvasFond.offsetHeight;
