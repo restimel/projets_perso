@@ -14,12 +14,23 @@
  * 				f(ctx,x,y) : this fait référence au ChartPlots déclencheur | ctx=contexte de dessins secondaire | x=coordonée X du click dans le canvas | y=coordonée Y du click dans le canvas
  * 
  * Méthodes:
- * 		- draw(ctx,tx,ty) : dessine la courbe (ctx: contexte de dessin, tx,ty: translation à effectuer avant de dessiner)
- * 		- draw2(ctx,x,y) : dessine les interactions avec la courbe (ctx: contexte de dessin, x,y: coordonées de l'interaction)
+ * 		- draw(plotInfo) : dessine la courbe (ctx: contexte de dessin, tx,ty: translation à effectuer avant de dessiner)
+ * 		- draw2(plotInfo) : dessine les interactions avec la courbe (ctx: contexte de dessin, x,y: coordonées de l'interaction)
  * 		- click(ctx,x,y) : permet de gérer un click sur la courbe
  * 		- getBox(xMin,xMax,extended) : permet d'obtenir la zone contenant la courbe
  * 		- isOn(x,y,r) : indique si les coordonées x,y est proche de la courbe
  **/
+
+ 
+/**
+ * PlotInfo : objet contenant des informations sur le point
+ * 
+ * 		mx,my : coordonées du curseur sur le canvas
+ * 		cx,cy : coordonées correspondant à la courbe
+ *		ctx : contexte du canvas utilisé (pour dessiner)
+ *		tx,ty : transformation à appliquer pour dessiner sur le canvas
+ **/ 
+
 
 function ChartPlots(plots,option){
 	if(plots instanceof Array && plots.length && plots[0] instanceof Array){
@@ -37,9 +48,12 @@ function ChartPlots(plots,option){
 /**
  * dessine la courbe dans le contexte
  **/
-ChartPlots.prototype.draw = function(ctx,tx,ty){
+ChartPlots.prototype.draw = function(plotInfo){
 	var i,x,y,
-		li = this.points.length;
+		li = this.points.length,
+		ctx = plotInfo.ctx,
+		tx = plotInfo.tx,
+		ty = plotInfo.ty;
 	//courbe
 	ctx.beginPath();
 	ctx.moveTo(0, this.points[0][1]*ty);
@@ -69,16 +83,25 @@ ChartPlots.prototype.draw = function(ctx,tx,ty){
 /**
  * permet de dessiner les interactions avec la courbe
  **/
-ChartPlots.prototype.draw2 = function(ctx,x,y){
+ChartPlots.prototype.draw2 = function(plotInfo){
 	var tx=this.tx,
 		ty=this.ty,
-		points = this.points;
+		points = this.points,
+		ctx = plotInfo.ctx,
+		x = plotInfo.cx/tx,
+		y = plotInfo.cy/ty;
 	
-//	console.log("isOn(%s,%s) : %s",x,y,this.isOn(x,y));
+	plotInfo.cx = x;
+	plotInfo.cy = y;
+	plotInfo.tx = tx;
+	plotInfo.ty = ty;
+	
+	//  console.log("isOn(%s,%s) : %s",plotInfo.cx,plotInfo.cy,this.isOn(plotInfo.cx,plotInfo.cy,10));
 	
 	if(x>0){// && y<this.maxY
 		//recherche de la position y
-		x = x/tx;
+		//x = x/tx;
+		
 		var i=0,dst=0,li=points.length;
 		while(i<li && dst<x){
 			dst = points[i++][0];
@@ -93,7 +116,7 @@ ChartPlots.prototype.draw2 = function(ctx,x,y){
 			ctx.translate(x*tx,y*ty);
 			
 			if(typeof this.mouseMove === "function"){
-				if(this.mouseMove.call(this,ctx,x,y) === false){
+				if(this.mouseMove.call(this,ctx,x,y,plotInfo) === false){
 					return false;
 				}
 			}
@@ -209,6 +232,7 @@ ChartPlots.prototype.getBox = function(xMin,xMax,extended){
 		box[2] = Infinity;
 		box[3] = -Infinity;
 	}*/
+	console.debug(box);
 	return box;
 }
 
@@ -221,8 +245,8 @@ ChartPlots.prototype.getBox = function(xMin,xMax,extended){
  **/
 ChartPlots.prototype.isOn = function(x,y,r){
 	r = r || 1;
-	x = x/this.tx;
-	y = y/this.ty;
+	//x = x/this.tx;
+	//y = y/this.ty;
 	var box = this.getBox(x-r,x+r,true);
 	if(y>box[2]-r && y<box[3]+r){
 		return true;

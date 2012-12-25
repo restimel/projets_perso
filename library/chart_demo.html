@@ -14,6 +14,7 @@
 	</style>
 </head>
 <body>
+<aside id="info" style="position:fixed;right:0px;width:20em;border:1px solid black;"></aside>
 <article>
 <h1>Parcours</h1>
 <figure>
@@ -88,7 +89,7 @@ window.onload=function(){
 	};
 	var denivele = convert2D(data);
 
-	function marcheur(ctx,x,y){
+	function marcheur(ctx,x,y,plotInfo){
 		ctx.save();
 		
 		//dessin marcheur
@@ -119,6 +120,8 @@ window.onload=function(){
 		ctx.stroke();
 		
 		ctx.restore();
+		
+		document.getElementById("info").textContent="x:"+x+" y:"+y+" plotInfo.mx:"+plotInfo.mx+" plotInfo.my:"+plotInfo.my+" plotInfo.cx:"+plotInfo.cx+" plotInfo.cy:"+plotInfo.cy;
 	}
 
 	var courbe1 = new ChartPlots(denivele,{mouseMove:marcheur});

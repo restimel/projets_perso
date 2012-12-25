@@ -22,6 +22,16 @@
  * 		- resize() : fonction permettant de remettre à jour les informations de tailles des éléments de dessin
  **/
  
+/**
+ * PlotInfo : objet contenant des informations sur le point
+ * 
+ * 		mx,my : coordonées du curseur sur le canvas
+ * 		cx,cy : coordonées correspondant à la courbe
+ *		ctx : contexte du canvas utilisé (pour dessiner)
+ *		tx,ty : transformation à appliquer pour dessiner sur le canvas
+ **/ 
+
+
 if(typeof ChartPlots === "undefined"){
 	//chargement de la classe ChartPlots
 	(function(){
@@ -100,7 +110,8 @@ Chart.prototype.draw = function(){
 		tx = this.maxX/(this.viewBox[1]-this.viewBox[0]),
 		ty = this.maxY/(this.viewBox[3]-this.viewBox[2]),
 		x,y,
-		pi2 = Math.PI/2;
+		pi2 = Math.PI/2,
+		plotInfo;
 	
 	ctx.save();
 	
@@ -175,8 +186,17 @@ Chart.prototype.draw = function(){
 	ctx.translate(this.margeX,this.maxY);
 	ctx.scale(1,-1);
 	li=this.plotsList.length;
+	plotInfo = {
+		ctx : ctx,
+		cx : null,
+		cy : null,
+		mx : null,
+		my : null,
+		tx : tx,
+		ty : ty
+	};
 	for(i=0;i<li;i++){
-		this.plotsList[i].draw(ctx,tx,ty);
+		this.plotsList[i].draw(plotInfo);
 	}
 	
 	ctx.restore();
@@ -193,7 +213,8 @@ Chart.prototype.draw = function(){
 Chart.prototype.draw2 = function(x,y){
 	var i = 0,
 		li = this.plotsList.length,
-		ctx2 = this.ctx2;
+		ctx2 = this.ctx2,
+		plotInfo;
 
 	ctx2.save();
 	ctx2.clearRect(0,0,this.width,this.height);
@@ -201,8 +222,18 @@ Chart.prototype.draw2 = function(x,y){
 	ctx2.translate(this.margeX,this.maxY);
 	ctx2.scale(1,-1);
 	
+	plotInfo = {
+		ctx : ctx2,
+		cx : x-this.margeX,
+		cy : this.maxY-y, //TODO verifier que c'est bon
+		mx : x,
+		my : y,
+		tx : null,
+		ty : null
+	};
 	for(i=0;i<li;i++){
-		this.plotsList[i].draw2(ctx2,x-this.margeX,y);
+		//this.plotsList[i].draw2(ctx2,x-this.margeX,y,plotInfo);
+		this.plotsList[i].draw2(plotInfo);
 	}
 	ctx2.restore();
 };
