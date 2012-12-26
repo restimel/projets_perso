@@ -7,6 +7,7 @@
  * 	new ChartPlots(plots,option);
  * 		plots [Array]: liste des points de la courbe. [[x,y],…]
  * 		option [object]:
+ * 			- name [string] : nom de la courbe
  * 			-  color [string] : couleur de la courbe (default : "rgba(100,100,250,1)")
  * 			- mouseClick [function]: appelée lorsque l'utilisateur clique sur le graphe (à voir/sur le courbe)
  * 				f(ctx,x,y) : this fait référence au ChartPlots déclencheur | ctx=contexte de dessins secondaire | x=coordonée X du click dans le canvas | y=coordonée Y du click dans le canvas
@@ -43,7 +44,12 @@ function ChartPlots(plots,option){
 	
 	this.mouseMove = option.mouseMove || null;
 	this.mouseClick = option.mouseClick || null;
+	
+	ChartPlots.nb++;
+	this.name = option.name || "draw #"+ChartPlots.nb;
 }
+
+ChartPlots.nb = 0;
 
 /**
  * dessine la courbe dans le contexte
@@ -83,18 +89,22 @@ ChartPlots.prototype.draw = function(plotInfo){
 /**
  * permet de dessiner les interactions avec la courbe
  **/
-ChartPlots.prototype.draw2 = function(plotInfo){
+ChartPlots.prototype.draw2 = function(pltInfo){
 	var tx=this.tx,
 		ty=this.ty,
 		points = this.points,
-		ctx = plotInfo.ctx,
-		x = plotInfo.cx/tx,
-		y = plotInfo.cy/ty;
-	
-	plotInfo.cx = x;
-	plotInfo.cy = y;
-	plotInfo.tx = tx;
-	plotInfo.ty = ty;
+		ctx = pltInfo.ctx,
+		x = pltInfo.cx/tx,
+		y = pltInfo.cy/ty,
+		plotInfo={
+			ctx:ctx,
+			cx:x,
+			cy:y,
+			mx:pltInfo.mx,
+			my:pltInfo.my,
+			tx:tx,
+			ty:ty
+		};
 	
 	//  console.log("isOn(%s,%s) : %s",plotInfo.cx,plotInfo.cy,this.isOn(plotInfo.cx,plotInfo.cy,10));
 	
@@ -232,7 +242,6 @@ ChartPlots.prototype.getBox = function(xMin,xMax,extended){
 		box[2] = Infinity;
 		box[3] = -Infinity;
 	}*/
-	console.debug(box);
 	return box;
 }
 

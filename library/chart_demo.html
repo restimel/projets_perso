@@ -28,6 +28,12 @@
 </figure>
 </article>
 
+<figure>
+<div id="bigData"></div>
+<catpion>Beaucoup de points (100000 points)</caption>
+</figure>
+</article>
+
 <!--<script src="./chartPlots.js"></script>-->
 <script src="./chart.js" async></script>
 <script>
@@ -131,10 +137,43 @@ window.onload=function(){
 	document.getElementById("altitude").appendChild(graphe1.create());
 
 	var courbe2 = new ChartPlots(data,{color:"#00FF00"});
+	console.time("total petite courbe");
+	console.time("chart petite courbe");
 	var graphe2=new Chart();
+	console.timeEnd("chart petite courbe");
+	console.time("add petite courbe");
 	graphe2.add(courbe2);
+	console.timeEnd("add petite courbe");
+	console.time("dessin petite courbe");
 	document.getElementById("vitesse").appendChild(graphe2.create());
-
+	console.timeEnd("dessin petite courbe");
+	console.timeEnd("total petite courbe");
+	
+	
+	//test bcp de données
+	var dt1 = [],dt2 = [], dt3=[],
+		nb = 100000,i;
+	
+	for(i=0;i<nb;i++){
+		dt1.push([i/10,Math.log((i+1)/10)]);
+		dt2.push([i/10,Math.sqrt(i/10)]);
+		dt3.push([i/10,Math.log((i+1)/10)*2]);
+	}
+	
+	var courbe3_1 = new ChartPlots(dt1,{color:"#00FFCC"});
+	var courbe3_2 = new ChartPlots(dt2,{color:"#FF9900"});
+	var courbe3_3 = new ChartPlots(dt3,{color:"#CC00CC"});
+	console.time("total grosse courbes");
+	var graphe3=new Chart();
+	console.time("ajout grosse courbes");
+	graphe3.add(courbe3_1);
+	graphe3.add(courbe3_2);
+	graphe3.add(courbe3_3);
+	console.timeEnd("ajout grosse courbes");
+	console.time("dessin grosse courbes");
+	document.getElementById("bigData").appendChild(graphe3.create());
+	console.timeEnd("total grosse courbes");
+	console.timeEnd("dessin grosse courbes");
 };
 </script>
 </body>

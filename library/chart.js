@@ -182,7 +182,7 @@ Chart.prototype.draw = function(){
 	
     
 	
-	//courbe
+	//courbes
 	ctx.translate(this.margeX,this.maxY);
 	ctx.scale(1,-1);
 	li=this.plotsList.length;
