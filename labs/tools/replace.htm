@@ -5,6 +5,17 @@
 	<meta author="Benoit Mariat">
 	<meta date="12/12/12">
 	<title>Tools: Text switching</title>
+	<style type="text/css">
+.info{
+	color:#0000CC;
+}
+.warning{
+	color:#CC9900;
+}
+.error{
+	color:#CC0000;
+}
+	</style>
 </head>
 <body>
 
@@ -39,12 +50,14 @@ var addReg=(function(){
 	var nbElement=0;
 	return function(){
 		var text='<hr>';
+		text+='<form id="regexpForm'+nbElement+'">';
 		text+='<label>regexp:<input id="regexp'+nbElement+'"></label>';
 		text+='<label>flag:<input id="flag'+nbElement+'" value="gi" placeholder="gimy"></label>';
 		text+='<aside style="float:right">';
 		text+='<input type="text" id="name'+nbElement+'" title="name to explain this regexp, this has no impact on RegExp" placeholder="name to explain this regexp" style="width:20em;"><br>';
 		text+='<label><input type="checkbox" id="active'+nbElement+'" title="Activate this RegExp" checked>Activate</label><br>';
 		text+='<div style="float:right;font-size:0.5em;">id:'+nbElement+'</div>';
+		text+='<output id="message'+nbElement+'"></output>';
 		text+='</aside>';
 		text+='<br>';
 		text+='<label title="\\n, \\r and \\t should be writen §n, §r and §t">replace:<input id="replace'+nbElement+'"></label>';
@@ -53,12 +66,173 @@ var addReg=(function(){
 		text+='<label>use&nbsp;incremental&nbsp;value:<input id="modeIncReplace'+nbElement+'" type="checkbox" onchange="this.parentNode.nextElementSibling.style.display=this.checked?\'inline\':\'none\';"></label>';
 		text+='<aside style="display:none;font-style:italic;font-size:0.8em;">The incremental value should be encapsuled by §! and !§. Example: to start from 0, you should write §!0!§</aside>';//doit être placé juste derrière le label de modeIncReplace
 		text+='<br>';
-		nbElement++;
+		text+='</form>';
 		var element=document.createElement("div");
 		element.innerHTML=text;
-		document.getElementById("zoneRegexp").appendChild(element);;
+		document.getElementById("zoneRegexp").appendChild(element);
+		//ajout des fonctions
+		document.getElementById("regexpForm"+nbElement).addEventListener("change",verifForm,false);
+		//document.getElementById("regexpForm"+nbElement).addEventListener("changeinput",verifForm,false);
+		nbElement++;
 	};
 })();
+
+function verifForm(event){
+	//permet de vérifier différents paramètres d'un bloc regexp
+	var form=this,
+		nbElement = form.id.substr(10),
+		message = document.getElementById("message"+nbElement),
+		msg = "",
+		status = "info",
+		tmp;
+	//warning
+	if(form["modeReplace"+nbElement].checked && form["modeIncReplace"+nbElement].checked){
+		msg = "incremental value is not available in incremental string replacement";
+		status = "warning";
+	}
+	//error
+	if((tmp = isValidRegExp(form["regexp"+nbElement].value))!=="OK"){
+		msg = "RegExp is not valid: "+tmp;
+		status = "error";
+	}
+	message.value = msg;
+	message.className = status;
+}
+
+function isValidRegExp(str){
+	//permet de vérifier que la chaine est une regexp valide
+	//retourne "OK" si c'est valide sinon retourne le message d'erreur
+	var i=0,
+		li=str.length,
+		open = [],
+		lastOpen = "",
+		char = "",
+		lastChar,
+		nxtChar = str.charAt(0);
+		msg = "";
+	for(i=0;i<li;i++){
+		lastChar = char;
+		char = nxtChar;
+		nxtChar=str.charAt(i+1);
+		if(char==="\\"){ //caractère d'échappement
+			if(i===li-1){
+				return "(c"+i+") escaped character at the end";
+			}
+			char+=nxtChar;
+			nxtChar = str.charAt(++i+1);
+			continue;
+		}
+		switch(lastOpen){
+			case "[": //mode class
+				switch(char){
+					case "]":
+						open.pop();
+						lastOpen=open[open.length-1];
+					break;
+					case "-":
+						if(lastChar!=="[" && nxtChar!=="]" && lastChar>nxtChar){
+							return "(c"+i+") Range out of order in character class";
+						}
+					break;
+				}
+			break;
+			case "(": //mode parenthèse
+				switch(char){
+					case ")":
+						open.pop();
+						lastOpen=open[open.length-1];
+					break;
+					case "?":
+						if(lastChar==="(" && nxtChar!==":" && nxtChar!=="!"){
+							return "(c"+i+") Invalid group";
+						}else if(lastChar==="^" || lastChar==="$" || (lastChar===":" || lastChar==="!") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
+							return "(c"+i+") Nothing to repeat";
+						}else if((lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="|") && (str.charAt(i-2)==="?" || str.charAt(i-2)==="*" || str.charAt(i-2)==="+" || str.charAt(i-2)==="¤}")){
+							return "(c"+i+") Nothing to repeat";
+						}
+					break;
+					case "*":
+						if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
+							return "(c"+i+") Nothing to repeat";
+						}
+					break;
+					case "+":
+						if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
+							return "(c"+i+") Nothing to repeat";
+						}
+					break;
+					case "{":
+						if(char = str.substr(i).match(/{[0-9]+,[0-9]*}/)){
+							char=char[0];
+							if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
+								return "(c"+i+") Nothing to repeat";
+							}
+							i+=char.length-1;
+							nxtChar=str.charAt(i+1);
+							char="¤}";
+						}
+					break;
+					case "[":
+						lastOpen="[";
+						open.push(lastOpen);
+						if(nxtChar==="]"){
+							msg+="Empty class [] could not match any string.";
+						}
+					break;
+				}
+			break;
+			default: //mode normal
+				switch(char){
+					case "[":
+						lastOpen="[";
+						open.push(lastOpen);
+						if(nxtChar==="]"){
+							msg+="Empty class [] could not match any string.";
+						}
+					break;
+					case "(":
+						lastOpen="(";
+						open.push(lastOpen);
+					break;
+					case "?":
+						if(lastChar==="" || lastChar==="^" || lastChar==="$" || lastChar==="|"){
+							return "(c"+i+") Nothing to repeat";
+						}else if((lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}") && (str.charAt(i-2)==="?" || str.charAt(i-2)==="*" || str.charAt(i-2)==="+" || str.charAt(i-2)==="¤}")){
+							return "(c"+i+") Nothing to repeat";
+						}
+					break;
+					case "*":
+						if(lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="" || lastChar==="^" || lastChar==="$" || lastChar==="|"){
+							return "(c"+i+") Nothing to repeat";
+						}
+					break;
+					case "+":
+						if(lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="" || lastChar==="^" || lastChar==="$" || lastChar==="|"){
+							return "(c"+i+") Nothing to repeat";
+						}
+					break;
+					case "{":
+						if(char = str.substr(i).match(/{([0-9]+),([0-9]*)}/)){
+							if(typeof char[2] !== "undefined" && parseInt(char[1],10)>parseInt(char[2],10)){
+								return "(c"+i+") numbers out of order in {} quantifier";
+							}
+							char=char[0];
+							if(lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="" || lastChar==="|"){
+								return "(c"+i+") Nothing to repeat";
+							}
+							i+=char.length-1;
+							nxtChar=str.charAt(i+1);
+							char="¤}";
+						}
+					break;
+				}
+		}
+	}
+	if(open.length){
+		return "Unterminated group "+open.join(",")+(open.length===1?" is":" are")+" not closed";
+	}
+	return "OK"; //TODO warning message
+}
 
 function prepareReplace(){
 	//permet d'afficher que c'est en cours de traitement
