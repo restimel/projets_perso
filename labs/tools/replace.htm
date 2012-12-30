@@ -2,8 +2,9 @@
 <html>
 <head>
 	<meta charset="utf8">
-	<title>Tools: Text switching</title>
 	<meta author="Benoit Mariat">
+	<meta date="12/12/12">
+	<title>Tools: Text switching</title>
 </head>
 <body>
 
@@ -48,8 +49,8 @@ var addReg=(function(){
 		text+='<br>';
 		text+='<label title="\\n, \\r and \\t should be writen §n, §r and §t">replace:<input id="replace'+nbElement+'"></label>';
 		text+='<label style="display:none;" title="each line represents an occurence. Motif should be separated by ~~">Incremental&nbsp;Replace:<textarea id="iReplace'+nbElement+'" placeholder="each line represents an occurence. Motif should be separated by ~~. When all occurence are used, it comes back to the first. Exemple:"></textarea></label> ';
-		text+='<label>use&nbsp;incremental&nbsp;string&nbsp;replace:<input id="modeReplace'+nbElement+'" type="checkbox" onchange="var e1=this.parentNode.previousSibling;if(this.checked){e1.style.display=\'inline\';e1.previousSibling.style.display=\'none\';e1.lastChild.focus();}else{e1.style.display=\'none\';e1.previousSibling.style.display=\'inline\';}"></label> ';
-		text+='<label>use&nbsp;incremental&nbsp;value:<input id="modeIncReplace'+nbElement+'" type="checkbox" onchange="this.parentNode.nextSibling.style.display=this.checked?\'inline\':\'none\';"></label>';
+		text+='<label>use&nbsp;incremental&nbsp;string&nbsp;replace:<input id="modeReplace'+nbElement+'" type="checkbox" onchange="var e1=this.parentNode.previousElementSibling;if(this.checked){e1.style.display=\'inline\';e1.previousElementSibling.style.display=\'none\';e1.lastChild.focus();}else{e1.style.display=\'none\';e1.previousElementSibling.style.display=\'inline\';}"></label> ';
+		text+='<label>use&nbsp;incremental&nbsp;value:<input id="modeIncReplace'+nbElement+'" type="checkbox" onchange="this.parentNode.nextElementSibling.style.display=this.checked?\'inline\':\'none\';"></label>';
 		text+='<aside style="display:none;font-style:italic;font-size:0.8em;">The incremental value should be encapsuled by §! and !§. Example: to start from 0, you should write §!0!§</aside>';//doit être placé juste derrière le label de modeIncReplace
 		text+='<br>';
 		nbElement++;
