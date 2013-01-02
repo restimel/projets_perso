@@ -1,0 +1,48 @@
+<DOCTYPE html>
+<html>
+<head>
+	<meta chartype="utf8">
+	<title>Sort text with number</title>
+</head>
+<body>
+<textarea id="source" placeholder="data to sort. They should be separated by end line."></textarea><br>
+<textarea id="rslt" placeholder="sorted result" readonly></textarea>
+<script>
+var source = document.getElementById("source"),
+	rslt = document.getElementById("rslt");
+source.onchange=test;
+
+function test(){
+	rslt.value = source.value.split(/(?:\r?\n)+/).sort(sortWithNumber).join('\n');
+}
+
+function sortWithNumber(s1,s2){
+    s1 = s1.toString();
+    s2 = s2.toString();
+    if(s1 === s2){
+        return 0;
+    }
+    
+    //on extrait la partie nombre du texte
+    var rgx = /^([^0-9]+)([0-9]*)(.*)$/,
+        t1 = s1.match(rgx),
+        t2 = s2.match(rgx);
+    if(!t1){return -1;}
+    if(!t2){return 1;}
+    if(t1[1] === t2[1]){
+        if(t1[2] === t2[2]){
+            return sortWithNumber(t1[3],t2[3]); //on cherche le nombre suivant
+        }else if(parseInt(t1[2]||0,10)<parseInt(t2[2]||0,10)){ //comparaison entre nombre
+            return -1;
+        }else{
+            return 1;
+        }
+    }else if(t1[1]<t2[1]){
+        return -1;
+    }else{
+        return 1;
+    }
+}
+</script>
+</body>
+</html>

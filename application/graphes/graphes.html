@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Editeur de graphes</title>
+	
+	<style>
+		figure>div{
+			width : 50%;
+			height : 300px;
+			border : 10px solid black;
+			
+		}
+		#graphe{
+			height:200px;
+		}
+	</style>
+</head>
+<body>
+<div id="zoneEquation">
+	<head>Nouvelle courbe</head>
+	<fieldset>
+	<legend>equation</legend>
+	<label>y(t)=<input type="text" id="equationY" placeholder="Entrez l'équation pour l'ordonée (t est la variable temporelle)"></label><br>
+	<label>x(t)=<input type="text" id="equationX"  value="t" placeholder="Entrez l'équation pour l'absisse (t est la variable temporelle)"></label><br>
+	<button id="newCourbe">Add Courbe</button>
+</div>
+
+<div id="graphe"></div>
+
+<table id="zoneListe"><thead><th>color</th><th>equation</th></thead></table>
+
+<script src="../../library/chart.js"></script>
+<script src="../../library/chartPlots.js"></script>
+<script>
+
+var listeGraphe = [];
+
+function generateEquation(x,y,t0,tMax,tInc){
+	var t,
+		data = [],
+		point;
+	
+	t0 = t0 || 0;
+	if(typeof tMax !== "number") tMax = 100;
+	if(!tInc || tInc<=0) tInc = 1;
+	
+	for(t=t0;t<=tMax;t+=tInc){
+		point=[];
+		point[0]=x(t);
+		point[1]=y(t);
+		console.log(point);
+		data.push(point);
+	}
+	return data;
+}
+function addCourbe(graphe){
+	var strX = document.getElementById("equationX").value,
+		strY = document.getElementById("equationY").value,
+		color = "#00FF00";
+	
+	function strToJS(motif,mot){
+		var result="";
+		switch(mot.toLowerCase()){
+			case "math.cos" :
+			case "cos" : 
+				result = "Math.cos(";
+				break;
+			case "math.sin" :
+			case "sin" : 
+				result = "Math.sin(";
+				break;
+			default: 
+				console.log(mot);
+				result ="(";
+		}
+		return result;
+	}
+	strY = strY.replace(/\b([a-zA-Z0-9._]+)\s*(\()/g,strToJS);
+	console.log(strY);
+	var x = new Function("t","return "+strX),
+		y = new Function("t","return "+strY);
+	listeGraphe.push([x,y]);
+	
+	var data = generateEquation(x,y),
+		courbe = new ChartPlots(data,{color:color});
+	graphe.add(courbe);
+	graphe.draw();
+	
+	//ajout au tableau
+	var row = document.getElementById("zoneListe").insertRow(-1),
+		cell = row.insertCell(-1);
+	cell.style.backgroundColor = color;
+	cell = row.insertCell(-1);
+	cell.appendChild(document.createTextNode("x(t) = "+strX));
+	cell.appendChild(document.createElement("br"));
+	cell.appendChild(document.createTextNode("y(t) = "+strY));
+}
+
+function graphesInit(){
+	var graphe = new Chart();
+	document.getElementById("graphe").appendChild(graphe.create());
+	document.getElementById("newCourbe").onclick=function(){
+		addCourbe(graphe);
+	};
+}
+
+window.addEventListener("load",graphesInit,false);
+
+</script>
+</body>
+</html>

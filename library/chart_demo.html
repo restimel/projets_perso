@@ -14,6 +14,7 @@
 	</style>
 </head>
 <body>
+<aside id="info" style="position:fixed;right:0px;width:20em;border:1px solid black;"></aside>
 <article>
 <h1>Parcours</h1>
 <figure>
@@ -27,79 +28,153 @@
 </figure>
 </article>
 
-<script src="./chart.js"></script>
+<figure>
+<div id="bigData"></div>
+<catpion>Beaucoup de points (100000 points)</caption>
+</figure>
+</article>
+
+<!--<script src="./chartPlots.js"></script>-->
+<script src="./chart.js" async></script>
 <script>
-//DEBUG
-var denivele=[
-	[42,5,100],
-	[42.1,5.5,101],
-	[42.2,5.512,111],
-	[42.1,5.515,105],
-	[42.1789,5.51575,125],
-	[42.14567,5.5152456,0],
-	[43,5,90],
-	[43.1,5.5,101],
-	[43.2,5.512,115],
-	[43.1,5.515,107],
-	[43.1789,5.51575,116],
-	[43.14567,5.6152456,101],
-	[42,5.9,129],
-	[42.1,6.4,95],
-	[42.2,6.412,72],
-	[42.1,6.515,102],
-	[42.1789,6.51575,95],
-	[42.14567,6.5152456,119],
-	[43,6,103],
-	[43.1,6.5,123],
-	[43.2,6.512,131],
-	[43.1,6.515,108.5],
-	[43.17892,6.51555,116.16],
-	[43.14567,6.5152456,20],
-	[43.14567,6.4152456,20]
-];
+window.onload=function(){
+	//DEBUG
+	var data=[
+		[42,5,100],
+		[42.1,5.5,101],
+		[42.2,5.512,111],
+		[42.1,5.515,105],
+		[42.1789,5.51575,125],
+		[42.14567,5.5152456,0],
+		[43,5,90],
+		[43.1,5.5,101],
+		[43.2,5.512,115],
+		[43.1,5.515,107],
+		[43.1789,5.51575,116],
+		[43.14567,5.6152456,101],
+		[42,5.9,129],
+		[42.1,6.4,95],
+		[42.2,6.412,72],
+		[42.1,6.515,102],
+		[42.1789,6.51575,95],
+		[42.14567,6.5152456,119],
+		[43,6,103],
+		[43.1,6.5,123],
+		[43.2,6.512,131],
+		[43.1,6.515,108.5],
+		[43.17892,6.51555,116.16],
+		[43.14567,6.5152456,20],
+		[43.14567,6.4152456,20]
+	];
+	var convert2D = function(chemin){
+		var distance = 0,
+			maxHeight = 0,
+			i = 1, li = chemin.length,
+			points;
+		
+		//TODO remove points sans altitude
+		
+		points = [[0,chemin[0][2]]];
+		maxHeight = Math.max(maxHeight,chemin[0][2]);
+		do{
+			distance += calculDistance(chemin[i-1],chemin[i]);
+			maxHeight = Math.max(maxHeight,chemin[i][2]);
+			points.push([distance,chemin[i][2]]);
+		}while(++i<li);
+		
+		function calculDistance(p1,p2){
+		//calcul approximatif (TODO utiliser le calcul de Map)
+			var dx = (p1[0] - p2[0])*100,
+				dy = (p1[1] - p2[1])*100,
+				dh = (p1[2] - p2[2]),
+				dst = Math.sqrt(dx*dx + dy*dy + dh*dh);
+			return dst;
+		}
+		
+		return points;
+	};
+	var denivele = convert2D(data);
 
-function marcheur(ctx,x,y){
-	var tx = this.maxX/this.distance,
-		ty = this.maxY/this.maxHeight;
-	ctx.save();
-	ctx.translate(this.margeX+x*tx,this.maxY-y*ty);
-	
-	//dessin marcheur
-	ctx.strokeStyle = "rgba(0,0,0,0.6)";
-	ctx.scale(0.7,0.7);
-	ctx.beginPath();
-	
-	//tete
-	ctx.arc(0, -35, 5, 0, 2 * Math.PI, false);
-	//jambes
-	ctx.moveTo(-10,0);
-	ctx.lineTo(0,-10);
-	ctx.lineTo(10,0);
-	//bras
-	ctx.moveTo(-20,-30);
-	ctx.lineTo(20,-30);
-	//corps
-	ctx.moveTo(0,-10);
-	ctx.lineTo(10,-30);
-	ctx.lineTo(-10,-30);
-	ctx.lineTo(0,-10);
-	
-	
-	//baton
-	ctx.moveTo(18,-32);
-	ctx.lineTo(17,0);
-	
-	ctx.stroke();
-	
-	ctx.restore();
-}
+	function marcheur(ctx,x,y,plotInfo){
+		ctx.save();
+		
+		//dessin marcheur
+		ctx.strokeStyle = "rgba(0,0,0,0.6)";
+		ctx.scale(0.7,0.7);
+		ctx.beginPath();
+		
+		//tete
+		ctx.arc(0, 35, 5, 0, 2 * Math.PI, false);
+		//jambes
+		ctx.moveTo(-10,0);
+		ctx.lineTo(0,10);
+		ctx.lineTo(10,0);
+		//bras
+		ctx.moveTo(-20,30);
+		ctx.lineTo(20,30);
+		//corps
+		ctx.moveTo(0,10);
+		ctx.lineTo(10,30);
+		ctx.lineTo(-10,30);
+		ctx.lineTo(0,10);
+		
+		
+		//baton
+		ctx.moveTo(18,32);
+		ctx.lineTo(17,0);
+		
+		ctx.stroke();
+		
+		ctx.restore();
+		
+		document.getElementById("info").textContent="x:"+x+" y:"+y+" plotInfo.mx:"+plotInfo.mx+" plotInfo.my:"+plotInfo.my+" plotInfo.cx:"+plotInfo.cx+" plotInfo.cy:"+plotInfo.cy;
+	}
 
-var graphe1=new Chart(denivele,{mouseMove:marcheur,uniteX:"km",uniteY:"m"});
-document.getElementById("altitude").appendChild(graphe1.create());
+	var courbe1 = new ChartPlots(denivele,{mouseMove:marcheur});
+	var graphe1=new Chart({uniteX:"km",uniteY:"m"});
+	graphe1.add(courbe1);
+	//var graphe1=new Chart(denivele,{mouseMove:marcheur,uniteX:"km",uniteY:"m"});
+	document.getElementById("altitude").appendChild(graphe1.create());
 
-var graphe2=new Chart(denivele);
-document.getElementById("vitesse").appendChild(graphe2.create());
-
+	var courbe2 = new ChartPlots(data,{color:"#00FF00"});
+	console.time("total petite courbe");
+	console.time("chart petite courbe");
+	var graphe2=new Chart();
+	console.timeEnd("chart petite courbe");
+	console.time("add petite courbe");
+	graphe2.add(courbe2);
+	console.timeEnd("add petite courbe");
+	console.time("dessin petite courbe");
+	document.getElementById("vitesse").appendChild(graphe2.create());
+	console.timeEnd("dessin petite courbe");
+	console.timeEnd("total petite courbe");
+	
+	
+	//test bcp de données
+	var dt1 = [],dt2 = [], dt3=[],
+		nb = 100000,i;
+	
+	for(i=0;i<nb;i++){
+		dt1.push([i/10,Math.log((i+1)/10)]);
+		dt2.push([i/10,Math.sqrt(i/10)]);
+		dt3.push([i/10,Math.log((i+1)/10)*2]);
+	}
+	
+	var courbe3_1 = new ChartPlots(dt1,{color:"#00FFCC"});
+	var courbe3_2 = new ChartPlots(dt2,{color:"#FF9900"});
+	var courbe3_3 = new ChartPlots(dt3,{color:"#CC00CC"});
+	console.time("total grosse courbes");
+	var graphe3=new Chart();
+	console.time("ajout grosse courbes");
+	graphe3.add(courbe3_1);
+	graphe3.add(courbe3_2);
+	graphe3.add(courbe3_3);
+	console.timeEnd("ajout grosse courbes");
+	console.time("dessin grosse courbes");
+	document.getElementById("bigData").appendChild(graphe3.create());
+	console.timeEnd("total grosse courbes");
+	console.timeEnd("dessin grosse courbes");
+};
 </script>
 </body>
 </html>
