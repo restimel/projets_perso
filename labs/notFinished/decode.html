@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf8">
+	<title>decode</title>
+	<meta author="Benoit Mariat">
+</head>
+<body>
+<fieldset>
+	<legend>Source</legend>
+	<form id="source">
+		<label>Hexa<input type="text" name="hex" oninput="decimal.value=parseInt(this.value,16);"></label><br>
+		<label>Decimal<input type="text" name="decimal"></label><br>
+		<label>Binaire<input type="text" name="binaire" oninput="decimal.value=parseInt(this.value,2);"></label><br>
+		<label>code text<input type="text" name="text" oninput="if(this.value.length>1) this.value=this.value[0];decimal.value=this.value.charCodeAt(0);"></label><br>
+	</form>
+</fieldset>
+
+<fieldset>
+	<legend>Mask</legend>
+	<form id="mask">
+		<label>Hexa<input type="text" name="hex" oninput="decimal.value=parseInt(this.value,16);"></label><br>
+		<label>Decimal<input type="text" name="decimal"></label><br>
+		<label>Binaire<input type="text" name="binaire" oninput="decimal.value=parseInt(this.value,2);"></label><br>
+		<label>code text<input type="text" name="text" oninput="if(this.value.length>1) this.value=this.value[0];decimal.value=this.value.charCodeAt(0);"></label><br>
+	</form>
+</fieldset>
+
+<fieldset>
+	<legend>Calcul</legend>
+	<form id="operation">
+		<label>operation<select name="operation">
+			<option value="xor" title="1100 xor 1010 = 0110">XOR</option>
+			<option value="rollR" title="00110101 roll 2 = 01001101">ROLL Right</option>
+			<option value="rollL" title="00110101 roll 2 = 11010100">ROLL Left</option>
+			<option value="test" title="pour tester">for test</option>
+		</select></label><br>
+		<label>Hexa<input type="text" name="hex" readonly></label><br>
+		<label>Decimal<input type="text" name="decimal" readonly></label><br>
+		<label>Binaire<input type="text" name="binaire" readonly></label><br>
+		<label>code text<input type="text" name="text" readonly></label><br>
+	</form>
+</fieldset>
+
+<script>
+function maj(form){
+	var dec = parseInt(form.decimal.value,10)||0;
+	form.decimal.value=dec;
+	form.hex.value=dec.toString(16);
+	form.binaire.value=dec.toString(2);
+	form.text.value=String.fromCharCode(dec);
+}
+
+function calcul(){
+	var nb1 = parseInt(document.getElementById("source").decimal.value,10),
+		nb2 = parseInt(document.getElementById("mask").decimal.value,10),
+		op=document.getElementById("operation");
+	op.decimal.value = doOperation(nb1,nb2,op.operation.value);
+	maj(op);
+}
+
+function doOperation(n1,n2,operation){
+	var result = 0;
+	switch(operation){
+		case "xor" : result = xor(n1,n2); break;
+		case "rollR" : result = rollRight(n1,n2); break;
+		case "rollL" : result = rollLeft(n1,n2); break;
+		case "test" : result = test(n1,n2); break;
+		default : result = NaN;
+	}
+	
+	return result;
+	
+	function xor(n1,n2){
+		return n1^n2;
+	}
+	
+	function rollRight(n1,n2){
+		return n1&n2;
+		y = (8-(y % 8))%8;
+		var masque = masquePoidsFort(y);
+		masque = (x & masque) >> (8-y);
+		return ((masque) + (x << y)) & 0x00ff;
+	}
+	
+	function rollLeft(x,y){
+		y = y % 8;
+		var masque = masquePoidsFort(y);
+		masque = (x & masque) >> (8-y);
+		return ((masque) + (x << y)) & 0x00ff;
+	}
+	
+	function test(x,y){
+		y = y % 8;
+		var masque = masquePoidsFort(y);
+		masque = (x & masque) >> (8-y);
+		return ((masque) + (x << y)) & 0x00ff;
+	}
+	
+	function masquePoidsFaible(y){
+		var z = Math.pow(2,y)-1;
+		return z;
+	}
+
+	function masquePoidsFort(y){
+		var z = 0;
+		for(var i=8-y;i<8;i++){
+			z += Math.pow(2,i);
+		}
+		return z;
+	}
+}
+
+document.getElementById("source").addEventListener("input",function(){maj(this);calcul();},false);
+document.getElementById("mask").addEventListener("input",function(){maj(this);calcul();},false);
+</script>
+</body>
+</html>
