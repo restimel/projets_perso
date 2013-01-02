@@ -51,10 +51,8 @@ alert(i+"/"+j+"/"+k+"/"+l);
 function test(){
 	var code = document.getElementById("question").value;
 	if(!/alert\(/.test(code)){
-		alert("ok");
 		code = code.replace(/(?:^|[\r\n])(?:[\r\n]|$)/g,"").replace(/(^|[\n\r;])([^;\r\n]+);?$/,"$1alert($2);");
 	}
-	alert(code);
 	try{
 		var f=new Function(code);
 	}catch(e){
