@@ -7,59 +7,111 @@
 		pre{
 			border: 1px dotted blue;
 		}
+		.ajout{
+			background-color: #F0FF80;
+		}
+		.suppression{
+			text-decoration: line-through;
+			background-color: #FFB2B2;
+		}
+		tr{
+			padding-bottom: 0.5em;
+		}
+		#loading{
+			display : none;
+			border : 1px solid black;
+			position : fixed;
+			padding : 2em;
+			margin : auto;
+		}
 	</style>
-	Source 1: <textarea id="source1"></textarea>
-	Source 2: <textarea id="source2"></textarea>
+	<label>Source 1: <textarea id="source1"></textarea></label>
+	<label>Source 2: <textarea id="source2"></textarea></label>
 	<br>
-	<label><input type="checkbox" id="multiligne" checked> Recherche multilignes</label><br>
-	<button onclick="compareSources(document.getElementById('source1').value,document.getElementById('source2').value,document.getElementById('multiligne').checked)">Compare</button>
+	<label><input type="radio" name="typeRecherche" value="1" id="parCaractere"> Recherche caractère par caractère</label><br>
+	<label><input type="radio" name="typeRecherche" value="2" id="parLigne" checked> Recherche ligne par ligne</label><br>
+	<button id="btnCompare">Compare</button>
 	<hr>
 	<div id="resultat"></div>
-	<script>	
-		function compareSources(s1,s2,multiligne){
-			var rslt="";
-			if(s1==s2){
-				rslt="Les chaines sont identiques";
-			}else{
-				//réalisation des recherches pour voir où sont les différences
-				if(multiligne){
-					s1=s1.split(/\r\n|\n|\r/);
-					s2=s2.split(/\r\n|\n|\r/);
-					var rslt1=[],rslt2=[], //array contenant les informations différentes -> [ld,lf] s: status par rapport  -> ld: index de départ; lf: index de fin (non compris) de différence
-						i1=0,i2=0, //index de la recherche en cours
-						li1=s1.length,li2=s2.length; //longueur à parcourir
-					while(i1<li1){
-						if(s1[i1]==s2[i2]){
-							i1++;
-							i2++;
-						}else{
-							//TODO rechercher cette ligne
-							rslt1.push([i1,i1+1]);
-							rslt2.push([i2,i2+1]);
-							i1++;
-							i2++;
-						}
-					}
-					if(i2<li2){
-						rslt1.push([i1,i1]);
-						rslt2.push([i2,li2]);
-					}
-				
-					//Afficher les différences
-						//TODO le faire correctement
-					var i=0,li=rslt1.length;
-					while(i<li){
-						rslt+="Erreur de la ligne "+rslt1[i][0]+" à la ligne "+rslt1[i][1]+" <br>";
-						i++;
-					}
-				}else{
-					//recherche sur une seule ligne
-						//TODO
-					rslt="Ce type de recherche n'est pas encore implémenté :(";
-				}
+	<div id="loading">Analyzing...</div>
+	<script src="./compareString.js" type="text/javascript"></script>
+	<script>
+	var w1=null;
+	if(window.Worker){
+		try{
+			w1 = new Worker("./compareString.js");
+			w1.onmessage = function(e){
+				resultat(e.data);
+			};
+			w1.onerror = function(e){
+				alert(e.message);
 			}
-			document.getElementById('resultat').innerHTML=rslt;
+		}catch(e){
+			workerFallBack();
 		}
+	}else{
+		workerFallBack();
+	}
+	
+	function workerFallBack(){
+		self.postMessage=function(data){ //réception du message provenant du moteur
+			resultat(data);
+		};
+		w1 = {
+			onmessage:function(data){
+				self.onmessage({data:data});//envoi du message au moteur
+			},
+			terminate:function(){}
+		};
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.src = "./compareString.js";
+		script.onload = function(){script.parentNode.removeChild(script);};
+		document.head.appendChild(script);
+	}
+	
+
+	document.getElementById("btnCompare").onclick=function(){
+		var typeRecherche = document.querySelector('input[name="typeRecherche"]:checked').value,
+			obj = {
+				src1 : document.getElementById('source1').value,
+				src2 : document.getElementById('source2').value,
+				mode : typeRecherche
+			};
+		
+		w1.onmessage(obj);
+	};
+	
+	function resultat(reponse){
+		document.getElementById('resultat').innerHTML = displayChange(reponse);
+	}
+
+	function displayChange(history){
+		var html="";
+		if(history.length){
+			html += "<table>";
+			var i=0,li=history.length,ligne=1;
+			html+="<tr>";
+			html+="<th>ligne</th>";
+			html+="<th>modification</th>";
+			html+="</tr>";
+			do{
+				html+="<tr>";
+				ligne+=history[i].position;
+				html+="<td>"+ligne+"</td>";
+				html+="<td>";
+				html+='<div class="suppression">'+history[i].old.replace(/\n/g,"<br>")+'</div>';
+				html+='<div class="ajout">'+history[i].modif.replace(/\n/g,"<br>")+'</div>';
+				html+="</td>";
+				html+="</tr>";
+			}while(++i<li);
+			html += "</table>";
+		}else{
+			html += "Ces textes sont identiques.";
+		}
+		return html;
+	}
+		
 	</script>
 </head>
 <body>

@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf8">
+	<title>String Compare</title>
+	<style>
+		pre{
+			border: 1px dotted blue;
+		}
+	</style>
+	Source 1: <textarea id="source1"></textarea>
+	Source 2: <textarea id="source2"></textarea>
+	<br>
+	<label><input type="checkbox" id="multiligne" checked> Recherche multilignes</label><br>
+	<button onclick="compareSources(document.getElementById('source1').value,document.getElementById('source2').value,document.getElementById('multiligne').checked)">Compare</button>
+	<hr>
+	<div id="resultat"></div>
+	<script>	
+		function compareSources(s1,s2,multiligne){
+			var rslt="";
+			if(s1==s2){
+				rslt="Les chaines sont identiques";
+			}else{
+				//réalisation des recherches pour voir où sont les différences
+				if(multiligne){
+					s1=s1.split(/\r\n|\n|\r/);
+					s2=s2.split(/\r\n|\n|\r/);
+					var rslt1=[],rslt2=[], //array contenant les informations différentes -> [ld,lf] s: status par rapport  -> ld: index de départ; lf: index de fin (non compris) de différence
+						i1=0,i2=0, //index de la recherche en cours
+						li1=s1.length,li2=s2.length; //longueur à parcourir
+					while(i1<li1){
+						if(s1[i1]==s2[i2]){
+							i1++;
+							i2++;
+						}else{
+							//TODO rechercher cette ligne
+							rslt1.push([i1,i1+1]);
+							rslt2.push([i2,i2+1]);
+							i1++;
+							i2++;
+						}
+					}
+					if(i2<li2){
+						rslt1.push([i1,i1]);
+						rslt2.push([i2,li2]);
+					}
+				
+					//Afficher les différences
+						//TODO le faire correctement
+					var i=0,li=rslt1.length;
+					while(i<li){
+						rslt+="Erreur de la ligne "+rslt1[i][0]+" à la ligne "+rslt1[i][1]+" <br>";
+						i++;
+					}
+				}else{
+					//recherche sur une seule ligne
+						//TODO
+					rslt="Ce type de recherche n'est pas encore implémenté :(";
+				}
+			}
+			document.getElementById('resultat').innerHTML=rslt;
+		}
+	</script>
+</head>
+<body>
+</html>
