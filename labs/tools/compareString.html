@@ -37,6 +37,7 @@
 	<div id="loading">Analyzing...<br>
 	<progress id="progress" max="100"></progress></div>
 	<script>
+	var uid=0;
 	var w1=null;
 	if(window.Worker){
 		try{
@@ -71,55 +72,62 @@
 		document.head.appendChild(script);
 	}
 	
-
+	//déclencheur de comparaison
 	document.getElementById("btnCompare").onclick=function(){
 		document.getElementById("loading").style.display="block";
 		var typeRecherche = document.querySelector('input[name="typeRecherche"]:checked').value,
 			obj = {
 				src1 : document.getElementById('source1').value,
 				src2 : document.getElementById('source2').value,
-				mode : typeRecherche
+				mode : typeRecherche,
+				id : uid++
 			};
 		
 		w1.postMessage(obj);
 	};
 	
 	function resultat(reponse){
-console.log(
-		document.getElementById("progress").value = reponse.progress
-);
+		document.getElementById("progress").value = reponse.progress;
 		if(reponse.debug){
 			console.debug(reponse);
 		}
 		if(reponse.progress === 100){
-			document.getElementById('resultat').innerHTML = displayChange(reponse);
-			document.getElementById("loading").style.display="none";
+			if(document.getElementById('rslt'+reponse.id)){
+				//TODO remplacement
+			}else{
+				document.getElementById('resultat').innerHTML = displayChange(reponse);
+				document.getElementById("loading").style.display="none";
+			}
 		}
 	}
 
 	function displayChange(history){
 		var html="";
-		if(history.length){
-			html += "<table>";
-			var i=0,li=history.length,ligne=1;
-			html+="<tr>";
-			html+="<th>ligne</th>";
-			html+="<th>modification</th>";
-			html+="</tr>";
-			do{
-				html+="<tr>";
-				ligne+=history[i].position;
-				//html+="<td>"+ligne+"</td>";
-				html+="<td>"+(history[i].position+1)+"</td>";
-				html+="<td>";
-				html+='<div class="suppression">'+history[i].old.replace(/\n/g,"<br>")+'</div>';
-				html+='<div class="ajout">'+history[i].modif.replace(/\n/g,"<br>")+'</div>';
-				html+="</td>";
-				html+="</tr>";
-			}while(++i<li);
-			html += "</table>";
-		}else{
-			html += "Ces textes sont identiques.";
+		switch(history.mode){
+			case 2:
+				if(history.length){
+					html += '<table id="rslt'+history.id+'">';
+					var i=0,li=history.length,ligne=1;
+					html+="<tr>";
+					html+="<th>ligne</th>";
+					html+="<th>modification</th>";
+					html+="</tr>";
+					do{
+						html+="<tr>";
+						ligne+=history[i].position;
+						//html+="<td>"+ligne+"</td>";
+						html+="<td>"+(history[i].position+1)+"</td>";
+						html+="<td>";
+						html+='<div class="suppression">'+history[i].old.replace(/\n/g,"<br>")+'</div>';
+						html+='<div class="ajout">'+history[i].modif.replace(/\n/g,"<br>")+'</div>';
+						html+="</td>";
+						html+="</tr>";
+					}while(++i<li);
+					html += "</table>";
+				}else{
+					html += "Ces textes sont identiques.";
+				}
+			break;
 		}
 		return html;
 	}

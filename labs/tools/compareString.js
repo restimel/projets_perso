@@ -14,6 +14,8 @@
 		
 		var rslt=compareSources();
 		rslt.progress=100;
+		rslt.id = e.data.id;
+		rslt.mode = mode;
 		self.postMessage(rslt);
 		
 		//effacement des données
