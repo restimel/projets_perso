@@ -3,31 +3,40 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 </head>
 <body>
-<aside style="display:none;">connaissances nécessaire: déclaration, contexte temporaire, portée</aside>
-thème: portée<br>
-niveau: 5<br><br>
+<aside style="display:none;">connaissances nécessaire: déclaration, bind</aside>
+thème: fonction<br>
+niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var toto = "abc";
-function f(){
-	alert("def");
+var type = "abc";
+
+function f(type){
+	alert(this.type);
 }
-with({ toto:"ghi" }) {
-	function f() {
-	   alert(toto);
-	}
-	f();
-}
+
+var r = f.bind({
+	click:function(){alert("def");},
+	load:function(){alert("ghi");},
+	type:"click",
+	jkl:function(){alert("mno");}
+});
+
+r("jkl");
+
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li class="bonneReponse">"abc"</li>
+	<li>rien</li>
+	<li>"abc"</li>
 	<li>"def"</li>
 	<li>"ghi"</li>
+	<li>"jkl"</li>
+	<li>"mno"</li>
+	<li class="bonneReponse">"click"</li>
 	<li>undefined</li>
-	<li>Une erreur apparait</li>
+	<li>Une erreur se produit</li>
 </ul>
 <hr>
 <br>

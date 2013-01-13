@@ -3,32 +3,27 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 </head>
 <body>
-<aside style="display:none;">connaissances nécessaire: déclaration, contexte temporaire, portée</aside>
-thème: portée<br>
-niveau: 5<br><br>
+<aside style="display:none;">connaissances nécessaire: regexp</aside>
+thème: regexp<br>
+niveau: 1<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var toto = "abc";
-function f(){
-	alert("def");
-}
-with({ toto:"ghi" }) {
-	function f() {
-	   alert(toto);
-	}
-	f();
-}
+var r = new RegExp("/test/","g");
+var s ="Test d'un test pour tester";
+alert(s.match(r)+"");
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li class="bonneReponse">"abc"</li>
-	<li>"def"</li>
-	<li>"ghi"</li>
-	<li>undefined</li>
-	<li>Une erreur apparait</li>
+	<li>Test</li>
+	<li>test</li>
+	<li>test,test</li>
+	<li>Test,test,test</li>
+	<li class="bonneReponse">null</li>
+	<li>Une erreur se produit</li>
 </ul>
+<br>
 <hr>
 <br>
 <b>Résultat</b> <i>essayez vous-même</i>:
@@ -38,6 +33,7 @@ with({ toto:"ghi" }) {
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+	Pour créer une ReGexp on peut soit utiliser la notation littéralle (/motif/) soit utiliser le constructeur. Pour ce dernier le premier argument est une chaine de caractères qui correpond au motif à rechercher. Or ici la chaine à rechercher est "/test/", c'est à dire avec les /. or le texte ne possède aucun / donc il n'y a aucun motif trouvé par l'expression régulière.
 </details>
 
 <script>

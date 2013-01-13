@@ -3,32 +3,30 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 </head>
 <body>
-<aside style="display:none;">connaissances nécessaire: déclaration, contexte temporaire, portée</aside>
-thème: portée<br>
-niveau: 5<br><br>
+<aside style="display:none;">connaissances nécessaire: objet, prototype</aside>
+thème: objet<br>
+niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var toto = "abc";
-function f(){
-	alert("def");
-}
-with({ toto:"ghi" }) {
-	function f() {
-	   alert(toto);
-	}
-	f();
-}
+var obj = {};
+obj.prototype = {val:1};
+obj.constructor.prototype = {val:2};
+
+alert(obj.val);
+
+
+
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li class="bonneReponse">"abc"</li>
-	<li>"def"</li>
-	<li>"ghi"</li>
-	<li>undefined</li>
-	<li>Une erreur apparait</li>
+	<li>1</li>
+	<li>2</li>
+	<li class="bonneReponse">undefined</li>
+	<li>rien, une erreur est survenue</li>
 </ul>
+<br>
 <hr>
 <br>
 <b>Résultat</b> <i>essayez vous-même</i>:
@@ -38,6 +36,7 @@ with({ toto:"ghi" }) {
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+	
 </details>
 
 <script>

@@ -10,8 +10,14 @@ niveau: 4<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var toto = "abc";
-with({ toto:"def" }) {
-	(function() { alert(toto); })();
+function f(){
+	alert("def");
+}
+with({ toto:"ghi" }) {
+	var f = function() {
+	   alert(toto);
+	};
+	f();
 }
 </textarea>
 
@@ -19,17 +25,16 @@ with({ toto:"def" }) {
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
 	<li>"abc"</li>
-	<li class="bonneReponse">"def"</li>
-	<li>"abcdef"</li>
+	<li>"def"</li>
+	<li class="bonneReponse">"ghi"</li>
 	<li>undefined</li>
-	<li>error</li>
+	<li>Une erreur se produit</li>
 </ul>
 <hr>
 <br>
 <b>Résultat</b> <i>essayez vous-même</i>:
 <br>
 <input type="button" id="input" value="tester" onclick="test()">
-<
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
