@@ -3,37 +3,33 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 </head>
 <body>
-<aside style="display:none;">connaissances nécessaire: déclaration, portée</aside>
-thème: fonction<br>
-niveau: 3<br><br>
+<aside style="display:none;">connaissances nécessaire: regexp,(un)greedy</aside>
+thème: regexp<br>
+niveau: 1<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-function affMessage(condition){
-	if(condition){
-		function leMessage(){
-			alert("Bonjour");
-		}
-	}else{
-		function leMessage(){
-			alert("Bonsoir");
-		}
-	}
-	leMessage();
-}
+var r = /[a-z]+?/g;
+var s ="Des questions";
+alert(s.replace(r,"@"));
 
-affMessage(true);
-affMessage(false);
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li>rien</li>
-	<li>"Bonjour" puis "Bonsoir"</li>
-	<li>"Bonsoir" puis "Bonjour"</li>
-	<li>"Bonjour" puis "Bonjour"</li>
-	<li class="bonneReponse">"Bonsoir" puis "Bonsoir"</li>
+	<li>"Des questions"</li>
+	<li>"@"</li>
+	<li>"@ @"</li>
+	<li>"@es questions"</li>
+	<li>"D@s questions"</li>
+	<li>"@ questions"</li>
+	<li>"Des @"</li>
+	<li>"D@ @"</li>
+	<li class="bonneReponse">"D@@ @@@@@@@@@"</li>
+	<li>"@@@ @@@@@@@@@"</li>
+	<li>Une erreur se produit</li>
 </ul>
+<br>
 <hr>
 <br>
 <b>Résultat</b> <i>essayez vous-même</i>:

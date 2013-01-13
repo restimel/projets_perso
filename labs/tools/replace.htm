@@ -143,7 +143,7 @@ function isValidRegExp(str){
 						lastOpen=open[open.length-1];
 					break;
 					case "?":
-						if(lastChar==="(" && nxtChar!==":" && nxtChar!=="!"){
+						if(lastChar==="(" && nxtChar!==":" && nxtChar!=="!" && nxtChar!=="="){
 							return "(c"+i+") Invalid group";
 						}else if(lastChar==="^" || lastChar==="$" || (lastChar===":" || lastChar==="!") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
 							return "(c"+i+") Nothing to repeat";
@@ -152,19 +152,19 @@ function isValidRegExp(str){
 						}
 					break;
 					case "*":
-						if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
+						if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!" || lastChar==="=") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
 							return "(c"+i+") Nothing to repeat";
 						}
 					break;
 					case "+":
-						if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
+						if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!" || lastChar==="=") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
 							return "(c"+i+") Nothing to repeat";
 						}
 					break;
 					case "{":
 						if(char = str.substr(i).match(/{[0-9]+,[0-9]*}/)){
 							char=char[0];
-							if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
+							if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!" || lastChar==="=") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
 								return "(c"+i+") Nothing to repeat";
 							}
 							i+=char.length-1;
