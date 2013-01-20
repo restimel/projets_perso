@@ -1,0 +1,463 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf8">
+	<meta author="Benoit Mariat">
+	<meta date="19/01/13">
+	<title>Tools: JS Color</title>
+<style>
+.boolean{
+	color:#0000FF;
+}
+.number{
+	color:#CCAA00;
+}
+.regexp{
+	color:#FF0000;
+}
+.regexpFlag{
+	color:#FF00CC;
+	font-style:italic;
+}
+.string1{
+	color:#CC8833;
+}
+.string2{
+	color:#CC4933;
+}
+.null{
+	color:#0000CC;
+	font-style:italic;
+}
+.operator{
+	color:#443349;
+	font-weight:bold;
+}
+.comment1{
+	color:#339933;
+	font-style:italic;
+	font-size:0.85em;
+}
+.comment2{
+	color:#008855;
+	font-style:italic;
+	font-size:0.8em;
+}
+.comment3{
+	color:#9999CC;
+	font-style:italic;
+	font-size:0.85em;
+}
+.reservedWord{
+	color:#005511;
+	font-weight:bold;
+}
+.futureReservedWord{
+	color:#AA0099;
+	font-weight:bold;
+}
+.commonMethod{
+	font-style:italic;
+}
+.commonObject{
+	font-weight:bold;
+}
+.useStrict{
+	color:#00EEFF;
+	font-style:italic;
+}
+</style>
+</head>
+<body>
+<nav style="position:fixed;right:10px;top:10px;border:1px solid black; border-radius:0.5em;opacity:0.8;padding:0.5em;">
+<a href="#source">Source code</a><br>
+<a href="#preview">Preview</a><br>
+<a href="#resultat">HTML result</a><br>
+</nav>
+<label>code:<textarea id="source" rows="20" cols="50" placeholder="JS Code"></textarea></label>
+<label><input type="checkbox" id="inline" checked>CSS inline</label>
+<br>
+<button id="bcolor">Execute Syntax color</button>
+<hr>
+<label>Preview:<br><code class="JavaScript" id="preview"></code></label><hr>
+<label>HTML:<textarea id="resultat" rows="20" cols="40" placeholder="html syntax for code color"></textarea></label>
+
+<div id="loading" style="display:none;text-align:center;position:fixed;top:50%;left:40%;width:300px;height:100px;background-color:#EEEEFF;border:1px solid black;">
+	<progress>Wait...</progress><br>
+	Script is running
+</div>
+
+<script type="text/javascript">
+
+//écrit la syntaxe permettant de colorier la source
+function color(source,inline){
+	"use strict";
+	var rslt="",
+		i=0,
+		li=source.length,
+		part="",
+		car="",
+		special="",
+		mode="";
+	
+	var classes={
+		boolean : "color:#0000FF;",
+		number : "color:#CCAA00;",
+		regexp : "color:#FF0000;",
+		regexpFlag : "color:#FF00CC;font-style:italic;",
+		string1 : "color:#CC8833;", // ""
+		string2 : "color:#CC4933;", // ''
+		null : "color:#0000CC;font-style:italic;",
+		operator : "color:#443349;font-weight:bold;",
+		comment1 : "color:#339933;font-style:italic;font-size:0.85em;", // //
+		comment2 : "color:#008855;font-style:italic;font-size:0.8em;", // /* */
+		comment3 : "color:#9999CC;font-style:italic;font-size:0.85em;", // /** **/
+		reservedWord : "color:#005511;font-weight:bold;",
+		futureReservedWord : "color:#AA0099;font-weight:bold;",
+		commonMethod: "font-style:italic;",
+		commonObject: "font-weight:bold;",
+		useStrict : "color:#00EEFF;font-style:italic;",
+		notFound : ""
+	};
+	
+	var liste_classes = {};
+	
+	//permet d'enlever le dernier caractère à la partie étudiée
+	function pop(){
+		if(part.length === 0) return;
+		part = part.substring(0,part.length-1);
+	}
+	
+	//ajoute une classe autour de la partie éctuellement étudiée
+	function add(cl,noClear){
+		if(part === "") return;
+		var r = '<span ';
+		if(inline){
+			r += 'style="'+(classes[cl]||'')+'">';
+		}else{
+			r += 'class="'+cl+'">';
+			liste_classes[cl]=true;
+		}
+		r += safeHTML(part)+'</span>';
+		if(!noClear){
+			rslt+=r;
+			part = "";
+		}else{
+			return r;
+		}
+	}
+	
+	//vérifie si la partie étudiée est particulière
+	function verify(flush,noClear){
+		if(part.length === 1) return;
+		pop();
+		switch(part){ //recherche de mot clef
+			case "break":
+			case "case":
+			case "catch":
+			case "continue":
+			case "debugger":
+			case "default":
+			case "delete":
+			case "do":
+			case "else":
+			case "finally":
+			case "for":
+			case "function":
+			case "if":
+			case "in":
+			case "instanceof":
+			case "new":
+			case "return":
+			case "switch":
+			case "this":
+			case "throw":
+			case "try":
+			case "typeof":
+			case "var":
+			case "void":
+			case "while":
+			case "with":
+				add("reservedWord",noClear);
+				break;
+			case "class":
+			case "const":
+			case "enum":
+			case "export":
+			case "extends":
+			case "import":
+			case "super":
+			case "implements":
+			case "interface":
+			case "let":
+			case "package":
+			case "private":
+			case "protected":
+			case "public":
+			case "static":
+			case "yield":
+				add("futureReservedWord",noClear);
+				break;
+			case "true":
+			case "false":
+				add("boolean",noClear);
+				break;
+			case "undefined":
+			case "null":
+				add("null",noClear);
+				break;
+			case "setTimeout":
+			case "setTinterval":
+			case "alert":
+			case "parseInt":
+			case "parseFloat":
+				add("commonMethod",noClear);
+				break;
+			case "window":
+			case "document":
+			case "console":
+			case "self":
+			case "Math":
+			case "Date":
+				add("commonObject",noClear);
+				break;
+			case "Infinity":
+			case "NaN":
+				add("number",noClear);
+				break;
+			default:
+				if(/^[+-]?(?:[0-9]*?\.)?[0-9]+(?:[eE][+-]?[0-9]+)?$|^0[xX][0-9a-fA-F]+?$/.test(part)){
+					add("number",noClear);
+				}
+		}
+		if(flush && part){
+			rslt += part;
+			part = "";
+		}
+		part += car;
+	}
+	
+	
+	for(i=0;i<li;i++){
+		car = source.charAt(i);
+		part+=car;
+		
+		if(special === "\\"){
+			special=""; //TODO \u0000
+			continue;
+		}
+		
+		switch(mode){
+			case '"': //dans une chaine de caractère (commençant par ")
+				switch(car){
+					case "\\":
+						special = car;
+						break;
+					case '"':
+						if(part === '"use strict"' && /(?:^|[;\r\n])\s*?$/.test(source.substring(0,i-part.length+1)) && /(^\s*?[;\r\n])/.test(source.substring(i+1))){
+							add("useStrict");
+						}else{
+							add("string1");
+						}
+						mode = "";
+						break;
+					default:
+				}
+				break;
+			case "'": //dans une chaine de caractère (commençant par ')
+				switch(car){
+					case "\\":
+						special = car;
+						break;
+					case "'":
+						if(part === "'use strict'" && /(?:^|[;\r\n])\s*?$/.test(source.substring(0,i-part.length+1)) && /(^\s*?[;\r\n])/.test(source.substring(i+1))){
+							add("useStrict");
+						}else{
+							add("string2");
+						}
+						mode = "";
+						break;
+					default:
+				}
+				break;
+			case "//":
+				if(/[\r\n\0]/.test(car)){
+					add("comment1");
+					mode="";
+				}
+				break;
+			case "/*":
+				if(car === "/" && /^\/\*[\s\S]*?\*\/$/.test(part)){
+					add("comment2");
+					mode="";
+				}
+				break;
+			case "/**":
+				if(car === "/"){
+					if(/^\/\*\*[\s\S]*?[^*][\s\S]*?\*\*\/$/.test(part)){
+						add("comment3");
+						mode="";
+					}else if(/\*\/$/.test(part)){
+						add("comment2");
+						mode="";
+					}//sinon c'est qu'il s'agit d'un / perdu au mileur d'un commentaire
+				}
+				break;
+			case "regexp":
+				switch(car){
+					case "\\":
+						special=car;
+						break;
+					case "[":
+						mode="r[";
+						break;
+					case "/":
+						part = safeHTML(part);
+						add("regexp");
+						mode="rflag";
+						break;
+				}
+				break;
+			case "r[":
+				switch(car){
+					case "\\":
+						special=car;
+						break;
+					case "]":
+						mode="regexp";
+						break;
+				}
+				break;
+			case "rflag":
+				if(/[^a-z]/i.test(car)){
+					pop();
+					add("regexpFlag");
+					i--; //afin de reparser ce caractère
+					mode="";
+				}
+				break;
+			default:
+				switch(car){
+					case "\\":
+						special=car;
+						break;
+					case " ": //espace
+					case "	": //tabulation
+					case "\n": //saut de ligne
+					case "\r": //saut de ligne
+					case "(":
+					case ")":
+					case "[":
+					case "]":
+					case "{":
+					case "}":
+					case ",":
+					case ";":
+						verify(true); //vérifie la partie précédente s'il s'agit d'un mot clef
+						rslt += part;
+						part="";
+						break;
+					case '"':
+						mode = '"';
+						special="";
+						break;
+					case "'":
+						mode = "'";
+						special="";
+						break;
+					case "+":
+					case "-":
+					case "*":
+					case "<":
+					case ">":
+					case "=":
+					case "!":
+					case "%":
+					case "&":
+					case "|":
+					case "^":
+					case "~":
+					case "?":
+					case ":":
+						verify(true);
+						add("operator");
+						break;
+					case ".":
+						if(/[\d\s]/.test(source.charAt(i+1)) && /[\s([{<>=!%|?:;,/+*-]/.test(source.charAt(i-1))){
+						//nombre
+						}else{
+							verify(true);
+							add("operator");
+						}
+						break;
+					case "/":
+						switch(source.charAt(i+1)){
+							case "/":
+								verify(true);
+								mode="//";
+								break;
+							case "*":
+								verify(true);
+								if(source.charAt(i+2) === "*"){
+									mode="/**";
+								}else{
+									mode="/*";
+								}
+								break;
+							default:
+								verify(true);
+								if(source.substring(0,i)){
+									mode="regexp";
+								}else{
+									add("operator");
+								}
+						}
+						break;
+				}
+		}
+	}
+	
+	part+=" ";
+	verify();
+	pop();
+	rslt += part;
+	
+	if(!inline){
+		part="<style>\n";
+		for(i in liste_classes){
+			part+="."+i+"{"+classes[i]+"}\n";
+		}
+		part+="</style>\n\n";
+		rslt = part+rslt;
+	}
+	return btfyHTML(rslt);
+	
+	function safeHTML(src){
+		src = src.replace(/&/g,"&amp;");
+		src = src.replace(/</g,"&lt;");
+		return src;
+	}
+	function btfyHTML(src){
+		src = src.replace(/\r\n|[\r\n]/g,"<br>\n");
+		src = src.replace(/\t/g,"&emsp;&emsp;&emsp;&emsp;");
+		src = src.replace(/  /g," &nbsp;")
+		return src;
+	}
+}
+
+function manage_color(){
+	var source = document.getElementById("source").value;
+	var html = color(source,document.getElementById("inline").checked);
+	var i=1;
+	if(nb){
+		html = html.replace(/^/gm,function(){return (i++)+":&emsp;";});//TODO coloration unique
+	}
+	document.getElementById("preview").innerHTML = html;
+	document.getElementById("resultat").value = html;
+}
+
+//ajout des événements sur les éléments
+document.getElementById("bcolor").onclick = manage_color;
+</script>
+</body>
+</html>
