@@ -1,16 +1,18 @@
+<!DOCTYPE html>
 <html>
 <head>
+<meta charset="utf-8">
+<title>Date Analyzer</title>
 <script type="text/javascript">
 function convert_month(d){
-	d=d.toLowerCase();
-	switch(d){
+	switch(d.toLowerCase()){
 		case "jan": return 1; break;
 		case "january": return 1; break;
 		case "janvier": return 1; break;
 		case "feb": return 2; break;
 		case "february": return 2; break;
 		case "fevrier": return 2; break;
-		case "f�vrier": return 2; break;
+		case "février": return 2; break;
 		case "fev": return 2; break;
 		case "mar": return 3; break;
 		case "march": return 3; break;
@@ -30,7 +32,7 @@ function convert_month(d){
 		case "aug": return 8; break;
 		case "august": return 8; break;
 		case "aout": return 8; break;
-		case "a�ut": return 8; break;
+		case "août": return 8; break;
 		case "aou": return 8; break;
 		case "sep": return 9; break;
 		case "september": return 9; break;
@@ -42,10 +44,10 @@ function convert_month(d){
 		case "novembre": return 11; break;
 		case "november": return 11; break;
 		case "dec": return 12; break;
-		case "d�c": return 12; break;
+		case "déc": return 12; break;
 		case "december": return 12; break;
 		case "decembre": return 12; break;
-		case "d�cembre": return 12; break;
+		case "décembre": return 12; break;
 		default:
 			return 0;
 	}
@@ -54,7 +56,7 @@ function convert_month(d){
 function get_Date(i){
 	var d=new Date();
 	if(!document.getElementById("j"+i)){
-		return new Date();
+		return d; //date actuelle
 	}
 	var jour=parseInt(document.getElementById("j"+i).value,10);
 	var mois=parseInt(document.getElementById("M"+i).value,10);
@@ -62,6 +64,7 @@ function get_Date(i){
 	var heure=parseInt(document.getElementById("h"+i).value,10);
 	var min=parseInt(document.getElementById("min"+i).value,10);
 	var sec=parseInt(document.getElementById("sec"+i).value,10);
+	
 	if(jour) d.setDate(jour);
 	if(mois) d.setMonth(mois-1);
 	if(annee) d.setFullYear(annee);
@@ -91,177 +94,248 @@ function compare_date(){
 	document.getElementById("result").innerHTML=txt;
 }
 
-function parse_date(i){
-	var dt=document.getElementById("d"+i).value;
-	var txt=" &rarr; "
-	var color="#00FF00";
-	var rgx=/([0-1]?[0-9])\/([0-3]?[0-9])\/([0-9]+) - ([0-2]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])/; //09/28/2009 - 19:09:50 (compuware)
-	var spl=rgx.exec(dt);
-	if(spl==null){
-		if(dt=="") txt="";
-		else{
-			rgx=/([0-3]?[0-9]) ([A-Za-z]+) ([0-9]+) ([0-2]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])/; //Tue, 29 Sep 2009 12:25:12 GMT (javascript)
-			spl=rgx.exec(dt);
-			if(spl!=null){
-				//Tue, 29 Sep 2009 12:25:12 GMT (javascript)
-				txt+=dt;
-				document.getElementById("j"+i).value=spl[1];
-				document.getElementById("M"+i).value=convert_month(spl[2]);
-				document.getElementById("A"+i).value=spl[3];
-				document.getElementById("h"+i).value=spl[4];
-				document.getElementById("min"+i).value=spl[5];
-				document.getElementById("sec"+i).value=spl[6];
-				compare_date();
-			}else{
-				rgx=/([0-9]+)-([0-1]?[0-9])-([0-3]?[0-9]) ([0-2]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])/; //2009-09-25 01:36:29 (log)
-				spl=rgx.exec(dt);
-				if(spl!=null){
-					//2009-09-25 01:36:29 (log)
-					txt+=dt;
-					document.getElementById("j"+i).value=spl[3];
-					document.getElementById("M"+i).value=spl[2];
-					document.getElementById("A"+i).value=spl[1];
-					document.getElementById("h"+i).value=spl[4];
-					document.getElementById("min"+i).value=spl[5];
-					document.getElementById("sec"+i).value=spl[6];
-					compare_date();
-				}else{
-					rgx=/([a-zA-Z]+) ([0-3]?[0-9]), ([0-9]+), ([0-2]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9]) ([AP]M)/; //October 15, 2009, 11:58:57 AM (windows)
-					spl=rgx.exec(dt);
-					if(spl!=null){
-						//October 15, 2009, 11:58:57 AM (windows)
-						txt+=dt;
-						document.getElementById("j"+i).value=spl[2];
-						document.getElementById("M"+i).value=convert_month(spl[1]);
-						document.getElementById("A"+i).value=spl[3];
-						document.getElementById("h"+i).value=parseInt(spl[4],10)+((spl[7]=="PM")?12:0);
-						document.getElementById("min"+i).value=spl[5];
-						document.getElementById("sec"+i).value=spl[6];
-						compare_date();
-					}else{
-						rgx=/^([0-9]+)-([0-9]{2})-([0-9]{2})$/; //HTML5: date
-						spl=rgx.exec(dt);
-						if(spl!=null){
-							//2010-04-16 (HTML5: date)
-							txt+=dt;
-							var t=new Date(spl[1],spl[2],spl[3]);
-							document.getElementById("j"+i).value=t.getDate();
-							document.getElementById("M"+i).value=t.getMonth()+1;
-							document.getElementById("A"+i).value=t.getFullYear();
-							document.getElementById("h"+i).value=t.getHours();
-							document.getElementById("min"+i).value=t.getMinutes();
-							document.getElementById("sec"+i).value=t.getSeconds();
-							compare_date();
-						}else{
-							rgx=/^\s*([0-9]+)\s*(ms|s|us|�s|ns|min|h|H|)\s*$/; //timestamp (s)
-							spl=rgx.exec(dt);
-							if(spl!=null){
-								//timestamp (s)
-								txt+=dt;
-								var t=new Date();
-								switch(spl[2]){
-									case "ms":
-										t.setTime(parseInt(spl[1],10));
-									break;
-									case "us":
-									case "�s":
-										t.setTime(parseInt(spl[1],10)/1000);
-									break;
-									case "ns":
-										t.setTime(parseInt(spl[1],10)/1000000);
-									break;
-									case "min":
-										t.setTime(parseInt(spl[1],10)*60000);
-									break;
-									case "H":
-									case "h":
-										t.setTime(parseInt(spl[1],10)*3600000);
-									break;
-									case "":
-									case "s":
-									default:
-										t.setTime(parseInt(spl[1],10)*1000);
-								}
-								document.getElementById("j"+i).value=t.getDate();
-								document.getElementById("M"+i).value=t.getMonth()+1;
-								document.getElementById("A"+i).value=t.getFullYear();
-								document.getElementById("h"+i).value=t.getHours();
-								document.getElementById("min"+i).value=t.getMinutes();
-								document.getElementById("sec"+i).value=t.getSeconds();
-								compare_date();
-							}else{
-								rgx=/^\s*([+-])\s*([0-9]+(?:\.[0-9]+)?)\s*(s|ms|min|h|H|us|�s|)\s*$/; //delay
-								spl=rgx.exec(dt);
-								if(spl!=null){
-									//delay
-									txt+=dt;
-									var t=new Date();
-									t.setTime(get_Date(i-1));
-									var tmps=parseFloat(spl[2]);
-									switch(spl[3]){
-										case "ns": tmps/=1000000; break;
-										case "us":
-										case "�s": tmps/=1000; break;
-										case "ms": break;
-										case "":
-										case "s": tmps*=1000; break;
-										case "min": tmps*=60000; break;
-										case "H":
-										case "h": tmps*=3600000; break;
-									}
-									if(spl[1]=="+"){
-										t.setMilliseconds(t.getSeconds()+tmps);
-									}else{
-										t.setMilliseconds(t.getSeconds()-tmps);
-									}
-									document.getElementById("j"+i).value=t.getDate();
-									document.getElementById("M"+i).value=t.getMonth()+1;
-									document.getElementById("A"+i).value=t.getFullYear();
-									document.getElementById("h"+i).value=t.getHours();
-									document.getElementById("min"+i).value=t.getMinutes();
-									document.getElementById("sec"+i).value=t.getSeconds();
-									compare_date();
-								}else{
-									txt+=" <b>(Date does not match)</b> "+dt;
-									color="#FF0000";
-								}
-							}
-						}
+
+/*permet d'analyser la chaine de caractères*/
+function parseDate(dt,dRef){
+	var now=new Date();
+	var formats = [
+		/*
+			{
+				name: nom(s) permettant de dire l'origine probable du format
+				exemple: exemple de format correspondant au motif
+				pattern: regexp permettant de trouver un motif correspondant à ce format
+				analyze: fonction callback appelée lorsque le motif a été trouvé. Le retour est un tableau: [Année(4 chiffres),mois(1→12),jour,heure(0→23),min,secondes,millisecondes]
+			}
+		*/
+			{
+				name : "dD mounth yyYY ? hH:mM:sS:iii",
+				example: "Mon, 28 Sep 2009 19:09:50 GMT{JavaScript}, lundi 28 septembre 2009, 19:09:50 (UTC+0200){linux}, 28/Sep/2009:19:09:50 +0200{log Apache}, 28 Sep 2009 19:09:50",
+				pattern:/(?:^|\s)([12][0-9]|3[0-1]|0?[1-9])(?![0-9])[-_.,/\s\\:]+([A-Za-zéûÉÛ]+)[-_.,/\s\\:]+([0-9]{2,4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\s\\]+([0-9]{1-3}))?)?(?![0-9]|[-_.,/\s\\:]+[0-9]{2})/,
+				analyze:function(spl){return arrToInt([year4digits(spl[3]),convert_month(spl[2]),spl[1],spl[4]||0,spl[5]||0,spl[6]||0,spl[7]||0]);}
+			},
+			{
+				name : "mounth dD ? hH:mM:sS:iii [AM/PM]",
+				example: "Sep 28 19:09:50{log unix}, September 28, 19:09:50",
+				pattern:/([adfjmnosADFJMNOS][aceéopuvACEÉOPUV][A-Za-zûÛ]+)[-_.,/\s\\]*\s+([12][0-9]|3[0-1]|0?[1-9])(?![0-9])[-_.,;/\s\\:]*\s+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\s\\]+([0-9]{1-3}))?(?:[-_mMsSeEcC:.,;/\s\\]+([aApP][mM]))?(?![0-9]|[-_.,/\s\\:]+[0-9]{2})/,
+				analyze:function(spl){return arrToInt([now.getFullYear(),convert_month(spl[1]),spl[2],hourPM(spl[3]||0,spl[7]),spl[4]||0,spl[5]||0,spl[6]||0]);}
+			},
+			{
+				name : "mounth dD yyYY ? hH:mM:sS:iii [AM/PM]",
+				example: "September 28, 2009, 07:09:50 PM{windows}, September 28, 2009, 19:09:50",
+				pattern:/([adfjmnosADFJMNOS][aceéopuvACEÉOPUV][A-Za-zûÛ]+)[-_.,/\s\\]+([12][0-9]|3[0-1]|0?[1-9])(?![0-9])[-_.,/\s\\:]+([0-9]{2,4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\s\\]+([0-9]{1-3}))?(?:[-_mMsSeEcC:.,;/\s\\]+([aApP][mM]))?)?(?![0-9]|[-_.,/\s\\:]+[0-9]{2})/,
+				analyze:function(spl){return arrToInt([year4digits(spl[3]||now.getFullYear()),convert_month(spl[1]),spl[2],hourPM(spl[4]||0,spl[8]),spl[5]||0,spl[6]||0,spl[7]||0]);}
+			},
+			{
+				name : "mM/dD/YYYY ? hH:mM:sS:iii",
+				example: "09/28/2009 - 19:09:50{compuware}, 09-28-2009 - 19:09:50 ",
+				pattern:/(?:^|\s)(0?[1-9]|1[0-2])[-_.,/\s\\:]+([12][0-9]|3[0-1]|0?[1-9])(?![0-9])[-_.,/\s\\:]+([0-9]{4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\s\\]+([0-9]{1-3}))?)?(?![0-9]|[-_.,/\s\\:]+[0-9]{2})/,
+				analyze:function(spl){return arrToInt([spl[3],spl[1],spl[2],spl[4]||0,spl[5]||0,spl[6]||0,spl[7]||0]);}
+			},
+			{
+				name : "dD-mM-YYYY ? hH:mM:sS:iii",
+				example: "28-09-2009 - 19:09:50",
+				pattern:/(?:^|\s)([12][0-9]|3[0-1]|0?[1-9])(?![0-9])[-_.,/\s\\:]+(0?[1-9]|1[0-2])[-_.,/\s\\:]+([0-9]{4})(?:[-_.,;/\s\\:]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])[-_mMiInN:.,;/\s\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\s\\]+([0-9]{1-3}))?)?(?![0-9]|[-_.,/\s\\:]+[0-9]{2})/,
+				analyze:function(spl){return arrToInt([spl[3],spl[2],spl[1],spl[4]||0,spl[5]||0,spl[6]||0,spl[7]||0]);}
+			},
+			{
+				name : "yyYY-mM-dD ? hH:mM:sS:iii",
+				example: "2009-09-28 - 19:09:50{log}, 2009-09-28{HTML5:date}, 2009-09-28T19:09Z{HTML5:datetime}",
+				pattern:/(?:^|\s)([0-9]{2,4})[-_.,/\s\\:]+(0?[1-9]|1[0-2])[-_.,/\s\\:]+([12][0-9]|3[0-1]|0?[1-9])(?![0-9])(?:[-_.,;/\s\\:T]+([0-2]?[0-9])[-_hH:.,;/\s\\]+([0-5]?[0-9])(?:[-_mMiInN:.,;/\s\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\s\\]+([0-9]{1-3}))?)?)?(?![0-9]|[-_.,/\s\\:]+[0-9]{2})/,
+				analyze:function(spl){return arrToInt([year4digits(spl[1]),spl[2],spl[3],spl[4]||0,spl[5]||0,spl[6]||0,spl[7]||0]);}
+			},
+			{
+				name : "xxxx timestamp",
+				example: "1254161390 {timestamp PHP},1254161390000ms{timestamp JS}",
+				pattern:/^\s*([0-9]+)\s*(s|ms|min|h|H|us|µs|)\s*$/,
+				analyze:function(spl){
+					timestamp=parseInt(spl[1],10);
+					switch(spl[2]){
+						case "h":
+						case "H":
+							timestamp*=3600000;
+							break;
+						case "min":
+							timestamp*=60000;
+							break;
+						case "us":
+						case "µs":
+							timestamp/=1000;
+							break;
+						case "ms":
+							break;
+						case "s":
+						default:
+							timestamp*=1000;
 					}
+					var d=new Date(timestamp);
+					return [d.getFullYear(),d.getMonth()+1,d.getDate(),d.getHours(),d.getMinutes(),d.getSeconds(),d.getMilliseconds()];
+				}
+			},
+			{
+				name : "[+-]xxxx timestamp from reference",
+				example: "+1254161390 {timestamp PHP},+1254161390000ms{timestamp JS}",
+				pattern:/([+-])([0-9]+)\s*(s|ms|min|h|H|us|µs|)\b/,
+				analyze:function(spl){
+					timestamp=parseInt(spl[2],10);
+					switch(spl[3]){
+						case "h":
+						case "H":
+							timestamp*=3600000;
+							break;
+						case "min":
+							timestamp*=60000;
+							break;
+						case "us":
+						case "µs":
+							timestamp/=1000;
+							break;
+						case "ms":
+							break;
+						case "s":
+						default:
+							timestamp*=1000;
+					}
+					var d;
+					if(spl[1]==="-"){
+						d=new Date(dRef.getTime()-timestamp);
+					}else{
+						d=new Date(dRef.getTime()+timestamp);
+					}
+					return [d.getFullYear(),d.getMonth()+1,d.getDate(),d.getHours(),d.getMinutes(),d.getSeconds(),d.getMilliseconds()];
 				}
 			}
+			
+		];
+		
+		function year4digits(year){
+			if(typeof year === "string" && year.length===2){
+				if(parseInt(year,10)>=70){
+					year="19"+year;
+				}else{
+					year="20"+year;
+				}
+			}
+			return year;
 		}
+		
+		function hourPM(hour,amPM){
+			switch(amPM){
+				case "am":
+				case "aM":
+				case "Am":
+				case "AM":
+					if(parseInt(hour,10)==12){
+						hour="00";
+					}
+					break;
+				case "pm":
+				case "pM":
+				case "Pm":
+				case "PM":
+					if(parseInt(hour,10)<12){
+						hour=parseInt(hour,10)+12;
+					}
+					break;
+			}
+			return hour;
+		}
+		
+		var i=0,
+			nbFormat=formats.length,
+			d=null,
+			spl;
+		while(i<nbFormat){
+			spl=formats[i].pattern.exec(dt);
+			if(spl!=null){
+				return formats[i].analyze(spl);
+			}
+			i++;
+		}
+		return [];
+}
+
+/*permet de gérer l'IHM*/
+function parse_date(i){
+	var dt=document.getElementById("d"+i).value,
+		txt=" &rarr; ",
+		info=[],
+		color="#00FF00",
+		elem=document.getElementById("temp"+i);
+		
+	if(dt==""){
+		txt="";
 	}else{
-		//09/28/2009 - 19:09:50 (compuware)
-		txt+=dt;
-		document.getElementById("j"+i).value=spl[2];
-		document.getElementById("M"+i).value=spl[1];
-		document.getElementById("A"+i).value=spl[3];
-		document.getElementById("h"+i).value=spl[4];
-		document.getElementById("min"+i).value=spl[5];
-		document.getElementById("sec"+i).value=spl[6];
-		compare_date();
+		info=parseDate(dt,get_Date(i-1));
 	}
-	var elem=document.getElementById("temp"+i);
+	
+	if(info.length){
+		txt+=dt;
+		document.getElementById("j"+i).value=info[2];
+		document.getElementById("M"+i).value=info[1];
+		document.getElementById("A"+i).value=info[0];
+		document.getElementById("h"+i).value=info[3];
+		document.getElementById("min"+i).value=info[4];
+		document.getElementById("sec"+i).value=info[5];
+		//TODO millisecondes
+		compare_date();
+	}else{
+		txt+=" <b>(Date does not match)</b> "+dt;
+		color="#FF0000";
+	}
 	elem.innerHTML=txt;
 	elem.style.color=color;
 }
+
+/*permet de rechercher dans un log toutes les dates*/
+function logAnalyzer(text){
+	var search="("+
+				"(?:^|\\s)([12][0-9]|3[0-1]|0?[1-9])(?![0-9])[-_.,/\\s\\\\:]+([A-Za-zéûÉÛ]+)[-_.,/\\s\\\\:]+([0-9]{2,4})(?:[-_.,;/\\s\\\\:]+([0-2]?[0-9])[-_hH:.,;/\\s\\\\]+([0-5]?[0-9])[-_mMiInN:.,;/\\s\\\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\\s\\\\]+([0-9]{1-3}))?)?(?![0-9]|[-_.,/\\s\\\\:]+[0-9]{2})"+
+				"|([adfjmnosADFJMNOS][aceéopuvACEÉOPUV][A-Za-zûÛ]+)[-_.,/\\s\\\\]*\\s+([12][0-9]|3[0-1]|0?[1-9])(?![0-9])[-_.,;/\\s\\\\:]*\\s+([0-2]?[0-9])[-_hH:.,;/\\s\\\\]+([0-5]?[0-9])[-_mMiInN:.,;/\\s\\\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\\s\\\\]+([0-9]{1-3}))?(?:[-_mMsSeEcC:.,;/\\s\\\\]+([aApP][mM]))?(?![0-9]|[-_.,/\\s\\\\:]+[0-9]{2})"+
+				"|([adfjmnosADFJMNOS][aceéopuvACEÉOPUV][A-Za-zûÛ]+)[-_.,/\\s\\\\]+([12][0-9]|3[0-1]|0?[1-9])(?![0-9])[-_.,/\\s\\\\:]+([0-9]{2,4})(?:[-_.,;/\\s\\\\:]+([0-2]?[0-9])[-_hH:.,;/\\s\\\\]+([0-5]?[0-9])[-_mMiInN:.,;/\\s\\\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\\s\\\\]+([0-9]{1-3}))?(?:[-_mMsSeEcC:.,;/\\s\\\\]+([aApP][mM]))?)?(?![0-9]|[-_.,/\\s\\\\:]+[0-9]{2})"+
+				"|(?:^|\\s)(0?[1-9]|1[0-2])[-_.,/\\s\\\\:]+([12][0-9]|3[0-1]|0?[1-9])(?![0-9])[-_.,/\\s\\\\:]+([0-9]{4})(?:[-_.,;/\\s\\\\:]+([0-2]?[0-9])[-_hH:.,;/\\s\\\\]+([0-5]?[0-9])[-_mMiInN:.,;/\\s\\\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\\s\\\\]+([0-9]{1-3}))?)?(?![0-9]|[-_.,/\\s\\\\:]+[0-9]{2})"+
+				"|(?:^|\\s)([12][0-9]|3[0-1]|0?[1-9])(?![0-9])[-_.,/\\s\\\\:]+(0?[1-9]|1[0-2])[-_.,/\\s\\\\:]+([0-9]{4})(?:[-_.,;/\\s\\\\:]+([0-2]?[0-9])[-_hH:.,;/\\s\\\\]+([0-5]?[0-9])[-_mMiInN:.,;/\\s\\\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\\s\\\\]+([0-9]{1-3}))?)?(?![0-9]|[-_.,/\\s\\\\:]+[0-9]{2})"+
+				"|(?:^|\\s)([0-9]{2,4})[-_.,/\\s\\\\:]+(0?[1-9]|1[0-2])[-_.,/\\s\\\\:]+([12][0-9]|3[0-1]|0?[1-9])(?![0-9])(?:[-_.,;/\\s\\\\:T]+([0-2]?[0-9])[-_hH:.,;/\\s\\\\]+([0-5]?[0-9])(?:[-_mMiInN:.,;/\\s\\\\]+([0-5]?[0-9])(?:[-_sSeEcC:.,;/\\s\\\\]+([0-9]{1-3}))?)?)?(?![0-9]|[-_.,/\\s\\\\:]+[0-9]{2})"+
+				")"; //il ne recherche pas les timestamp //TODO générer cette regexp automatiquement à partir des pattern de recherche
+	search = new RegExp(search,"g");
+	var liste = text.match(search);
+	console.log(liste.length);
+console.debug(liste);
+	
+	document.getElementById("d1").value=liste[0];
+	document.getElementById("d2").value=liste[liste.length-1];
+	parse_date(1);
+	parse_date(2);
+}
+
+/*permet de convertir toutes les valeurs du tableau en nombre entier*/
+function arrToInt(arr){
+	arr.forEach(function(v,i,arr){arr[i]=parseInt(v,10);});
+	return arr;
+}
+
 </script>
 </head>
 <body>
-<u>Reference date</u><br>
+<fieldset style="float:right;">
+	<legend>text log to analyze</legend>
+	<textarea onchange="logAnalyzer(this.value)" placeholder="Compare the first date with the last date in this log" style="min-width:27em;"></textarea>
+</fieldset>
+
+<h2>Time 1</h2><br>
 <label for="d1">Date text to parse</label><input type="text" id="d1" onchange="parse_date(1)"><input type="date" onchange="var d1=document.getElementById('d1');d1.value=this.value;d1.onchange();" style="width:12px; background:red;" value="X"><span id="temp1"></span><br>
-<input type="text" id="j1" size="2" title="Day">/<input type="text" id="M1" size="2" title="Month">/<input type="text" id="A1" size="3" title="Year (4 digits)"> - <input type="text" id="h1" size="2" title="hours">:<input type="text" id="min1" size="2" title="minutes">:<input type="text" id="sec1" size="2" title="seconds">
+<input type="text" id="j1" size="2" title="Day" placeholder="dd" onchange="compare_date()">/<input type="text" id="M1" size="2" title="Month" placeholder="MM" onchange="compare_date()">/<input type="text" id="A1" size="3" title="Year (4 digits)" placeholder="yyyy" onchange="compare_date()"> - <input type="text" id="h1" size="2" title="hours" placeholder="hh" onchange="compare_date()">:<input type="text" id="min1" size="2" title="minutes" placeholder="mm" onchange="compare_date()">:<input type="text" id="sec1" size="2" title="seconds" placeholder="ss" onchange="compare_date()">
 <hr>
-<u>date</u><br>
+
+<h2>Time 2</h2><br>
 <label for="d2">Date text to parse</label><input type="text" id="d2" onchange="parse_date(2)"><input type="date" onchange="var d2=document.getElementById('d2');d2.value=this.value;d2.onchange();" style="width:12px; background:red;" value="X"><span id="temp2"></span><br>
-<input type="text" id="j2" size="2" title="Day">/<input type="text" id="M2" size="2" title="Month">/<input type="text" id="A2" size="3" title="Year (4 digits)"> - <input type="text" id="h2" size="2" title="hours">:<input type="text" id="min2" size="2" title="minutes">:<input type="text" id="sec2" size="2" title="seconds">
+<input type="text" id="j2" size="2" title="Day" placeholder="dd" onchange="compare_date()">/<input type="text" id="M2" size="2" title="Month" placeholder="MM" onchange="compare_date()">/<input type="text" id="A2" size="3" title="Year (4 digits)" placeholder="yyyy" onchange="compare_date()"> - <input type="text" id="h2" size="2" title="hours" placeholder="hh" onchange="compare_date()">:<input type="text" id="min2" size="2" title="minutes" placeholder="mm" onchange="compare_date()">:<input type="text" id="sec2" size="2" title="seconds" placeholder="ss" onchange="compare_date()">
 <hr>
+
 <input type="button" onclick="compare_date()" value="Calcul"><br>
-<div id="result" style="background:#DDDDFF;">
-</div>
+<div id="result" style="background:#DDDDFF;"></div>
 <br>
-<hr color="#00FF00">
-personnal notes:<br><textarea rows="20" style="width:99%;"></textarea>
+
+<hr style="color:#00FFFF;">
+personal notes:<br><textarea rows="20" style="width:99%;" placeholder="You can write anything you want there. It does not affect the tool."></textarea>
 </body>
 </html>
