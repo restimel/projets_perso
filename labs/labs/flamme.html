@@ -71,11 +71,11 @@ aside{
 }
 </style>
 
-<form class="labsMenu labsMenuHaut">
-	<!--<label>Perturbation avec la souris: <input type="checkbox" onchange="flamme.sourisVent(this.checked);"></label><br>Fonctionnalité expérimentale-->
-	<label>Vent aléatoire: <input type="checkbox" onchange="flamme.autoVent(this.checked);"></label><br>
-	<label>vent:<input type="number" id="vent" value="0" onchange="flamme.changeVent();"><button onclick="flamme.changeVent(-1);">-</button><button onclick="flamme.changeVent(1);">+</button></label>
-</form>
+<div class="labsMenu labsMenuHaut">
+	<!--<label>Perturbation avec la souris: <input type="checkbox" onchange="allumette.sourisVent(this.checked);"></label><br>Fonctionnalité expérimentale-->
+	<label>Vent aléatoire: <input type="checkbox" onchange="allumette.autoVent(this.checked);"></label><br>
+	<label>vent:<input type="number" id="vent" value="0" onchange="allumette.changeVent();"><button onclick="allumette.changeVent(-1);">-</button><button onclick="allumette.changeVent(1);">+</button></label>
+</div>
 <br>
 <div id="flamme" class="souffre"></div>
 <div id="tige" class="tige"></div>

@@ -238,4 +238,4 @@ function flammeAnimate(divID,divVent){
 	changeVent(0);
 }
 
-var flamme=new flammeAnimate("flamme","vent");
+var allumette=new flammeAnimate("flamme","vent");
