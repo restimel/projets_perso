@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="author" content="Benoit Mariat">
+	<meta name="description" content="CV">
+	<title>Curriculum Vitae</title>
+	<style>
+/*mise à plat de différence entre navigateurs
+→mise en place d'un alinéa*/
+details{
+	margin-left:3em;
+	margin-right:3em;
+	display:block;
+}
+summary{
+	margin-top: 1em;
+	margin-bottom: 0.5em;
+	margin-left:-1em;
+	margin-right:-1em;
+	display:block !important; /*compatibilité*/
+	cursor:pointer; /*pour insister sur le fait que c'est dépliable*/
+	font-size:1.5em;
+	
+	background-color: rgba(0,150,250,0.5);
+	/*dégradé*/
+	background-image: -ms-linear-gradient(top, rgba(0,0,0,0.25) -5%, rgba(250,250,255,0.1) 90%);
+	background-image: -moz-linear-gradient(top, rgba(0,0,0,0.25) -5%, rgba(250,250,255,0.1) 90%);
+	background-image: -o-linear-gradient(top, rgba(0,0,0,0.25) -5%, rgba(250,250,255,0.1) 90%);
+	background-image: -webkit-linear-gradient(top, rgba(0,0,0,0.25) -5%, rgba(250,250,255,0.1) 90%);
+	background-image: linear-gradient(top, rgba(0,0,0,0.25) -5%, rgba(250,250,255,0.1) 90%);
+}
+
+/*gestion de l'image*/
+details>figure{
+	float:right;
+	text-align:right;
+	margin-top:0;
+}
+details>figure>img{
+	height:4em;
+	/*animation sur le rétrécissement*/
+	-moz-transition:width 0.5s, height 0.5s;
+	-webkit-transition:width 0.5s, height 0.5s;
+	-o-transition:width 0.5s, height 0.5s;
+	transition:width 0.5s, height 0.5s;
+}
+details>figure>img:hover{
+	height:16em;
+	/*animation sur l'agrandissement*/
+	-moz-transition:width 1s, height 1s;
+	-webkit-transition:width 1s, height 1s;
+	-o-transition:width 1s, height 1s;
+	transition:width 1s, height 1s;
+}
+details>figure>figcaption{
+	display:none;
+}
+details>figure>img:hover~figcaption{
+	display:block;
+}
+
+/*langage ayant une information supplémentaire à fournir*/
+li>span[title]{
+	cursor:help;
+}
+
+/*boutton permettant de tout déployer*/
+button{
+	position: absolute;
+	right : 3em;
+	top : 2em;
+}
+
+/*fallback pourles navigateur ne sachant pas gérer les balises details/summary*/
+summary.detailsClosed~*{
+	display:none;
+}
+summary.detailsClosed:before{
+	content:"▸ ";
+}
+summary.detailsOpen:before{
+	content:"▾ ";
+}
+
+/*affichage des éléments de liste (type de logiciel)*/
+em{
+	font-style:normal;
+	font-weight:bold;
+}
+	</style>
+</head>
+<body itemscope itemtype="http://data-vocabulary.org/Person">
+<h1 itemprop="name">Benoît Mariat</h1>
+<h2 itemprop="title">Ingénieur en informatique</h2>
+<details><summary>Informations personnelles</summary>
+<figure><img src="./bmariat.jpg" alt="Benoît Mariat" itemprop="photo"><figcaption>Benoît Mariat - 32&nbsp;ans</figcaption></figure>
+<div>PACSé</div>
+<div>Français</div>
+<div>32&nbsp;ans</div>
+</details>
+<details><summary>Pour me contacter</summary>
+<div itemprop="address" itemscope itemtype="http://data-vocabulary.org/Address"><div itemprop="street-address">17 Bis Avenue Carnot</div><div><span itemprop="postal-code">78500</span> <span itemprop="locality">Sartrouville</span></div>
+<br>
+<div itemprop="tel">06 16 96 05 64</div>
+<a href="mailto:b.mariat@gmail.com" itemprop="email">b.mariat@gmail.com</a></div>
+</details>
+<details><summary>Expériences Professionnelles</summary>
+<h3>SAP - Ingénieur Qualité Logiciel</h3>
+<span><time datetime="2006-02-08">Février 2006</time> → à ce jour</span><br>
+<h4>Tests de benchmark :</h4>
+<p>Mise en place d'un environnement de test permettant de stresser les logiciels SAP avec de nombreux utilisateurs virtuels (avec QALoad et LoadRunner).<br>
+Écriture en langage C et exécution des scripts de charge.<br>
+Configuration et préparation des bases de données (Oracle, SQL Server, et SAP Hana).<br>
+Mesure et comparaison des performances.<br>
+Analyse et communication des résultats avec des propositions de corrections ou d'améliorations.</p>
+
+<h4>Développement d'outils interne :</h4>
+<p>Élaboration et développement d'outils de gestion de test et de récolte d'informations.<br>
+Site Web développé en C# avec une base de donnée tournant sous SQL Server. Conception de l'interface dynamique en JavaScript.<br>
+Développement d'outils de récolte d'informations système tournant sous Linux, écrits en JAVA.</p>
+
+
+<h4>Développement de scripts de tests unitaires :</h4>
+<p>Analyse du code JAVA existant et proposition de tests.<br>
+Écriture des tests unitaires et d'intégration au sein d'une équipe de développement.</p>
+</details>
+<details><summary>Compétences informatiques</summary>
+<ul>
+<li><em>Langages de programmation</em> : C, C++, C#, JAVA</li>
+<li><em>Développement Web</em> : HTML5, CSS3, <span title="EcmaScript 5.1, EcmaScript Harmony">JavaScript</span></li>
+<li><em>SGBD</em> : <span title="8i, 9i, 10g, 11g">Oracle</span>, <span title="2000, 2005, 2008">SQLServer</span>, <span>SAP Hana</span></li>
+<li><em>Système d'exploitation</em> : <span title="Serveur: 2000,2003,2008	Desktop: 3.1→7">Windows</span>, <span title="Ubuntu, Suze 11">Linux</span></li>
+<li><em>Analyse réseau</em> : Fiddler, Wireshark</li>
+<li><em>Source Control</em> : Git, SourceSafe, Perforce</li>
+<li><em>Logiciel de Charge</em> : LoadRunner, QALoad</li>
+</ul>
+</details>
+<details><summary>Formation</summary>
+<h3>ENSEA (École Nationale Supérieure de l'Électronique et de ses Applications)</h3>
+<span><time datetime="2001-09">Septembre 2001</time> → <time datetime="2005-09">Septembre 2005</time></span><br>
+<p>Diplôme d'Ingénieur ENSEA</p>
+<h3>Baccalauréat S</h3>
+<time datetime="1999-07">Juillet 1999</time><br>
+<p>Obtention du Baccalauréat S avec la mention assez bien.
+Baccalauréat scientifique spécialité Mathématiques et option Technologie Industrielle</p>
+</details>
+<details><summary>Langues</summary>
+<ul>
+<li>Anglais : professionnel</li>
+<li>Allemand : scolaire</li>
+<li>Français : langue maternelle</li>
+</ul>
+</details>
+<details><summary>Loisirs</summary>
+<ul>
+<li>Jeux de Stratégie<ul>
+	<li>Échecs (1650 élo français)</li>
+	<li>Go (4 kyu français, Formateur diplômé)</li>
+	<li>Jeux de rôles</li>
+</ul></li>
+<li>Histoire de France du XVII<sup>e</sup> siècle</li>
+<li>Chasseur de nuages</li>
+<li>Randonnée pédestre</li>
+</ul>
+</details>
+<br>
+<a href="CV_Benoit_MARIAT.pdf" target="_blank">Version PDF</a>
+
+<script>
+(function(){
+	var elem=document.createElement("button");
+	var open=false;
+	elem.textContent = "Tout déployer";
+	if(typeof document.querySelector("details").open !== "undefined"){
+		elem.onclick = function(){
+			var liste = document.querySelectorAll("details"),i=0,li=liste.length;
+			open=!open;
+			elem.textContent = open?"Tout replier":"Tout déployer";
+			while(i<li){
+				liste[i++].open=open;
+			}
+		};
+	}else{
+		//la balise HTML5 details n'est pas connue
+		HTML5majDetails();
+		elem.onclick = function(){
+			var liste = document.querySelectorAll("summary"),i=0,li=liste.length;
+			open=!open;
+			elem.textContent = open?"Tout replier":"Tout déployer";
+			while(i<li){
+				liste[i++].className=open?"detailsOpen":"detailsClosed";
+			}
+		};
+	}
+	document.body.appendChild(elem);
+	
+	function HTML5majDetails(){
+	//pour mettre à jour les navigateur ne supportant pas la balise details
+		var liste = document.querySelectorAll("summary"),i=0,li=liste.length;
+		while(i<li){
+			liste[i].onclick=openSwitch;
+			liste[i++].className="detailsClosed";
+		}
+		function openSwitch(){
+			if(this.className==="detailsClosed"){
+				this.className="detailsOpen";
+			}else{
+				this.className="detailsClosed";
+			}
+		}
+	}
+})();
+</script>
+</body>
+</html>

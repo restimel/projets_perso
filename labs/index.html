@@ -1,1 +1,98 @@
-labs.html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<!--
+Labs.html
+
+Author: Benoit Mariat (b.mariat@gmail.com)
+Date: March 2013
+
+License: You are free to use, share, redistribute and modify it if you keep all authors and contributors names. ( http://creativecommons.org/licenses/by/3.0/)
+
+Vous êtes autorisés à utiliser, partager, redistribuer et modifier ce code tant que vous gardez les noms des auteurs et contributeurs. (http://creativecommons.org/licenses/by/3.0/deed.fr)
+
+
+Content: Information about me and some program that I have made
+Original file: http://b.mariat.free.fr/
+
+-->
+<title>Beno&icirc;t Mariat</title>
+<link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+<nav class="extended">
+	<div></div><label></label>
+	<header>Benoît Mariat</header>
+	<a href="./cv/cv.html" target="contenu"><!--<img src="./cv.png" alt="cv">-->Curriculum Vitae</a>
+	<a href="./tools.html" target="contenu">Outils</a>
+	<a href="./demo.html" target="contenu">Démonstration & Jeux</a>
+<!--applications-->
+<!-- cours & quizz -->
+	<button id="previousPage" title="Revenir à la page précédente" disabled>⤺<span></span></button>
+</nav>
+<div id="forIframe"><iframe id="contenu" name="contenu" src=""></iframe></div>
+
+<script>
+(function(){
+		var currentPage=null,
+		historiqueIframe=[],
+		historiqueTitle=document.querySelector("nav>button>span"),
+		iframe=document.querySelector("iframe");
+
+	//ajout d'événements
+	document.querySelector("nav>div").addEventListener("click",displayHideMenu,false);
+	iframe.addEventListener("load",iframeHistorique,false);
+	document.getElementById("previousPage").addEventListener("click",iframeBack,false);
+	
+	function displayHideMenu(e){
+	//permet d'afficher ou de cacher le menu de navigation
+		if(this.parentNode.className==="extended"){
+			this.parentNode.className="";
+		}else{
+			this.parentNode.className="extended";
+		}
+	}
+	
+	function iframeHistorique(e){
+	//permet de gérer l'historique de l'iframe afin de pouvoir naviguer facilement en arrière
+		
+		//récupération informations courante
+		var href=this.contentWindow.location.href,
+			title=this.contentDocument.title;
+
+		//maj historique
+		if(!currentPage || currentPage.href!==href){
+			if(currentPage) historiqueIframe.push(currentPage);
+			currentPage={href:href,title:title};
+		}
+		
+		//maj bouton
+		if(historiqueIframe.length){
+			historiqueTitle.textContent=historiqueIframe[historiqueIframe.length-1].title;
+			historiqueTitle.parentNode.disabled=false;
+		}else{
+			historiqueTitle.textContent="-";
+			historiqueTitle.parentNode.disabled=true;
+		}
+		
+		//maj titre
+		document.title="Benoît Mariat : "+title;
+	}
+	
+	function iframeBack(){
+	//permet de revenir en arrière dans l'historique
+		var h=historiqueIframe.pop();
+		if(h){
+			currentPage=h;
+			iframe.src=h.href;
+		}
+	}
+	
+	//initialisation
+	iframe.src="indexLabs.html";
+	//iframeHistorique();
+}());
+</script>
+</body>
+</html>

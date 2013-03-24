@@ -1,0 +1,173 @@
+@font-face{
+	font-family: titreMenu;
+	src: url('./font/bold_dot_digital-7.ttf');
+}
+
+body{
+	padding:0;
+}
+
+/*gestion de la zone de contenu*/
+iframe{
+	width:100%;
+	height:100%;
+}
+#forIframe{
+	display:block;
+	position: absolute;
+	top:0;
+	bottom:0;
+	right:0;
+	left:2em;
+	overflow:hidden;
+	-webkit-transition: left 0.5s;
+	transition: left 0.5s;
+}
+
+/*gestion du menu*/
+nav{
+	position:fixed;
+	display:block;
+	top:0;
+	left:-10em;
+	height:100%;
+	width:12em;
+	box-shadow:inset -4em 0 3em -3em #FC9325;
+	background-color:#F3D9BF;
+	/*animation*/
+	-webkit-transition: left 0.5s;
+	transition: left 0.5s;
+	
+	/*debug*/
+	border:1px solid black;
+}
+nav.extended{
+	left:0;
+}
+nav.extended~#forIframe{/*modification de la zone de contenu quand le menu est étendu*/
+left:12em !important;
+}
+
+/*encart du menu de navigation*/
+nav>div{
+	position: absolute;
+	right:0;
+	height:100%;
+	width:2em;
+	cursor:pointer;
+	z-index:2;/*pour être au-dessus du label*/
+}
+
+nav>label{
+	padding: 0;
+	position: absolute;
+	top: 50%;
+	right: -3.5em;
+	z-index:1; /*pour être en dessous du div*/
+	/*orientation du texte*/
+	writing-mode: bt-lr;/*pour les vieux IE*/
+	-moz-transform: rotate(270deg);
+	-o-transform: rotate(270deg);
+	-webkit-transform: rotate(270deg);
+	-ms-transform: rotate(270deg);
+	transform: rotate(270deg);
+}
+
+nav>div:hover~label{
+	color: #CC0000;
+}
+
+nav>label:after{
+	content:"  ▾ Afficher le Menu ▾";
+}
+
+nav.extended>label:after{
+	content:"  ▴ Replier le Menu ▴";
+}
+
+/*titre du menu*/
+nav header{
+	font-family:titreMenu;
+	text-align:center;
+	font-size : 1em;
+	margin-top:1em;
+	margin-right:2em;
+}
+
+/*affichage des liens du menu*/
+nav a{
+	display: block;
+	margin-top:2em;
+	margin-bottom:-0.5em;
+	margin-left: 0.5em;
+	width: 8em;
+	padding: 0.5em;
+	text-decoration:none;
+	text-align: center;
+	color: black;
+	
+	border-radius: 0.4em;
+	box-shadow: inset 0px 0px 20px 0px #1a7094,0px 0px 2px 0px #1a7094;
+	background-color: #45add9;
+	background-image: -ms-linear-gradient(top, #45add9 -5%, #FFFFFF 30%, #45add9);
+	background-image: -moz-linear-gradient(top, #45add9 -5%, #FFFFFF 30%, #45add9);
+	background-image: -o-linear-gradient(top, #45add9 -5%, #FFFFFF 30%, #45add9);
+	background-image: -webkit-linear-gradient(top, #45add9 -5%, #FFFFFF 30%, #45add9);
+	background-image: linear-gradient(top, #45add9 -5%, #FFFFFF 30%, #45add9);
+}
+
+/*affichage de la gestion d'historique*/
+nav button{
+	/*suppression des aspect de base d'un bouton*/
+	font:inherit;
+	-moz-box-sizing:content-box;
+	box-sizing:content-box;
+	border:none;
+	
+	
+	display: block;
+	margin-top:2em;
+	margin-bottom:-0.5em;
+	margin-left: 0.5em;
+	width: 8em;
+	padding: 0.4em;
+	text-decoration:none;
+	text-align: center;
+	color: black;
+	cursor: pointer;
+	
+	
+	border-radius: 0.4em;
+	box-shadow: inset 0px 0px 20px 0px #097D17,0px 0px 2px 0px #097D17;
+	background-color: #39e24d;
+	background-image: -ms-linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
+	background-image: -moz-linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
+	background-image: -o-linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
+	background-image: -webkit-linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
+	background-image: linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
+	
+	opacity:1;
+	-webkit-transition: opacity 1s;
+	transition: opacity 1s;
+}
+nav button[disabled]{
+	/*color: #CCCCCC;
+	cursor: forbidden;
+	
+	box-shadow: inset 0px 0px 20px 0px #707D72,0px 0px 2px 0px #707D72;
+	background-color: #CBE2CE;
+	background-image: -ms-linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
+	background-image: -moz-linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
+	background-image: -o-linear-gradient(top, #CBE2CE -5%, #FFFFFF 30%, #CBE2CE);
+	background-image: -webkit-linear-gradient(top, #CBE2CE -5%, #FFFFFF 30%, #CBE2CE);
+	background-image: linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
+	*/
+	opacity: 0;
+}
+
+/*affichage du titre de la page dans le bouton*/
+nav button span{
+	font-size:0.8em;
+	display:block;
+	margin-top:-0.2em;
+}
