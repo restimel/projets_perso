@@ -1,8 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-<title>Alumette</title>
+<meta charset="utf-8" />
+<title>Allumette CSS</title>
+<!--
+flamme.html
+
+Author: Benoit Mariat (b.mariat@gmail.com)
+Date: June 2011
+
+License: You are free to use, share, redistribute and modify it if you keep all authors and contributors names. ( http://creativecommons.org/licenses/by/3.0/)
+
+Vous êtes autorisés à utiliser, partager, redistribuer et modifier ce code tant que vous gardez les noms des auteurs et contributeurs. (http://creativecommons.org/licenses/by/3.0/deed.fr)
+
+
+Content: CSS demo
+Original file: http://b.mariat.free.fr/
+-->
 </head>
 <body>
 
@@ -42,18 +56,33 @@ body{
 	-webkit-box-shadow: inset #806040 2px 0 10px 3px;
 	box-shadow: inset #806040 2px 0 10px 3px;
 }
+
+aside{
+	color: rgb(50,50,0);
+	background-color: rgba(233,227,158,0.8);
+	box-shadow: inset 0 0 1em 0 #000000;
+	position:absolute;
+	bottom : 1em;
+	right : 1em;
+	z-index:10;
+	opacity:0;
+	-webkit-transition: opacity 3s;
+	transition: opacity 3s;
+}
 </style>
 
-<div class="labsMenu labsMenuHaut">
-<label>Perturbation avec la souris: <input type="checkbox" onchange="flamme.sourisVent(this.checked);"></label><br>
-<label>Vent aléatoire: <input type="checkbox" onchange="flamme.autoVent(this.checked);"></label><br>
-<label>vent:<input type="number" id="vent" value="0" onchange="flamme.changeVent();"><button onclick="flamme.changeVent(-1);">-</button><button onclick="flamme.changeVent(1);">+</button></label>
-</div>
+<form class="labsMenu labsMenuHaut">
+	<!--<label>Perturbation avec la souris: <input type="checkbox" onchange="flamme.sourisVent(this.checked);"></label><br>Fonctionnalité expérimentale-->
+	<label>Vent aléatoire: <input type="checkbox" onchange="flamme.autoVent(this.checked);"></label><br>
+	<label>vent:<input type="number" id="vent" value="0" onchange="flamme.changeVent();"><button onclick="flamme.changeVent(-1);">-</button><button onclick="flamme.changeVent(1);">+</button></label>
+</form>
 <br>
 <div id="flamme" class="souffre"></div>
 <div id="tige" class="tige"></div>
 <br>
 
+<aside>Vous pouvez (r)allumer l'allumette en cliquant dessus.<br>
+Elle s'éteindra si le vent dépasse une force de 10.</aside>
 
 <script type="text/javascript" src="./flamme.js"></script>
 
