@@ -4,8 +4,8 @@
  	<meta charset="utf-8">
 	<title>Reconnaissance vectorielle de caractères</title>
  </head>
- <body onload="erase();" style="padding:0;margin: 0;">
-   <input type="text" id="demo"><button onclick="erase();">Effacer</button><br>
+ <body onload="erase();" style="padding:0;margin: 0;overflow:hidden;">
+   <button onclick="erase();">Effacer</button> <output type="text" id="demo" value=" "></output><br>
    <canvas id="canvas" width="1050" height="850" style="background:#CCCCCC;margin:0;padding:0;" onmousedown="paint(event);">
      <p>This example requires a browser that supports the
      <a href="http://www.w3.org/html/wg/html5/">&lt;canvas&gt; feature.</a> 
@@ -118,9 +118,10 @@
 			var result=lettres.search(directions);
 			var demo=document.getElementById("demo");
 			if(result==="²"){
-				result=directions.join(','); //debug
+				result="Forme non identifiée : "+directions.join(','); //debug
 				demo.style.color="red";
 			}else{
+				result="Caractère identifié : "+result;
 				demo.style.color="green";
 			}
 			demo.value=result;
