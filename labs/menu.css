@@ -2,6 +2,15 @@
 	Feuille de style des pages de menu
 */
 
+html{ /*Ipad hack for iframe scrolling*/
+	overflow:auto;
+	-webkit-overflow-scrolling:touch;
+}
+/*
+*:not(html) {
+-webkit-transform: translate3d(0, 0, 0);
+}
+*/
 
 body>section{
 	-moz-column-count:2;

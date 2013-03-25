@@ -11,6 +11,10 @@ body{
 iframe{
 	width:100%;
 	height:100%;
+	
+	/*Ipad scrolling hack*/
+	overflow:auto;
+	-webkit-overflow-scrolling:touch;
 }
 #forIframe{
 	display:block;
