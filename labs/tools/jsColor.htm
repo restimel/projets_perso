@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf8">
@@ -449,7 +449,8 @@ function manage_color(){
 	var source = document.getElementById("source").value;
 	var html = color(source,document.getElementById("inline").checked);
 	var i=1;
-	if(nb){
+	if(typeof nb !== "undefined" && nb){
+		//numérotation des lignes
 		html = html.replace(/^/gm,function(){return (i++)+":&emsp;";});//TODO coloration unique
 	}
 	document.getElementById("preview").innerHTML = html;
