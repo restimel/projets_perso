@@ -8,16 +8,27 @@
 <style>
 #liste{
 	width:500px;
+	border:1px solid green;
+	overflow:auto;/*sera ajouté de toute façon*/
+	-webkit-overflow-scrolling:touch; /*ipad hack*/
+	
+	height:500px; /*important pour que le script fonctionne correctement,cette valeur doit être une valeur fixe (pas un %)*/
+}
+
+img{
+	height:20px;
+	margin-bottom:0.5em;
 }
 </style>
 
-<div id="liste" style="height:500px;overflow:auto;border:1px solid green;"></div>
 <button id="goto">goto 1000</button><br>
+<div id="liste"></div>
+
 
 <script src="pagingElement.js"></script>
 <script>
 	function remplir(nb){
-		this.textContent = "TOTO"+nb;
+		this.textContent = "TOTO "+nb;
 		var img = document.createElement("img");
 		img.style.height="20px";
 		img.alt="mon image n°"+nb;

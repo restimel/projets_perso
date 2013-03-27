@@ -298,8 +298,6 @@ function logAnalyzer(text){
 				")"; //il ne recherche pas les timestamp //TODO générer cette regexp automatiquement à partir des pattern de recherche
 	search = new RegExp(search,"g");
 	var liste = text.match(search);
-	console.log(liste.length);
-console.debug(liste);
 	
 	document.getElementById("d1").value=liste[0];
 	document.getElementById("d2").value=liste[liste.length-1];

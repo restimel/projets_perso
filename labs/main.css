@@ -26,6 +26,10 @@ iframe{
 	overflow:hidden;
 	-webkit-transition: left 0.5s;
 	transition: left 0.5s;
+	
+	/*Ipad scrolling hack*/
+	overflow:auto;
+	-webkit-overflow-scrolling:touch;
 }
 
 /*gestion du menu*/
@@ -82,11 +86,11 @@ nav>div:hover~label{
 }
 
 nav>label:after{
-	content:"  ▾ Afficher le Menu ▾";
+	content:"▾ Afficher le Menu ▾";
 }
 
 nav.extended>label:after{
-	content:"  ▴ Replier le Menu ▴";
+	content:"▴ Replier le Menu ▴";
 }
 
 /*titre du menu*/
