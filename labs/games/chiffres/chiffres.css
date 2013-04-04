@@ -1,3 +1,6 @@
+body{
+	padding:1em;
+}
 .info{
 	position: absolute;
 	left: 0;
@@ -86,19 +89,19 @@
 #entreeFormule{ /*espace où l'utilisateur entre sa formule*/
 	position: absolute;
 	display: block;
-	bottom: 0.5em;
+	bottom: 1.5em;
 	left: 0.5em;
 }
 #jeuDistance{ /*distance obtenue par le joueur*/
 	position: absolute;
 	display: block;
-	bottom: 0.5em;
+	bottom: 1.5em;
 	right: 17em;
 }
 #resultatIA > div{ /*distance obtenue par l'IA*/
 	position:absolute;
 	display: block;
-	bottom: 0.5em;
+	bottom: 1.5em;
 	right: 1em;
 }
 
