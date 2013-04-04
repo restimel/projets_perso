@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<title>TP : jeu des chiffres</title>
+		<link rel="stylesheet" href="chiffres.css" type="text/css">
+	</head>
+	<body>
+		<section class="info" id="zoneJeu" style="display:none;">
+			<button id="bRestart">Rejouer</button>
+			<output id="jeuCible"></output>
+			<output id="jeuTemps"></output>
+			<fieldset id="operations">
+				<legend>opérations</legend>
+				<button id="bPlus">+</button>
+				<button id="bMoins">-</button>
+				<button id="bFois">×</button>
+				<button id="bDiv">÷</button>
+			</fieldset>
+			<section id="zonePlaque"></section>
+		</section>
+		<section class="info" id="zoneParametres">
+			<label>Nombre de plaques : <input type="number" min="2" value="6" id="regleNbPlaques"/></label>
+			<label>Temps de jeu : <input type="number" min="1" value="45" id="regleTemps"/> secondes</label>
+			<br/>
+			<button id="bStart">Commencer une partie</button>
+		</section>
+		<fieldset id="zoneResultat">
+			<legend>Résultat</legend>
+			<section id="zoneCalcul"></section>
+			<aside id="resultatIA"></aside>
+			<input type="text" id="entreeFormule" title="Entrez ici vos formules de calculs" placeholder="Entrez les calculs ici" />
+			<output id="jeuDistance"></output>
+		</fieldset>
+		
+		<script src="jeu.js"></script>
+	</body>
+</html>

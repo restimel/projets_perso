@@ -1,0 +1,127 @@
+.info{
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: 7em;
+}
+#zonePlaque{
+	display: block;
+}
+#jeuCible{ /*le nombre à trouver*/
+	display: inline-block;
+	width: 4em;
+	padding: 0.3em;
+	margin: 0.5em;
+	letter-spacing: 0.3em;
+	font-weight: bold;
+	text-align: center;
+	font-size: 1.5em;
+	color: #0C0;
+	text-shadow: 2px 2px 5px #090;
+	background-color: #000;
+}
+#jeuTemps{ /*le chronomètre*/
+	display: inline-block;
+	width: 5em;
+	padding: 0.3em;
+	margin: 0.5em 0.5em 0.5em 2em;
+	text-align: center;
+	font-size: 1.5em;
+	color: #DC3;
+	text-shadow: 2px 2px 2px #00A;
+	background-color: #EFE;
+	border: 1px solid #000;
+}
+#jeuTemps:after{
+	content: " s";
+}
+#operations{/*affichage des opérations possible*/
+	position:absolute;
+	right: 0;
+	margin-top: -1em;
+}
+#operations>button{/*boutons des opérations*/
+	display:inline-block;
+	width: 2em;
+	padding: 0.5em;
+	text-align: center;
+	font-weight: bold;
+	cursor: pointer;
+}
+#zonePlaque >div{ /*les plaques*/
+	width: 3em;
+	padding: 0.5em;
+	margin: 0 0.5em 0 0.5em;
+	text-align: center;
+	background-color: #000;
+	color: #FFF;
+	font-weight: bold;
+	display: inline-block;
+	cursor: pointer;
+}
+#zoneResultat{ /*espace de jeu*/
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 7em;
+	bottom: 0;
+	background-color: #CCF;
+	display: none;
+}
+#zoneCalcul{ /*zone d'affichage des opérations*/
+	right: 10em;
+	padding: 1em;
+}
+#resultatIA{ /*zone d'affichage de l'IA*/
+	position: absolute;
+	top:0.5em;
+	bottom:0;
+	right: 0;
+	width: 15em;
+	background-color: #DDD;
+	border:1px solid #000;
+	box-shadow: inset 0 0 0.3em 0.1em #999;
+}
+#entreeFormule{ /*espace où l'utilisateur entre sa formule*/
+	position: absolute;
+	display: block;
+	bottom: 0.5em;
+	left: 0.5em;
+}
+#jeuDistance{ /*distance obtenue par le joueur*/
+	position: absolute;
+	display: block;
+	bottom: 0.5em;
+	right: 17em;
+}
+#resultatIA > div{ /*distance obtenue par l'IA*/
+	position:absolute;
+	display: block;
+	bottom: 0.5em;
+	right: 1em;
+}
+
+#zoneCalcul > div, #resultatIA{ /*les opérations*/
+	margin: 0.5em 1em 0 0;
+	color:#333;
+	text-shadow: 1px 1px 0 #111;
+	display: block;
+	cursor: pointer;
+}
+#zoneJeu > button{
+	float: right;
+}
+.deletion{
+	margin-right: 2em;
+}
+.deletion:hover~*{/*pour supprimer un calcul*/
+	text-decoration: line-through;
+}
+
+.erreur{
+	background-color: #FCC;
+}
+.compteBon{
+	color:#393 !important;
+}
