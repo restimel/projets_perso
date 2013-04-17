@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8">
+	<title>HTML5 web-worker : Le monde parallèle du JavaScript</title>
+	<link rel="stylesheet" type="text/css" href="./tutoriel.css">
+</head>
+<body>
+<h1>HTML5 web-worker : Le monde parallèle du JavaScript</h1>
+<nav>
+<header>Table des matières</header>
+<ol>
+	<li><a href="./workers.html">Introduction</a></li>
+	<li><h2>Premiers Pas</h2>
+		<ol>
+			<li><a href="./introduction.html">Introduction à la programmation parallèle</a></li>
+			<li><a href="./webWorker.html">Dedicated-Worker</a></li>
+			<li><a href="./SharedWorker.html">Shared-Worker</a></li>
+		</ol>
+	</li>
+	<li><h2>Pour en savoir plus</h2>
+		<ol>
+			<li><a href="./communication.html">Communiquer avec des workers</a></li>
+			<li><a href="./manipulation.html">Manipulation des workers</a></li>
+			<li><a href="./utilisation.html">Utilisation des workers</a></li>
+			<li><a href="./compatibilite.html">Support des Workers dans les navigateurs</a></li>
+		</ol>
+	</li>
+</nav>
+<article>
+<h2>Introduction à la programmation parallèle</h2>
+<p>
+Avant de plonger dans les web-workers, nous allons d'abord voir, et surtout comprendre, ce qu'est la programmation parallèle.</p>
+
+<p>Le but d'un programme est d'exécuter une tâche. Pour réaliser celle-ci, on donne à l'ordinateur une liste d'instructions qu'il va effectuer. Il existe plusieurs manières de traiter ces instructions.</p>
+
+<p>Ainsi nous allons voir ici, et surtout comprendre, différentes manières d'exécuter des instructions.</p>
+
+<p>Il s'agit d'un chapitre essentiellement théorique.</p>
+
+
+<section>
+<h3>La programmation séquentielle</h3>
+
+	<section>
+		<h4>La programmation impérative</h4>
+		<p>Il s'agit sans doute de la méthode la plus naturelle, et il s'agit de la base de la programmation. Les instructions sont données les unes à la suites des autres. Lorsque l'ordinateur a fini de traiter une instruction, il exécute la suivante.</p>
+		<details>
+			<summary>Exemple : Analogie avec un jardinier</summary>
+			<p>Imaginez un jardinier. Dans son jardin, il fait pousser des plantes, les soigne et répond aux questions de quelques curieux.<br>
+Ainsi s'il s'agissait d'un programme, nous lui donnerions les tâches suivantes :
+			</p>
+			<ol>
+				<li>Arroser les plantes</li>
+				<li>Soigner les plantes</li>
+				<li>Répondre aux questions</li>
+			</ol>
+			<p>Ainsi il commence par arroser les plantes. Dès qu'il a fini, il va les soigner. Et lorsqu'il a fini de les soigner, il va répondre aux questions des curieux.</p>
+		</details>
+		<p>Bien sûr, une liste d'instructions n'est pas forcément linéaire. On peut ajouter des structures de contrôle (comme les structures conditionnelles avec les <span class="minicodeJS reservedWord">if</span>), des boucles (comme <span class="minicodeJS reservedWord">for</span> ou <span class="minicodeJS reservedWord">while</span>), ou des sous-ensembles d'instructions (comme les fonctions). Toutefois cela ne change pas le fait que l'exécution du code reste séquentiel : dès qu'une instruction est terminée, on passe à la suivante.</p>
+		<p>L'ordre d'exécution du code est prévisible. On sait exactement ce qu'il va se passer en lisant un code en programmation impérative.</p>
+		<p>Jusqu'ici, tout est clair ?<br>
+Cela vous paraît évident que le résultat d'un code est prévisible ? En fait, ça ne l'est pas tant que ça …</p>
+	</section>
+	
+	<section>
+		<h4>La programmation événementielle</h4>
+		<p>En <strong>programmation événementielle</strong>, un morceau de code (une action) est déclenché lors d'un événement.</p>
+		<p>Le résultat n'est plus prévisible, car l'ordre des actions dépendra de l'apparition des événements.</p>
+		<p>Ce type de programmation rejoint la <strong>programmation asynchrone</strong>. Lorsqu'on exécute une tâche de manière asynchrone, son résultat n'est pas connu tout de suite. Pour obtenir son résultat, on écrit une fonction qui se déclenchera lorsque le résultat est connu. On voit bien qu'on a besoin d'un événement (quand le résultat est accessible) pour continuer l'exécution du code.<br>
+Dans le cas d'une <strong>programmation synchrone</strong>, lorsqu'on exécute la fonction, le résultat est connu tout de suite (on ne continue pas tant que le résultat n'est pas connu).</p>
+	<details><summary>Étude d'un cas pratique : Le chargement d'image</summary>
+	<p>Si vous souhaitez afficher une nouvelle image et récupérer ses dimensions, qu'allez-vous faire ?</p>
+
+	<p>Si vous écrivez <span class="miniCodeJS"><span class="reservedWord">var</span> img <span class="operator">=</span> <span class="reservedWord">new</span> Image(); img<span class="operator">.</span>src <span class="operator">=</span> cheminImage;</span> img.src = cheminImage;, vous ne pourrez pas obtenir ses dimensions tout de suite. En effet l'objet image va charger l'image de manière asynchrone. Ainsi pour obtenir ses dimensions, il va falloir utiliser l'événement onload pour lire les informations lorsque l'image est chargée.</p>
+	</details>
+	</section>
+</section>
+</article>
+</body>
+</html>
