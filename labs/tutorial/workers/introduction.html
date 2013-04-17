@@ -72,9 +72,55 @@ Dans le cas d'une <strong>programmation synchrone</strong>, lorsqu'on exécute l
 	<details><summary>Étude d'un cas pratique : Le chargement d'image</summary>
 	<p>Si vous souhaitez afficher une nouvelle image et récupérer ses dimensions, qu'allez-vous faire ?</p>
 
-	<p>Si vous écrivez <span class="miniCodeJS"><span class="reservedWord">var</span> img <span class="operator">=</span> <span class="reservedWord">new</span> Image(); img<span class="operator">.</span>src <span class="operator">=</span> cheminImage;</span> img.src = cheminImage;, vous ne pourrez pas obtenir ses dimensions tout de suite. En effet l'objet image va charger l'image de manière asynchrone. Ainsi pour obtenir ses dimensions, il va falloir utiliser l'événement onload pour lire les informations lorsque l'image est chargée.</p>
+	<p>Si vous écrivez <span class="miniCodeJS"><span class="reservedWord">var</span> img <span class="operator">=</span> <span class="reservedWord">new</span> Image(); img<span class="operator">.</span>src <span class="operator">=</span> cheminImage; img.src = cheminImage;</span>, vous ne pourrez pas obtenir ses dimensions tout de suite. En effet l'objet image va charger l'image de manière asynchrone. Ainsi pour obtenir ses dimensions, il va falloir utiliser l'événement <span class="miniCodeJS">onload</span> pour lire les informations lorsque l'image est chargée.</p>
 	</details>
-	</section>
+	<p class="info">Mais même si les séquences sont exécutées de manière asynchrone, à chaque fois il n'y en a qu'une qui travaille. Les autres séquences attendent que la séquence active se termine pour remplir leur tâche.</p>
+	<details><summary>Exemple : Analogie avec un jardinier</summary>
+	<p>Reprenons l'analogie du jardinier, et rendons-le un peu plus "intelligent" :</p>
+	<ul>
+		<li>Il ne va arroser les plantes que lorsqu'elles manquent d'eau.</li>
+		<li>Il ne va soigner les plantes que lorsqu'il observera des parasites.</li>
+		<li>Il ne répondra aux curieux que lorsqu'ils auront une question à poser.</li>
+	</ul>
+	<p>Donc dès que les plantes sont envahies par des parasites, le jardinier se met alors à la tâche et s'en va soigner ses plantes.</p>
+	<p>Imaginons, alors, que pendant son travail, les deux autres événements apparaissent : les plantes manquent d'eau, et un curieux désire poser une question.</p>
+	<p>Notre jardinier termine alors son travail de soin, s'en va chercher de l'eau, les arrose. Puis, enfin, va rejoindre le curieux pour répondre à sa question. On peut alors facilement estimer que dans ce cas de figure, le curieux peut avoir passé beaucoup de temps à attendre. Et s'il s'agit d'une personne importante, comme un client, il serait dommage de le vexer en le faisant attendre aussi longtemps. ☹ </p>
+	</details>
+	<p>Malheureusement en JavaScript, il n'est pas possible d'ordonnancer les tâches qui ont été déclenchées en fonction de leur priorité. Elles seront exécutées dans l'ordre de déclenchement.<br>
+ On pourrait essayer de le faire manuellement. Ainsi au début d'une nouvelle tâche, on vérifie s'il ne faut pas en exécuter d'abord une autre plus prioritaire, et remettre celle en cours à plus tard.<br>
+ Non seulement c'est compliqué à mettre en place, mais on a toujours un problème : si la tâche en cours au moment du déclenchement de l'événement est très longue, notre important client devra toujours patienter jusqu'à la fin de celle-ci.</p>
+	 <p class="question">Mais alors comment faire ?</p>
+	 <p>Il suffit d'embaucher une nouvelle personne. ☺</p>
+ 	</section>
+ 	<section>
+ 		<h3>La programmation parallèle</h3>
+ 		<p>La <strong>programmation parallèle</strong> consiste à exécuter plusieurs tâches en même temps !</p>
+ 		<p>À la question précédente, certains petits malins ont dû penser : il suffit que le jardinier arrose ses plantes et réponde en criant. ☺<br>
+ 		Oui, mais le jardinier doit quand même faire deux actions en même temps : arroser et crier. Cela est possible, car l'humain est une machine formidable capable de réaliser de très nombreuses choses en même temps.<br>
+ Cependant pour un ordinateur, ce n'est pas aussi simple. Car initialement, les ordinateurs sont conçus pour traiter les informations séquentiellement : le processeur exécute les instructions les unes à la suite des autres. Dans ce contexte, il est difficile d'imaginer de pouvoir réaliser plusieurs actions en même temps.</p>
+ 	
+ 	<p>Et pourtant, quand vous utilisez votre ordinateur et que vous copiez un (gros) fichier, vous pouvez toujours continuer à naviguer dans vos répertoires. Vous n'êtes pas (plus) obligé d'attendre la fin de la copie.<br>
+ Ceci est possible, car votre système d'exploitation gère ce qu'on appelle un scheduler (ordonnanceur en français). Il va allouer un certain temps d'exécution à chaque code qui désire fonctionner à cet instant. Ainsi, il va exécuter un premier code (comme la copie du fichier), puis l'interrompre pour démarrer un deuxième code (comme la navigation dans les répertoires), puis interrompre ce dernier pour relancer le premier là où il en était précédemment … et alterner ainsi de suite avec tous les programmes qui tournent à ce moment.<br>
+ Bien que chaque code s'exécute à tour de rôle, il s'agit bien d'actions simultanées puisque lorsque la première tâche est en cours d'exécution, la deuxième est également en cours d'exécution.</p>
+ 
+ 	<p>Depuis les années 2000, les ordinateurs multiprocesseurs ou les processeurs multicœurs se sont généralisés. Aujourd'hui, pratiquement tout le monde possède un ordinateur disposant de cette technologie. Or cette technologie permet de réellement exécuter plusieurs instructions en même temps (1 par cœur ou par processeur).<br>
+ Cependant, pour qu'un programme puisse bénéficier de ces avantages, et donc exécuter deux codes (ou plus) de manière concurrente, il doit indiquer qu'un certain code ne s'exécute plus dans la même pile que le code principal.</p>
+ 
+	<p>Une pile, ou plutôt <strong>pile sémantique</strong> (pour ne pas la confondre avec la pile d'exécution qui liste les fonctions actives du programme, et même si dans chaque pile sémantique se trouve une pile d'exécution) est un ensemble d'instructions que l'ordinateur doit exécuter.<br>
+ Il est possible que vous entendiez les termes <strong>thread</strong> ou <strong>processus</strong>.</p>
+	<p class="information">Un <strong>thread</strong> (ou fil d'exécution en français) contient une pile sémantique et se charge de l'exécuter.<br>
+Un <strong>processus</strong> (ou process en anglais) contient un ou plusieurs threads. Le scheduler se chargera de séquencer ces processus afin qu'ils puissent tous fonctionner en même temps.
+ Les threads à l'intérieur du même processus peuvent partager une mémoire commune alors que les processus ne partagent pas de mémoire entre eux.</p>
+ 
+	<p>En JavaScript, c'est au moteur de choisir s'il crée un nouveau thread dans le même processus, ou s'il crée un nouveau processus (avec un thread dedans bien sûr). Le programmeur ne peut pas choisir spécifiquement l'un ou l'autre.<br>
+ Dans la suite de ce tutoriel, j'utiliserai le terme thread pour désigner ce qui est en fait une pile sémantique, car ce terme est très généralement utilisé sur le web sans faire la distinction entre ces différents concepts. Comme nous ne gérons pas le programme dans le système d'exploitation, nous n'aurons donc pas de quiproquo.</p>
+ 
+	<p>En programmation parallèle, il est très souvent nécessaire d'avoir un système de communication entre les threads. Il existe deux principaux modèles de communication : le modèle par mémoire partagée, et le modèle par passage de messages.</p>
+ 	
+ 	<section>
+ 		<h4>Communication par mémoire partagée</h4>
+ 	</section>
+
 </section>
 </article>
 </body>

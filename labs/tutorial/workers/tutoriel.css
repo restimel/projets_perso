@@ -1,6 +1,16 @@
+.information{
+	display:block;
+	background-color: rgba(150,250,150,0.8);
+}
+.question{
+	display:block;
+	background-color: rgba(150,150,250,0.8);
+}
+
 .miniCodeJS,.minicodeJS,.minicodejs{
 	display:inline;
 	font-family:courier,monospace;
+	font-size:0.9em;
 }
 .codeJS,.codejs{
 	display:block;
