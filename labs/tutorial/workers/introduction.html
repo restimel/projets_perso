@@ -57,7 +57,7 @@ Ainsi s'il s'agissait d'un programme, nous lui donnerions les tâches suivantes 
 			</ol>
 			<p>Ainsi il commence par arroser les plantes. Dès qu'il a fini, il va les soigner. Et lorsqu'il a fini de les soigner, il va répondre aux questions des curieux.</p>
 		</details>
-		<p>Bien sûr, une liste d'instructions n'est pas forcément linéaire. On peut ajouter des structures de contrôle (comme les structures conditionnelles avec les <span class="codeJS reservedWord">if</span>), des boucles (comme <span class="codeJS reservedWord">for</span> ou <span class="codeJS reservedWord">while</span>), ou des sous-ensembles d'instructions (comme les fonctions). Toutefois cela ne change pas le fait que l'exécution du code reste séquentiel : dès qu'une instruction est terminée, on passe à la suivante.</p>
+		<p>Bien sûr, une liste d'instructions n'est pas forcément linéaire. On peut ajouter des structures de contrôle (comme les structures conditionnelles avec les <span class="minicodeJS reservedWord">if</span>), des boucles (comme <span class="minicodeJS reservedWord">for</span> ou <span class="minicodeJS reservedWord">while</span>), ou des sous-ensembles d'instructions (comme les fonctions). Toutefois cela ne change pas le fait que l'exécution du code reste séquentiel : dès qu'une instruction est terminée, on passe à la suivante.</p>
 		<p>L'ordre d'exécution du code est prévisible. On sait exactement ce qu'il va se passer en lisant un code en programmation impérative.</p>
 		<p>Jusqu'ici, tout est clair ?<br>
 Cela vous paraît évident que le résultat d'un code est prévisible ? En fait, ça ne l'est pas tant que ça …</p>
@@ -69,6 +69,11 @@ Cela vous paraît évident que le résultat d'un code est prévisible ? En fait,
 		<p>Le résultat n'est plus prévisible, car l'ordre des actions dépendra de l'apparition des événements.</p>
 		<p>Ce type de programmation rejoint la <strong>programmation asynchrone</strong>. Lorsqu'on exécute une tâche de manière asynchrone, son résultat n'est pas connu tout de suite. Pour obtenir son résultat, on écrit une fonction qui se déclenchera lorsque le résultat est connu. On voit bien qu'on a besoin d'un événement (quand le résultat est accessible) pour continuer l'exécution du code.<br>
 Dans le cas d'une <strong>programmation synchrone</strong>, lorsqu'on exécute la fonction, le résultat est connu tout de suite (on ne continue pas tant que le résultat n'est pas connu).</p>
+	<details><summary>Étude d'un cas pratique : Le chargement d'image</summary>
+	<p>Si vous souhaitez afficher une nouvelle image et récupérer ses dimensions, qu'allez-vous faire ?</p>
+
+	<p>Si vous écrivez <span class="miniCodeJS"><span class="reservedWord">var</span> img <span class="operator">=</span> <span class="reservedWord">new</span> Image(); img<span class="operator">.</span>src <span class="operator">=</span> cheminImage;</span> img.src = cheminImage;, vous ne pourrez pas obtenir ses dimensions tout de suite. En effet l'objet image va charger l'image de manière asynchrone. Ainsi pour obtenir ses dimensions, il va falloir utiliser l'événement onload pour lire les informations lorsque l'image est chargée.</p>
+	</details>
 	</section>
 </section>
 </article>

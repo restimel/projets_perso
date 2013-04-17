@@ -1,4 +1,9 @@
-.codeJS{
+.miniCodeJS,.minicodeJS,.minicodejs{
+	display:inline;
+	font-family:courier,monospace;
+}
+.codeJS,.codejs{
+	display:block;
 	font-family:courier,monospace;
 }
 .boolean{
