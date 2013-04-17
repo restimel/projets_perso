@@ -1,0 +1,63 @@
+.codeJS{
+	font-family:courier,monospace;
+}
+.boolean{
+	color:#0000FF;
+}
+.number{
+	color:#CCAA00;
+}
+.regexp{
+	color:#FF0000;
+}
+.regexpFlag{
+	color:#FF00CC;
+	font-style:italic;
+}
+.string1{
+	color:#CC8833;
+}
+.string2{
+	color:#CC4933;
+}
+.null{
+	color:#0000CC;
+	font-style:italic;
+}
+.operator{
+	color:#443349;
+	font-weight:bold;
+}
+.comment1{
+	color:#339933;
+	font-style:italic;
+	font-size:0.85em;
+}
+.comment2{
+	color:#008855;
+	font-style:italic;
+	font-size:0.8em;
+}
+.comment3{
+	color:#9999CC;
+	font-style:italic;
+	font-size:0.85em;
+}
+.reservedWord{
+	color:#005511;
+	font-weight:bold;
+}
+.futureReservedWord{
+	color:#AA0099;
+	font-weight:bold;
+}
+.commonMethod{
+	font-style:italic;
+}
+.commonObject{
+	font-weight:bold;
+}
+.useStrict{
+	color:#00EEFF;
+	font-style:italic;
+}

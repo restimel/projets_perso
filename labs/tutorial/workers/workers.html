@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8">
+	<title>HTML5 web-worker : Le monde parallèle du JavaScript</title>
+	<link rel="stylesheet" type="text/css" href="./tutoriel.css">
+</head>
+<body>
+<h1>HTML5 web-worker : Le monde parallèle du JavaScript</h1>
+<nav>
+<header>Table des matières</header>
+<ol>
+	<li><a href="./workers.html">Introduction</a></li>
+	<li><h2>Premiers Pas</h2>
+		<ol>
+			<li><a href="./introduction.html">Introduction à la programmation parallèle</a></li>
+			<li><a href="./webWorker.html">Dedicated-Worker</a></li>
+			<li><a href="./SharedWorker.html">Shared-Worker</a></li>
+		</ol>
+	</li>
+	<li><h2>Pour en savoir plus</h2>
+		<ol>
+			<li><a href="./communication.html">Communiquer avec des workers</a></li>
+			<li><a href="./manipulation.html">Manipulation des workers</a></li>
+			<li><a href="./utilisation.html">Utilisation des workers</a></li>
+			<li><a href="./compatibilite.html">Support des Workers dans les navigateurs</a></li>
+		</ol>
+	</li>
+</nav>
+<article>
+<h2>Introduction</h2>
+<p>
+Dans ce qu'on nomme le HTML5, de nombreuses nouvelles fonctionnalités ont été ajoutées au javascript. Parmi celles-ci se trouvent les web-workers ou la possibilité d'exécuter du code en parallèle en javascript.<br>
+Effectivement depuis sa création, le javascript souffre d'un défaut de taille : il est mono-thread !</p>
+<quote>
+Qui n'a jamais vu ses pages ne répondant plus pendant un certain temps ?<br>
+Qui n'a jamais vu ses animations saccader lorsqu'un autre script démarre ?<br>
+Qui n'a jamais vu son super code être coupé par une alerte invitant l'utilisateur à interrompre le script ?<br>
+<figure>
+<img src="./scriptTimeout.png" alt="Délai d'expiration d'un script">
+<figcaption>Délai d'exécution d'un script atteint.</figcaption>
+</figure>
+</quote>
+
+<p>Dans ce tutoriel, nous allons voir comment résoudre ces problèmes, en réalisant des exécutions de code en simultané.</p>
+
+<p>Pour bien comprendre ce tutoriel, il est nécessaire d'avoir une connaissance solide du javascript. La maitrise du fonctionnement asynchrone et la manipulation d'objet est le strict minimum.</p>
+
+<p>Le fait que ce tutoriel traite de fonctionnalités HTML5 implique que seuls les navigateurs récents (Firefox 3.5, Chrome 3, Opera 10.60, Internet Explorer 10, …) pourront les supporter. Toutefois selon les navigateurs certaines fonctionnalités sont plus ou moins bien supportées. <a href="./compatibilite.html">Le dernier chapitre est dédié à ce sujet</a>.
+
+</article>
+</body>
+</html>
