@@ -1,0 +1,50 @@
+<script>
+
+function creationDB(){
+	console.log("fonction creationDB a été appelée");
+	alert("creationDB");
+}
+
+function createTable(transaction){
+	transaction.executeSql('create table if not exists toto (id unique,text)',[],reponse);
+	transaction.executeSql('insert into toto (id, text) values (1, "test")',[],reponse);
+	read(transaction);
+}
+
+function read(transaction){
+	transaction.executeSql('select * from toto',[],reponse);
+}
+
+function reponse(transaction,results){
+	var txt = "",row,r,c;
+	var li = results.rows.length,i;
+	for(i=0;i<li;i++){
+		row="";
+		r = results.rows.item(i);
+		if(!txt){
+			for(c in r){
+				txt+=c+"\t";
+			}
+			txt+="\n";
+		}
+		for(c in r){
+			txt+=r[c]+"\t";
+		}
+		txt+="\n";
+	}
+	alert("réponse !\n"+txt);
+}
+
+try{
+	console.log("db to open");
+	var db = openDatabase("testDB4.1","1.1","essais de database",500,creationDB);
+	console.log("db open");
+	db.transaction(createTable);
+	console.log("table created");
+	db.transaction(read);
+	console.log("table read");
+}catch(e){
+	console.error(e);
+	alert(e.message);
+}
+</script>

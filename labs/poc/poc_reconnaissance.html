@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+ <head>
+ 	<meta charset="utf-8">
+	<title>Reconnaissance vectorielle de caractères</title>
+ </head>
+ <body onload="erase();" style="padding:0;margin: 0;overflow:hidden;">
+   <button onclick="erase();">Effacer</button> <output type="text" id="demo" value=" "></output><br>
+   <canvas id="canvas" width="1050" height="850" style="background:#CCCCCC;margin:0;padding:0;" onmousedown="paint(event);">
+     <p>This example requires a browser that supports the
+     <a href="http://www.w3.org/html/wg/html5/">&lt;canvas&gt; feature.</a> 
+     </p>
+   </canvas>
+   
+   <script type="text/javascript">
+	function erase() {
+	//efface le canvas
+		var canvas = document.getElementById("canvas");
+		if (canvas.getContext) {
+			var ctx = canvas.getContext("2d");
+			ctx.clearRect (0, 0, canvas.width, canvas.height);
+		}
+	}
+	
+	var reconnaissance=function(){
+	/*
+		fonction permettant la reconnaissance des gestes
+	*/
+		lettres={lettre:[],konami:[],add:function(c,k){
+				//permet d'ajouter une reconaissance de caractère
+				if(this.search(k)!=="²"){
+					alert("le konami ["+k.join(",")+"] a déjà été lié au caractère: "+this.search(k)+"\nLe caractère "+c+" associé à ce konami a été rejeté.");
+					return false;
+				}
+				this.lettre.push(c);
+				this.konami.push(k);
+			},search:function(k){
+				//permet de rechercher un konami identique
+				var li=this.konami.length,lng=k.length,lj;
+				liste_konami: while(li--){
+					if((lj=this.konami[li].length)===lng){
+						while(lj--){
+							if(this.konami[li][lj]!==k[lj]){
+								continue liste_konami;
+							}
+						}
+						return this.lettre[li];
+					}
+				}
+				return "²"; //not found
+			}};
+		
+		//liste des caractères reconnus
+		lettres.add("A",[0,5,4,3,2,1]);
+		lettres.add("A",[0,4,2]);
+		lettres.add("A",[0,4,3,2]);
+		lettres.add("a",[0,7,8,1,2,3,4,5,1,2,3]);
+		lettres.add("a",[0,7,8,1,2,3,4,5,1,2]);
+		lettres.add("B",[0,1,5,4,3,2,1,8,7,3,2,1,8,7]);
+		lettres.add("B",[0,5,4,3,2,1,8,7,3,2,1,8,7]);
+		lettres.add("b",[0,1,5,4,3,2,1,8,7]);
+		lettres.add("C",[0,7,8,1,2,3]);
+		lettres.add("D",[0,5,3,2,1,8,7]);
+		lettres.add("d",[0,7,8,1,2,3,4,5]);
+		lettres.add("d",[0,7,8,1,2,3,4,5,1]);
+		lettres.add("e",[0,3,4,5,6,7,8,1,2,3]);
+		lettres.add("e",[0,3,5,6,7,8,1,2,3]);
+		lettres.add("e",[0,3,5,7,1,2,3]);
+		lettres.add("e",[0,3,4,5,6,7,8,1,3]);
+		lettres.add("e",[0,3,4,6,7,8,1,2,3]);
+		lettres.add("e",[0,3,5,6,7,8,1,3]);
+		lettres.add("e",[0,3,5,6,7,1,2,3]);
+		lettres.add("E",[0,7,8,1,2,3,7,8,1,2,3]);
+		lettres.add("F",[0,7,1]);
+		lettres.add("G",[0,7,8,1,2,3,4,5,7]);
+		lettres.add("G",[0,7,8,1,2,3,4,5,3]);
+		lettres.add("H",[0,1,5,4,3,2,1]);
+		lettres.add("I",[0,1]);
+		lettres.add("J",[0,1,7]);
+		lettres.add("J",[0,1,8,7]);
+		lettres.add("K",[0,8,7,6,5,4,3,2]);
+		lettres.add("L",[0,1,3]);
+		lettres.add("M",[0,5,2,4,1]);
+		lettres.add("M",[0,5,4,3,2,1,5,4,3,2,1]);
+		lettres.add("N",[0,5,2,5]);
+		lettres.add("O",[0,7,8,1,2,3,4,5,6,7]);
+		lettres.add("P",[0,5,4,3,2,1,8,7]);
+		//lettres.add("P",[0,5,3,2,1,8,7]);//conflit avec D
+		//lettres.add("P",[0,1,5,4,3,2,1,8,7]);//conflit avec D
+		lettres.add("P",[0,1,5,3,2,1,8,7]);
+		lettres.add("Q",[0,7,8,1,2,3,4,5,6,7,3]);
+		lettres.add("R",[0,5,4,3,2,1,8,7,2]);
+		lettres.add("R",[0,5,3,2,1,8,7,2]);
+		lettres.add("R",[0,1,5,4,3,2,1,8,7,2]);
+		lettres.add("R",[0,1,5,3,2,1,8,7,2]);
+		lettres.add("R",[0,5,4,3,2,1,8,7,3,2]);
+		lettres.add("R",[0,5,3,2,1,8,7,3,2]);
+		lettres.add("R",[0,1,5,4,3,2,1,8,7,3,2]);
+		lettres.add("R",[0,1,5,3,2,1,8,7,3,2]);
+		lettres.add("S",[0,7,8,1,2,3,2,1,8,7]);
+		lettres.add("S",[0,7,8,1,2,1,8,7]);
+		lettres.add("T",[0,3,1]);
+		lettres.add("U",[0,1,2,3,4,5]);
+		lettres.add("U",[0,1,3,5]);
+		lettres.add("V",[0,2,4]);
+		lettres.add("v",[0,2,4,3]);
+		lettres.add("W",[0,2,4,2,4]);
+		lettres.add("w",[0,1,2,3,4,5,1,2,3,4,5]);
+		lettres.add("X",[0,2,5,8]);
+		lettres.add("x",[0,2,3,4,5,6,7,8]);
+		lettres.add("Y",[0,1,2,3,4,5,1,8,7,6,5,4]);
+		lettres.add("Z",[0,3,8,3]);
+		
+
+		
+		
+		return function(directions){
+			var result=lettres.search(directions);
+			var demo=document.getElementById("demo");
+			if(result==="²"){
+				result="Forme non identifiée : "+directions.join(','); //debug
+				demo.style.color="red";
+			}else{
+				result="Caractère identifié : "+result;
+				demo.style.color="green";
+			}
+			demo.value=result;
+		}
+	}();
+	
+	
+	function paint(event){
+	/*
+		gestion de l'action lorsqu'on clique sur l'élément
+		Cette fonction gère aussi les actions de mouseover et mouseup
+	*/
+	
+		var old_x=offset_X(event), //ne sert qu'à l'affichage
+			old_y=offset_Y(event), //ne sert qu'à l'affichage
+			old_sens=0, //sert à améliorer la stabilité (anticrénelage)
+			ref_x=old_x, //point de référence pour calculer le mouvement
+			ref_y=old_y, //point de référence pour calculer le mouvement
+			directions=[0]; //sauvegarde de la direction du curseur
+
+		
+		function paint_move(event){
+		//fonction appelée lorsque le curseur bouge
+		
+			var seuil=10, //sensibilité
+				x=offset_X(event),
+				y=offset_Y(event);
+			
+			//Tracé
+			ctx.beginPath();
+			ctx.moveTo(old_x,old_y);
+			ctx.lineTo(x,y);
+			ctx.stroke();
+			old_x=x;
+			old_y=y;
+
+			//calcul de la direction
+			var dx=x-ref_x,
+				dy=y-ref_y,
+				distance=Math.sqrt(Math.max(dx*dx+dy*dy));
+			if(distance>seuil){
+				var seuil_distance=distance/2,
+					sens=0;
+					
+				if(dx>seuil_distance){
+					if(dy>seuil_distance){
+						sens=2; //bas-droite
+					}else if(dy<-seuil_distance){
+						sens=4; //haut-droite
+					}else{
+						sens=3; //droite
+					}
+				}else if(dx<-seuil_distance){
+					if(dy>seuil_distance){
+						sens=8; //bas-gauche
+					}else if(dy<-seuil_distance){
+						sens=6; //haut-gauche
+					}else{
+						sens=7; //gauche
+					}
+				}else{
+					if(dy>seuil_distance){
+						sens=1; //bas
+					}else if(dy<-seuil_distance){
+						sens=5; //haut
+					}else{
+						sens=0; //ne devrait pas apparaitre
+					}
+				}
+				
+				if(sens!==directions[directions.length-1] && old_sens!==directions[directions.length-1]){
+					directions.push(old_sens);
+				}
+				old_sens=sens;
+				//console.log(sens+" x:"+x+" y:"+y+" refx:"+ref_x+" refy:"+ref_y+" dx:"+dx+" dy:"+dy);
+				ref_x=x;
+				ref_y=y;
+			}
+		}
+		
+		function stop_paint(event){
+		//fonction appelée lorsqu'on relache la souris
+			canvas.onmousemove=null;
+			canvas.onmouseup=null;
+			if(old_sens!==directions[directions.length-1]){
+				directions.push(old_sens);
+			}
+			reconnaissance(directions);
+			directions=[0];
+		}
+
+		var canvas = document.getElementById("canvas");
+		if (canvas.getContext) {		
+			var ctx = canvas.getContext("2d");
+			ctx.globalCompositeOperation = "source-over";
+			ctx.lineWidth=5;
+			
+			canvas.onmousemove=paint_move;
+			canvas.onmouseup=stop_paint;
+			
+			paint_move(event);
+		}
+	}
+
+
+	if(typeof(offset_X)==="undefined"){
+		function offset_X(event){
+			if(event.offsetX) return event.offsetX;
+			var el = event.target, ox = -el.offsetLeft;
+			while(el=el.offsetParent){
+				ox += el.scrollLeft - el.offsetLeft;
+			}
+			return event.clientX + ox;
+		}
+	}
+	if(typeof(offset_Y)==="undefined"){
+		function offset_Y(event){
+			if(event.offsetY) return event.offsetY;
+			var el = event.target, oy = -el.offsetTop;
+			while(el=el.offsetParent){
+				oy += el.scrollTop - el.offsetTop;
+			}
+			return event.clientY + oy;
+		}
+	}
+   </script>
+   <div style="position:absolute;bottom:0px;right:0px;font-size:6px;border:1px solid">Author: Benoit Mariat<br>Site: <a href="http://b.mariat.free.fr/">http://b.mariat.free.fr</a> <i><a href="http://b.mariat.free.fr/javascript.html">Exemples de scripts Javascript</a></i><br>Date: September 2010<br>Proof of Concept for a problem encounter on <a href="http://www.siteduzero.com/">http://www.siteduzero.com/</a></div>
+
+ </body>
+</html>
+

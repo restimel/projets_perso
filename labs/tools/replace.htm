@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf8">
@@ -15,14 +15,99 @@
 .error{
 	color:#CC0000;
 }
+.information{
+	float:right;
+	font-size:0.5em;
+/*	cursor:pointer;*/
+}
+.nonStandard{
+	font-size:0.5em;
+}
+.shortCut{
+	font-size:1.2em;
+	font-weight:bold;
+}
+
+*[draggable=true] hr{
+	cursor:move;
+}
+
+.rgxover{
+	color: #666666;
+	/*background-color:rgba(250,200,0,0.5);*/
+}
+.rgxover>hr:first-child{
+	visibility:visible !important;
+	width:90%;
+	height: 0px;
+	border: 1px dashed #CCCC00;
+}
+#zoneRegexp>div>hr:first-child, #endZoneRgx>hr:first-child{
+	visibility:hidden;
+}
+.moveIt{
+	/*color: #FF9900;*/
+	background-color:rgba(250,200,0,0.2);
+}
+
+#zoomEditor{
+	display:none;
+	text-align:center;
+	position:fixed;
+	top:10%;
+	left:10%;
+	width:80%;
+	height:85%;
+	background-color:#EEEEFF;
+	border:1px solid black;
+	box-shadow: 5px 5px 21px 0 #000;
+	overflow:auto;
+	z-index:1001;
+}
+#zoomEditor fieldset{
+	height: 44%;
+	float: left;
+	text-align:left;
+}
+fieldset.srch{
+	width:70%;
+}
+fieldset.option{
+	width:20%;
+}
+#zoomEditor textarea{
+	width: 99%;
+	height: 91%;
+	box-shadow: inset 0 0 0.8em 0 #000;
+}
+
+menu{
+	position:fixed;
+	top:0px;
+	right:0px;
+	z-index:1000;
+}
+
+menu>aside{
+	visibility:hidden;
+	font-style:italic;
+	font-size:0.8em;
+}
 	</style>
 </head>
 <body>
+<!--TODO
+	améliorer design: mettre des couleurs
+	ajouter sauvegarde localstore
+	Ajout de règles avec pattern prédéfini
+	Faire Analyseur syntaxique de regexp + test
+	Ajout manuel d'aide
+-->
 
-<menu style="position:fixed;top:0px;right:0px;z-index:10000;" title="Rules manager">
+<menu title="Rules manager">
 	<button id="saveReg">Save Rules</button> <button id="loadReg">Load Rules</button><br>
 	<textarea id="manageCode" placeholder="Rules to load"></textarea>
-	<aside id="infoSave" style="visibility:hidden;font-style:italic;font-size:0.8em;">You should copy this line to reuse it later</aside>
+	<aside id="infoSave">You should copy this line to reuse it later</aside>
 </menu>
 
 <label>source:<textarea id="source" rows="20" cols="50" placeholder="text to change"></textarea></label>
@@ -31,7 +116,7 @@
 
 <header>Change rules to apply:</header>
 <section id="zoneRegexp"></section>
-<hr>
+<div id="endZoneRgx"><hr><hr></div>
 <button id="addReg" title="Add a new rule">+</button>
 <hr>
 
@@ -44,36 +129,190 @@
 	Script is running
 </div>
 
+
+<div id="zoomEditor">
+	<header id="zoomEditorHeader"></header>
+	<fieldset class="srch">
+		<legend>Pattern to find</legend>
+		<textarea id="zoomEditorRegxp"></textarea>
+	</fieldset>
+	<fieldset class="option">
+		<legend>Flag</legend>
+		<label title="Pattern is searched many times"><input type="checkbox"> <span class="shortCut">g</span>lobal search</label><br>
+		<label title="uppercase and lowercase in the pattern match the same pattern"><input type="checkbox"> case <span class="shortCut">i</span>nsensitive</label><br>
+		<label title="^ and $ match the begining and the end of lines"><input type="checkbox"> <span class="shortCut">m</span>ultiple line</label><br>
+		<label title="When the pattern is searched again it starts from previous pattern found"><input type="checkbox"> stick<span class="shortCut">y</span> <span class="nonStandard">(non-standard)</span></label><br>
+		<label>other: <input type="text" style="width:5ex;"></label><br>
+	</fieldset>
+	<fieldset class="srch">
+		<legend>Replace</legend>
+		<textarea id="zoomEditorReplace"></textarea>
+		<textarea id="zoomEditoriReplace" placeholder="each line represents an occurence. Pattern should be separated by ~~. When all occurence are used, it comes back to the first. Exemple:occurence1_pattern1~~pattern2~~pattern3 of the first occurence"></textarea>
+	</fieldset>
+	<fieldset class="option">
+		<legend>Option</legend>
+		<label><input type="checkbox">use incremental string&nbsp;replace</label><br>
+		<label><input type="checkbox">use incremental value</label><br>
+	</fieldset>
+</div>
+
 <script type="text/javascript">
-//ajout d'un bloc de Regex
+var rulesOrder=[]; //donne l'ordre des règles à effectuer
+
 var addReg=(function(){
+//ajout d'un bloc de Regex
 	var nbElement=0;
 	return function(){
-		var text='<hr>';
+		var text='<hr><hr>';
 		text+='<form id="regexpForm'+nbElement+'">';
 		text+='<label>regexp:<input id="regexp'+nbElement+'"></label>';
 		text+='<label>flag:<input id="flag'+nbElement+'" value="gi" placeholder="gimy"></label>';
 		text+='<aside style="float:right">';
 		text+='<input type="text" id="name'+nbElement+'" title="name to explain this regexp, this has no impact on RegExp" placeholder="name to explain this regexp" style="width:20em;"><br>';
 		text+='<label><input type="checkbox" id="active'+nbElement+'" title="Activate this RegExp" checked>Activate</label><br>';
-		text+='<div style="float:right;font-size:0.5em;">id:'+nbElement+'</div>';
+		text+='<div class="information" id="information'+nbElement+'">id:'+nbElement+'</div>';
 		text+='<output id="message'+nbElement+'"></output>';
 		text+='</aside>';
 		text+='<br>';
 		text+='<label title="\\n, \\r and \\t should be writen §n, §r and §t">replace:<input id="replace'+nbElement+'"></label>';
-		text+='<label style="display:none;" title="each line represents an occurence. Motif should be separated by ~~">Incremental&nbsp;Replace:<textarea id="iReplace'+nbElement+'" placeholder="each line represents an occurence. Motif should be separated by ~~. When all occurence are used, it comes back to the first. Exemple:"></textarea></label> ';
-		text+='<label>use&nbsp;incremental&nbsp;string&nbsp;replace:<input id="modeReplace'+nbElement+'" type="checkbox" onchange="var e1=this.parentNode.previousElementSibling;if(this.checked){e1.style.display=\'inline\';e1.previousElementSibling.style.display=\'none\';e1.lastChild.focus();}else{e1.style.display=\'none\';e1.previousElementSibling.style.display=\'inline\';}"></label> ';
-		text+='<label>use&nbsp;incremental&nbsp;value:<input id="modeIncReplace'+nbElement+'" type="checkbox" onchange="this.parentNode.nextElementSibling.style.display=this.checked?\'inline\':\'none\';"></label>';
+		text+='<label style="display:none;" title="each line represents an occurence. Pattern should be separated by ~~">Incremental&nbsp;Replace:<textarea id="iReplace'+nbElement+'" placeholder="each line represents an occurence. Pattern should be separated by ~~. When all occurence are used, it comes back to the first. Exemple:occurence1_pattern1~~pattern2~~pattern3 of the first occurence"></textarea></label> ';
+		text+='<label>use&nbsp;incremental&nbsp;string&nbsp;replace:<input id="modeReplace'+nbElement+'" type="checkbox"></label> ';
+		text+='<label>use&nbsp;incremental&nbsp;value:<input id="modeIncReplace'+nbElement+'" type="checkbox"></label>';
 		text+='<aside style="display:none;font-style:italic;font-size:0.8em;">The incremental value should be encapsuled by §! and !§. Example: to start from 0, you should write §!0!§</aside>';//doit être placé juste derrière le label de modeIncReplace
 		text+='<br>';
 		text+='</form>';
+		
+		//ajout de l'élément principal de la règle
 		var element=document.createElement("div");
+		element.id="rgxDiv"+nbElement;
+		element.draggable=true;
+		element.ondragover=rgxDragOver;
+		element.ondragleave=rgxDragLeave;
+		element.ondrop=rgxDrop;
 		element.innerHTML=text;
 		document.getElementById("zoneRegexp").appendChild(element);
+		
 		//ajout des fonctions
-		document.getElementById("regexpForm"+nbElement).addEventListener("change",verifForm,false);
+		document.getElementById("regexpForm"+nbElement).addEventListener("change",verifForm,false); //ajoute la vérification du formulaire
 		//document.getElementById("regexpForm"+nbElement).addEventListener("changeinput",verifForm,false);
-		nbElement++;
+		document.getElementById("regexpForm"+nbElement).addEventListener("dblclick",zoomEditor,false); //ajoute l'action de zoom sur la règle
+		document.getElementById("modeReplace"+nbElement).addEventListener("change",changeModeReplace,false); //ajoute l'action de changement de zone de remplacement
+		document.getElementById("modeIncReplace"+nbElement).addEventListener("change",changeModeInc,false); //ajoute l'action d'affichage de commentaire lorsqu'on active l'incremental value
+		
+		//ajoute la règle à la fin de la liste
+		rulesOrder.push(nbElement++);
+	};
+})();
+
+function changeModeReplace(elRef){
+//permet d'afficher/cacher les textarea replace/ireplace en fonction de l'élément replace (elref)
+	if(!elRef || !elRef.id){
+		elRef=this;
+	}
+	var e1=elRef.parentNode.previousElementSibling;
+	if(elRef.checked){
+		e1.style.display='inline';
+		e1.previousElementSibling.style.display='none';
+		e1.lastChild.focus();
+	}else{
+		e1.style.display='none';
+		e1.previousElementSibling.style.display='inline';
+	}
+}
+
+function changeModeInc(elRef){
+//permet d'afficher/cacher les commentaires de l'incremental value
+	if(!elRef || !elRef.id){
+		elRef=this;
+	}
+	elRef.parentNode.nextElementSibling.style.display=elRef.checked?'inline':'none';
+}
+
+var zoomEditor=(function(){
+//permet d'avoir une fenêtre d'édition un peu plus grande
+	var ref=null, //référence à la règle actuellement affiché
+		elemBloc = document.getElementById("zoomEditor"), //référence à la fenêtre d'affichage
+		elemHeader = document.getElementById("zoomEditorHeader"), //référence à l'entête
+		elemEditor = document.getElementById("zoomEditorRegxp"), //référence au bloc d'écriture
+		elemReplace = document.getElementById("zoomEditorReplace"), //référence au bloc de remplacement
+		elemiReplace = document.getElementById("zoomEditoriReplace"), //référence au bloc de remplacement incrémental
+		inputs=document.querySelectorAll("#zoomEditor>fieldset input"),
+		elemFlagg = inputs[0], //flag g
+		elemFlagi = inputs[1], //flag g
+		elemFlagm = inputs[2], //flag g
+		elemFlagy = inputs[3], //flag g
+		elemFlagother = inputs[4], //flag g
+		elemOptionMdIncrementalReplace = inputs[5], //mode incremental replace
+		elemOptionMdIncrementalValue = inputs[6]; //mode incremental value
+	
+	elemOptionMdIncrementalReplace.onchange = displayMode;
+	
+	elemEditor.onblur=verifyFocus;
+	
+	function verifyFocus(event){
+	//permet de vérifier si le focus (le click) est toujours sur la fenêtre de zoom ou non
+		var elem=event.target;
+		while(elem !== document){
+			if(elem === elemBloc){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		document.removeEventListener("click",verifyFocus,false);
+		maj();
+	}
+	
+	function maj(){
+	//mise à jour de l'élément d'origine
+		document.getElementById("regexp"+ref).value = elemEditor.value;
+		//document.getElementById("name"+ref).value = elemHeader.textContent;
+		document.getElementById("flag"+ref).value = (elemFlagg.checked?"g":"")+(elemFlagi.checked?"i":"")+(elemFlagm.checked?"m":"")+(elemFlagy.checked?"y":"")+elemFlagother.value;
+		document.getElementById("replace"+ref).value = elemReplace.value;
+		document.getElementById("iReplace"+ref).value = elemiReplace.value;
+		
+		document.getElementById("modeReplace"+ref).checked = elemOptionMdIncrementalReplace.checked;
+		document.getElementById("modeIncReplace"+ref).checked = elemOptionMdIncrementalValue.checked;
+		//mise à jour de l'affichage de la règle
+		changeModeReplace(document.getElementById("modeReplace"+ref));
+		changeModeInc(document.getElementById("modeIncReplace"+ref));
+		
+		elemBloc.style.display="none";
+	}
+	
+	function displayMode(){
+	//permet d'afficher/cacher le textarea de replace/ireplace
+		if(elemOptionMdIncrementalReplace.checked){
+			elemReplace.style.display="None";
+			elemiReplace.style.display="Block";
+		}else{
+			elemReplace.style.display="Block";
+			elemiReplace.style.display="None";
+		}
+	}
+	
+	return function (event){
+	//affiche la fenêtre d'édition de zoom et la met à jour
+		ref = this.id.substr(10);
+		elemEditor.value = document.getElementById("regexp"+ref).value;
+		elemHeader.textContent = document.getElementById("name"+ref).value||"Rules #"+ref;
+		var flag = document.getElementById("flag"+ref).value;
+		elemFlagg.checked = (flag.indexOf("g")!==-1);
+		elemFlagi.checked = (flag.indexOf("i")!==-1);
+		elemFlagm.checked = (flag.indexOf("m")!==-1);
+		elemFlagy.checked = (flag.indexOf("y")!==-1);
+		elemFlagother.value = flag.replace(/[gimy]/g,"");
+		
+		elemReplace.value = document.getElementById("replace"+ref).value;
+		elemiReplace.value = document.getElementById("iReplace"+ref).value;
+		
+		elemOptionMdIncrementalReplace.checked = document.getElementById("modeReplace"+ref).checked;
+		elemOptionMdIncrementalValue.checked = document.getElementById("modeIncReplace"+ref).checked;
+		
+		displayMode();
+		
+		elemBloc.style.display="block";
+		elemEditor.focus();
+		document.addEventListener("click",verifyFocus,false);
 	};
 })();
 
@@ -242,13 +481,16 @@ function prepareReplace(){
 }
 
 function doReplace(){
+//effectue le remplacement à partir des règles regxp
 	var rslt = document.getElementById("source").value,
-		rgx=document.getElementById("regexp0"),
+		c=0,
+		i=rulesOrder[0],
+		rgx=document.getElementById("regexp"+i),
 		flg,rplc,Regex,
-		i=0,
 		modeValueInc;
 	
 	do{
+		i=rulesOrder[c];
 		modeValueInc = document.getElementById("modeIncReplace"+i).checked;
 		rgx = rgx.value;
 		if(!rgx) continue; // il n'y a pas de valeur donnée à cette regexp
@@ -289,7 +531,7 @@ function doReplace(){
 					});
 					var nb=0;
 					var mtf = r.replace(/§!([\s\S]+?)!§/g,function(){return "§!"+(nb++);});
-					console.debug(values);
+					//console.debug(values);
 					return function(motif){
 						var rslt = mtf;
 						if(arguments.length>3){
@@ -309,19 +551,21 @@ function doReplace(){
 			alert("There is an error to build the regexp #"+(i+1)+". Reason is:\n"+e);
 		}
 		rslt = rslt.replace(Regex,rplc);
-	}while(rgx=document.getElementById("regexp"+(++i)));
+	}while(rgx=document.getElementById("regexp"+rulesOrder[++c]));
 	document.getElementById("resultat").value=rslt;
 
 	document.getElementById("loading").style.display="none";
 }
 
 function saveReg(){
+//permet de sauvegarder des Regexp dans un JSON
 	var rslt=[],
-		rgx=document.getElementById("regexp0"),
-		flg,mode,rplc,inc,name,deactivated,
-		i=0;
+		c=0,i=rulesOrder[0],
+		rgx=document.getElementById("regexp"+i),
+		flg,mode,rplc,inc,name,deactivated;
 	
 	do{
+		//i=rulesOrder[c];
 		rgx = rgx.value;
 		if(!rgx) continue; // il n'y a pas de valeur donnée à cet regexp
 		flg = document.getElementById("flag"+i).value;
@@ -334,15 +578,17 @@ function saveReg(){
 		inc=document.getElementById("modeIncReplace"+i).checked;
 		deactivated=!document.getElementById("active"+i).checked;
 		rslt.push({name:name,rgx:rgx,flg:flg,mode:mode,inc:inc,replace:rplc,deactivated:deactivated});
-	}while(rgx=document.getElementById("regexp"+(++i)));
+	}while(rgx=document.getElementById("regexp"+(i=rulesOrder[++c])));
 	document.getElementById("manageCode").value=JSON.stringify(rslt);
 	document.getElementById("infoSave").style.visibility="visible";
 }
 
 function loadReg(data){
+//permet de charger des Regexp à partir d'un JSON
 	document.getElementById("infoSave").style.visibility="hidden";
 	data=data||document.getElementById("manageCode").value;
-	var obj={};
+	var obj={},
+		elTmp; //sert de tampon pour des éléments réutilisés plusieurs fois
 	
 	//transformation en objet
 	if(typeof data === "object"){
@@ -372,31 +618,39 @@ function loadReg(data){
 			if(!(elem=document.getElementById("regexp"+i))){
 				addReg();
 				elem=document.getElementById("regexp"+i);
+			}else{
+				//remise en ordre
+				elTmp=document.getElementById("rgxDiv"+i);
+				elTmp.parentNode.insertBefore(elTmp,elTmp.parentNode.children[i]);
 			}
 			elem.value=obj[i].rgx;
 			document.getElementById("name"+i).value = obj[i].name || "";
 			document.getElementById("active"+i).checked = (obj[i].deactivated!=true);
+			(elTmp=document.getElementById("modeIncReplace"+i)).checked=obj[i].inc;
+			changeModeInc(elTmp);
 			if(obj[i].mode){
-				document.getElementById("modeReplace"+i).checked=true;
+				(elTmp=document.getElementById("modeReplace"+i)).checked=true;
 				document.getElementById("iReplace"+i).value=obj[i].replace;
 				document.getElementById("replace"+i).value="";
 			}else{
-				document.getElementById("modeReplace"+i).checked=false;
+				(elTmp=document.getElementById("modeReplace"+i)).checked=false;
 				document.getElementById("iReplace"+i).value="";
 				document.getElementById("replace"+i).value=obj[i].replace;
 			}
-			document.getElementById("modeIncReplace"+i).checked=obj[i].inc;
+			changeModeReplace(elTmp);
+
 			document.getElementById("flag"+i).value=obj[i++].flg;
 		}
+		generateOrder(); //maj de l'ordre
 		while(elem=document.getElementById("regexp"+i)){
 			elem.value="";
 			document.getElementById("iReplace"+i).value="";
 			document.getElementById("replace"+i).value="";
-			document.getElementById("flag"+(i++)).value="gi";
+			document.getElementById("flag"+i).value="gi";
 			document.getElementById("name"+i).value = "";
 			document.getElementById("active"+i).checked = true;
 			document.getElementById("modeReplace"+i).checked=false;
-			document.getElementById("modeIncReplace"+i).checked = false;
+			document.getElementById("modeIncReplace"+(i++)).checked = false;
 		}
 	}else{
 		alert("Load has failed.\nData format is not supported");
@@ -428,7 +682,67 @@ function loadSourceFile(event,cible){
 	}
 }
 
+function generateOrder(){
+//permet de redéfinir l'ordre des règles
+	rulesOrder=[];
+	var liste=document.getElementById("zoneRegexp").children,li=liste.length,i=0;
+	while(i<li){
+		rulesOrder.push(liste[i].id.substr(6));
+		i++;
+	}
+}
+
+function rgxDragStart(event){
+//démarrage d'un drag sur une zone regexp
+	event.dataTransfer.effectAllowed = "move";
+	event.target.className="moveIt";
+	event.dataTransfer.setData("Text", event.target.getAttribute('id'));
+}
+
+function rgxDrop(event){
+//l'élément regexp est laché
+	event.preventDefault();
+	event.stopPropagation();
+	this.parentNode.insertBefore(document.getElementById(event.dataTransfer.getData("Text")),this);
+	rgxDragLeave(event,this); // pour restaurer l'état par défaut
+	generateOrder();
+	return false;
+}
+
+function ergxDrop(event){
+//l'élément regexp est laché après le dernier bloc (hors de la zone)
+	event.preventDefault();
+	event.stopPropagation();
+	document.getElementById("zoneRegexp").appendChild(document.getElementById(event.dataTransfer.getData("Text")));
+	rgxDragLeave(event,this); // pour restaurer l'état par défaut
+	generateOrder();
+	return false;
+}
+
+function rgxDragOver(event){
+//on passe au dessus d'un élément droppable
+	var elem=this;
+	elem.className="rgxover";
+	return false;
+}
+
+function rgxDragLeave(event,elem){
+//on quitte un élément droppable
+	elem=elem||this;
+	elem.className="none";
+}
+
+
 window.onload=function(){
+	var zRgx = document.getElementById("zoneRegexp");
+	zRgx.ondragstart=rgxDragStart;
+	
+	//zone après les regexp (permet de mettre un bloc à la fin)
+	var zERgx = document.getElementById("endZoneRgx");
+	zERgx.ondragover=rgxDragOver;
+	zERgx.ondragleave=rgxDragLeave;
+	zERgx.ondrop=ergxDrop;
+	
 	addReg();
 	if(!window.File || !window.FileReader){
 		//le javascript ne supporte pas les API File ou FileReader

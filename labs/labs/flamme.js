@@ -1,12 +1,12 @@
 function flammeAnimate(divID,divVent){
-	var flamme=document.getElementById(divID),
-		t = 0,
-		animation=null,
-		timer=0,
-		timer2=0,
-		vent=0,
-		elemVent=document.getElementById(divVent),
-		oPos=0;
+	var flamme=document.getElementById(divID), //élément représentant la base de la flamme
+		t = 0, //variable pour les oscillations
+		animation=null, //fonction devant être appelée pour gérer l'animation actuelle
+		timer=0, //timer d'animation de l'allumette
+		timer2=0, //timer de modification du vent
+		vent=0, //valeur actuelle du vent
+		elemVent=document.getElementById(divVent), //input où est situé la valeur du vent affectant la flamme
+		oPos=0;// position original pour des éléments proches
 		
 	//fonctions de calcul
 	function calc(amp,freq,resistance){
@@ -27,7 +27,7 @@ function flammeAnimate(divID,divVent){
 	function burn(){
 		var 
 			c=[	
-				"inset #993010 0px 0px 10px "+calc2(4,2,0.4)+"px, ", //intérieur de l'alumette
+				"inset #993010 0px 0px 10px "+calc2(4,2,0.4)+"px, ", //intérieur de l'allumette
 				"#102525 0px 2px 18px 5px, ", //contact avec l'allumette
 				"#e8f8ff "+(oPos=0,calc(4,1,0.4))+"px -40px  12px -9px, ", //flamme blanche
 				"#ffffff "+calc(4,1,0.5)+"px -50px  10px -12px, ",
@@ -64,7 +64,7 @@ function flammeAnimate(divID,divVent){
 	function smoke(){
 		var 
 			c=[	
-				"inset #200000 0px 6px 28px 15px, ", //intérieur de l'alumette "inset #806040 0 0 10px 2px, "
+				"inset #200000 0px 6px 28px 15px, ", //intérieur de l'allumette "inset #806040 0 0 10px 2px, "
 				"#202525 0px -2px 18px 1px, ", //contact avec l'allumette
 				"#d0e0f0 "+(oPos=0)+"px -35px 20px -20px, ", //fumée bleu/grise
 				"#a0c0e0 "+calc(5,2.5)+"px "+calc2(-40,5,1)+"px  25px -22px, ",
@@ -114,6 +114,7 @@ function flammeAnimate(divID,divVent){
 	//fonctions d'interaction
 	this.autoVent=function(active){
 		clearInterval(timer2);
+		iddle();
 		if(active){
 			elemVent.disabled=true;
 			timer2=setInterval(function(){changeVent((Math.random()*2-1));},1000);
@@ -123,6 +124,7 @@ function flammeAnimate(divID,divVent){
 	}
 	
 	var mouvement=(function(){
+		//fonction gérant les perturbations de la souris (expérimental)
 		var elem=document.getElementById("flamme");
 		var limitX2=elem.offsetWidth,limitY2=elem.offsetHeight;
 		var offset=[elem.offsetLeft,elem.offsetTop];
@@ -165,14 +167,17 @@ function flammeAnimate(divID,divVent){
 	})();
 
 	this.sourisVent=function(active){
+		//active ou désactive les perturbations souris
 		if(active){
 			document.body.addEventListener("mousemove",mouvement,false);
 		}else{
 			document.body.removeEventListener("mousemove",mouvement,false);
 		}
 	}
+	
 	function changeVent(force){
 		if(typeof force === "undefined"){
+			iddle();
 			force=elemVent.value-vent;
 		}
 		vent+=force;
@@ -196,9 +201,33 @@ function flammeAnimate(divID,divVent){
 	}
 	this.changeVent=changeVent;
 	
+	var iddle = (function(){
+	//permet de cacher/afficher le message d'aide si l'utilisateur ne fait rien
+		var timerIddle, //timer d'iddle
+			iddleTime=30000, //temps d'attente avant de considérer la page en iddle
+			displayElement=document.querySelector("aside"); //élément à afficher
+		
+		display();
+		
+		function display(){
+			displayElement.style.opacity=1;
+		}
+		
+		function hidden(){
+			clearTimeout(timerIddle);
+			displayElement.style.opacity=0;
+			timerIddle=setTimeout(display,iddleTime);
+		}
+		
+		return hidden;
+	})();
+	
 	function allume(){
+		//gère l'allumage de l'allumette
+		iddle();
 		if(animation===burn){
 			alert("Ouch!\nÇa brûle!");
+			iddle();
 		}else{
 			animation=burn;
 			clearInterval(timer);
@@ -209,4 +238,4 @@ function flammeAnimate(divID,divVent){
 	changeVent(0);
 }
 
-var flamme=new flammeAnimate("flamme","vent");
+var allumette=new flammeAnimate("flamme","vent");

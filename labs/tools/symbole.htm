@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<title>UTF-8 characters helper</title>
+<title>Caractères et Symboles UTF-8</title>
 <style>
 #corps table{
 	border:3px double;
@@ -22,23 +22,23 @@
 <body>
 <div id="corps">
 	<aside>
-		<h1>UTF-8 characters code</h1>
+		<h1>Caractères UTF-8</h1>
 		<label>
-			<input type="checkbox" id="hex" title="Les nombres précèdents sont entrés en héxadécimal"> Héxadécimal →
+			<input type="checkbox" id="hex" title="Les nombres précèdents sont entrés en hexadécimal"> Hexadécimal →
 		</label>
 	
-		Start:<input id="start" type="number" min="0" value="65">
-		End:<input id="end" type="number" min="1" value="122">
+		Début:<input id="start" type="number" min="0" value="65">
+		Fin:<input id="end" type="number" min="1" value="122">
 		<input type="button" id="btnDisplay" value="Display">
 		<div style="position:absolute; top: 1em;right:5em;">
-			<input type="text" id="search" placeholder="characters to find">
-			<button id="btnSearch">Search</button><br>
-			<input type="text" id="displayHTML" placeholder="HTML code" title="display symbol from HTML code like &amp;quest;">
-			<button id="btnDspHTML">display HTML</button>
+			<input type="text" id="search" placeholder="caractères à trouver">
+			<button id="btnSearch">Chercher</button><br>
+			<input type="text" id="displayHTML" placeholder="entités HTML" title="Afficher les caractères à partir de leurs entités comme &amp;quest; ">
+			<button id="btnDspHTML">Afficher le HTML</button>
 		</div>
 		<br>
 		<label title="Search HTML code">
-			<input type="checkbox" id="syhtml" title="rechercher les codes HTML"> HTML
+			<input type="checkbox" id="syhtml" title="Afficher les entités HTML"> HTML
 		</label>
 		<hr>
 	</aside>
@@ -53,7 +53,7 @@
 
 
 function getHead(syhtml,searched){
-	return '<tr>'+(searched?'<th title="Searched character">S</th>':'')+'<th title="Decimal value">Decimal</th><th title="Hexadecimal value">Hexa.</th><th title="Octal value">Oct.</th><th title="Symbol">Sy</th>'+(syhtml?'<th>HTML</th>':'')+'</tr>';
+	return '<tr>'+(searched?'<th title="Caractères recherchés">S</th>':'')+'<th title="Valeur Décimal">Décimal</th><th title="Valeur Hexadécimal">Hexa.</th><th title="Valeur Octal">Oct.</th><th title="Symbole ou caractère">Sy</th>'+(syhtml?'<th>HTML</th>':'')+'</tr>';
 }
 
 function display_symb(){
@@ -77,7 +77,7 @@ function display_symb(){
 
 
 
-//recherche de codes HTML
+//recherche de codes HTML (n'est pas utilisé dans le fonctionnement de base)
 var search_HTML4 =(function(){
 	var dsearch=document.getElementById("search"),
 		convert=["","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"],
@@ -190,7 +190,7 @@ var search_HTML4 =(function(){
 	}
 	
 	function fin(){
-		console.log("symboles trouvés "+symboles.code.length);
+		console.log("Caractères trouvés "+symboles.code.length);
 		running = false;
 		var i=elements.elem.length;
 		while(i--){
@@ -203,7 +203,7 @@ var search_HTML4 =(function(){
 	}
 	
 	function displaySymbole(){
-		if(confirm("Afficher la liste des symboles trouvés ?\n"+symboles.code.length+" symboles trouvés")){
+		if(confirm("Afficher la liste des caractères trouvés ?\n"+symboles.code.length+" carctères trouvés")){
 			var text="<table>";
 			text+="<tr><th>HTML</th><th>caractères</th></tr>";
 			var i=0,li=symboles.code.length;
@@ -241,6 +241,7 @@ var search_HTML4 =(function(){
 	return findElements;
 })();
 
+//permet de rechercher les entités d'une plage de caractères
 var getHTML = function(start,end){
 	var listeCode="ac;af;ap;dd;ee;eg;el;ge;gg;gl;gt;gE;ic;ii;in;it;le;lg;ll;lt;lE;mp;mu;ne;ni;nu;or;oS;pi;pm;pr;rx;sc;wp;wr;xi;DD;Gg;Gt;GT;Im;Ll;Lt;LT;Mu;Nu;Or;Pi;Pr;Re;Sc;Xi;acd;acy;amp;and;ang;ape;apE;ast;bcy;bot;cap;chi;cir;cup;dcy;deg;die;div;dot;ecy;egs;ell;els;eng;eta;eth;fcy;gap;gcy;gel;geq;ges;ggg;gla;glj;glE;gne;gnE;gEl;icy;iff;int;jcy;kcy;lap;lat;lcy;leg;leq;les;lgE;lne;lnE;loz;lrm;lsh;lEg;map;mcy;mho;mid;nap;ncy;nge;ngt;nis;niv;nle;nlt;not;npr;nsc;num;ocy;ogt;ohm;olt;ord;orv;par;pcy;phi;piv;pre;prE;psi;rcy;reg;rho;rlm;rsh;sce;scy;scE;shy;sim;smt;sol;squ;sub;sum;sup;tau;tcy;top;ucy;uml;vcy;vee;ycy;yen;zcy;zwj;Acy;And;AMP;Bcy;Cap;Cfr;Chi;Cup;Dcy;Del;Dot;Ecy;Eta;ENG;ETH;Fcy;Gcy;Hat;Hfr;Icy;Ifr;Int;Jcy;Kcy;Lcy;Lsh;Map;Mcy;Ncy;Not;Ocy;Pcy;Phi;Psi;Rcy;Rfr;Rho;Rsh;REG;Scy;Sub;Sum;Sup;Tav;Tcz;Ucz;Vcz;Vef;Ycz;Zcz;Zfs;ande;andw;angf;apie;apot;aumm;bbrl;betb;beti;bnou;boxi;boxw;boxI;boxW;bsin;bsom;bulm;bumq;bNou;cdot;cent;chcy;circ;cire;cirE;comp;cong;copy;csub;csup;darr;dash;diam;djcy;dscy;dsol;dtri;dzcy;dArr;dHar;ecir;edot;emsp;ensp;epar;epsi;escr;esim;euml;euro;excl;eDot;flat;fnof;fork;gdot;geqq;gjcy;gnap;gneq;gscr;gsim;gtcc;half;harr;hbar;hArr;iecy;imof;iocy;iota;isin;iuml;khcy;kjcy;lang;larr;late;lcub;ldca;ldsh;leqq;ljcy;lnap;lneq;lozf;lpar;lsim;lsqb;ltcc;ltri;lArr;lHar;macr;male;malt;mlcp;mldr;nbsp;ncap;ncup;ngeq;ngtr;nisd;njcy;nldr;nleq;nmid;npar;nsim;nsub;nsup;ntgl;ntlg;oast;ocir;odiv;odot;ogon;oint;omid;opar;ordf;ordm;oror;oscr;osol;ouml;para;part;perp;phiv;plus;prap;prec;prnE;prod;prop;qint;quot;rang;rarr;rcub;rdca;rdsh;real;rect;rhov;ring;rpar;rsqb;rtri;rArr;rHar;scap;scnE;sdot;sect;semi;sext;shcy;sime;simg;siml;smid;smte;solb;spar;squf;star;sube;subE;succ;sung;supe;supE;tbrk;tdot;tint;toea;tosa;trie;tscy;uarr;upsi;utri;uuml;uArr;uHar;varr;vert;vArr;vBar;xcap;xcup;xmap;xnis;xvee;yacy;yicy;yucy;yuml;zdot;zeta;zhcy;zwnj;Auml;Barv;Beta;Bscr;Cdot;Copf;CHcy;COPY;Darr;DJcy;DScy;DZcy;Edot;Escr;Esim;Euml;Fscr;Gdot;GJcy;Hopf;Hscr;Idot;Iota;Iscr;Iuml;IEcy;IOcy;KHcy;KJcy;Lang;Larr;Lscr;LJcy;Mscr;Nopf;NJcy;Ouml;Popf;Qopf;QUOT;Rang;Rarr;Ropf;Rscr;Sqrt;Star;SHcy;TScy;Uarr;Upsi;Uuml;Vbar;Vert;Yuml;YAcy;YIcy;YUcy;Zdot;Zeta;Zopf;ZHcy;acirc;acute;aelig;aleph;alpha;amacr;amalg;angle;angrt;angst;aogon;aring;asymp;awint;bcong;bdquo;bepsi;blank;block;boxdl;boxdr;boxdL;boxdR;boxhd;boxhu;boxhD;boxhU;boxul;boxur;boxuL;boxuR;boxvh;boxvl;boxvr;boxvH;boxvL;boxvR;boxDl;boxDr;boxDL;boxDR;boxHd;boxHu;boxHD;boxHU;boxUl;boxUr;boxUL;boxUR;boxVh;boxVl;boxVr;boxVH;boxVL;boxVR;breve;bsemi;bsime;bsolb;bumpe;bumpE;caret;caron;ccaps;ccirc;ccups;cedil;check;clubs;colon;comma;crarr;cross;csube;csupe;ctdot;cuepr;cuesc;cupor;cuvee;cuwed;cwint;dashv;dblac;ddarr;delta;dharl;dharr;diams;disin;doteq;dtdot;dtrif;duarr;duhar;ecirc;efDot;emacr;empty;eogon;eplus;epsiv;eqsim;equiv;erarr;erDot;esdot;exist;eDDot;fflig;filig;fllig;fltns;forkv;frasl;frown;gamma;gcirc;gescc;gimel;gneqq;gnsim;grave;gsime;gsiml;gtcir;gtdot;harrw;hcirc;hoarr;icirc;iexcl;iiint;iiota;ijlig;imacr;image;imath;imped;infin;iogon;iprod;isins;isinv;isinE;iukcy;jcirc;jmath;jukcy;kappa;langd;laquo;larrb;lbarr;lbbrk;lbrke;lceil;ldquo;lescc;lhard;lharu;lhblk;llarr;lltri;lneqq;lnsim;loang;loarr;lobrk;lopar;lrarr;lrhar;lrtri;lsime;lsimg;lsquo;ltcir;ltdot;ltrie;ltrif;lAarr;lBarr;mdash;micro;minus;mumap;mDDot;nabla;napos;natur;ncong;ndash;nearr;neArr;ngsim;nharr;nhpar;nhArr;nlarr;nless;nlsim;nltri;nlArr;notin;notni;nprec;nrarr;nrtri;nrArr;nsime;nsmid;nspar;nsube;nsucc;nsupe;numsp;nwarr;nwArr;ocirc;odash;oelig;ofcir;ohbar;olarr;olcir;oline;omacr;omega;operp;oplus;orarr;order;ovbar;parsl;phone;plusb;pluse;pound;prcue;prime;prnap;prsim;quest;radic;rangd;range;raquo;rarrb;rarrc;rarrw;ratio;rbarr;rbbrk;rbrke;rceil;rdquo;reals;rhard;rharu;rlarr;rlhar;rnmid;roang;roarr;robrk;ropar;rrarr;rsquo;rtrie;rtrif;rAarr;rBarr;sbquo;sccue;scirc;scnap;scsim;sdotb;sdote;searr;setmn;seArr;sharp;sigma;simeq;simgE;simlE;simne;slarr;smile;sqcap;sqcup;sqsub;sqsup;srarr;starf;strns;subne;subnE;supne;supnE;swarr;swArr;szlig;theta;thkap;thorn;tilde;times;trade;trisb;tshcy;twixt;ubrcy;ucirc;udarr;udhar;uharl;uharr;uhblk;ultri;umacr;uogon;uplus;upsih;uring;urtri;utdot;utrif;uuarr;varpi;vdash;veeeq;vltri;vprop;vrtri;vBarv;vDash;wcirc;wedge;xcirc;xdtri;xharr;xhArr;xlarr;xlArr;xodot;xrarr;xrArr;xutri;ycirc;Acirc;Alpha;Amacr;Aogon;Aring;AElig;Breve;Ccirc;Colon;Cross;Dashv;Delta;Ecirc;Emacr;Eogon;Equal;Gamma;Gcirc;Hacek;Hcirc;Icirc;Imacr;Iogon;Iukcy;IJlig;Jcirc;Jukcy;Kappa;Ocirc;Omacr;Omega;OElig;Prime;RBarr;Scirc;Sigma;Theta;Tilde;THORN;TRADE;TSHcy;Ubrcy;Ucirc;Umacr;Union;Uogon;UpTee;Uring;Vdash;VDash;Wcirc;Wedge;Ycirc;aacute;abreve;agrave;andand;angmsd;angsph;apacir;approx;atilde;barvee;barwed;becaus;bernou;bigcap;bigcup;bigvee;bkarow;bottom;bowtie;boxbox;bprime;brvbar;bullet;bumpeq;cacute;capand;capcap;capcup;capdot;ccaron;ccedil;circeq;cirmid;colone;commat;compfn;conint;coprod;copysr;cularr;cupcap;cupcup;cupdot;curarr;curren;cylcty;dagger;daleth;dcaron;dfisht;divide;divonx;dlcorn;dlcrop;dollar;drcorn;drcrop;dstrok;eacute;easter;ecaron;ecolon;egrave;egsdot;elsdot;emptyv;eparsl;eqcirc;equals;equest;female;ffilig;ffllig;forall;gacute;gammad;gbreve;gesdot;gesles;gtlPar;gtrarr;gtrdot;gtrsim;hairsp;hamilt;hardcy;hearts;hellip;hercon;homtht;horbar;hslash;hstrok;hybull;hyphen;iacute;igrave;iiiint;iinfin;incare;inodot;intcal;iquest;isinsv;itilde;jsercy;kappav;kcedil;kgreen;lacute;lagran;lambda;langle;larrfs;larrhk;larrlp;larrpl;larrtl;latail;lbrace;lbrack;lcaron;lcedil;ldquor;lesdot;lesges;lfisht;lfloor;lharul;llhard;lmidot;lmoust;loplus;lowast;lowbar;lparlt;lrhard;lsaquo;lsquor;lstrok;lthree;ltimes;ltlarr;ltrPar;lAtail;mapsto;marker;mcomma;midast;midcir;middot;minusb;minusd;mnplus;models;mstpos;nacute;ncaron;ncedil;nearhk;nequiv;nesear;nexist;nltrie;nprcue;nrtrie;nsccue;nsimeq;ntilde;numero;nvdash;nvlArr;nvrArr;nvDash;nvHarr;nwarhk;nwnear;nVdash;nVDash;oacute;odblac;odsold;ograve;ominus;origof;oslash;otilde;otimes;parsim;percnt;period;permil;phmmat;planck;plankv;plusdo;plusdu;plusmn;preceq;primes;prnsim;propto;prurel;puncsp;qprime;racute;rangle;rarrap;rarrfs;rarrhk;rarrlp;rarrpl;rarrtl;ratail;rbrace;rbrack;rcaron;rcedil;rdquor;rfisht;rfloor;rharul;rmoust;roplus;rpargt;rsaquo;rsquor;rthree;rtimes;rAtail;sacute;scaron;scedil;scnsim;searhk;seswar;sfrown;shchcy;sigmaf;sigmav;simdot;smashp;softcy;solbar;spades;sqsube;sqsupe;square;squarf;ssetmn;ssmile;sstarf;subdot;subset;subsim;subsub;subsup;succeq;supdot;supset;supsim;supsub;supsup;swarhk;swnwar;target;tcaron;tcedil;telrec;thetav;thinsp;thksim;timesb;timesd;topbot;topcir;tprime;tridot;tstrok;uacute;ubreve;udblac;ufisht;ugrave;ulcorn;ulcrop;urcorn;urcrop;utilde;vangrt;varphi;varrho;veebar;vellip;verbar;wedbar;wedgeq;weierp;wreath;xoplus;xotime;xsqcup;xuplus;xwedge;yacute;zacute;zcaron;zeetrf;Aacute;Abreve;Agrave;Assign;Atilde;Barwed;Bumpeq;Cacute;Ccaron;Ccedil;Colone;Conint;CupCap;Dagger;Dcaron;DotDot;Dstrok;Eacute;Ecaron;Egrave;Exists;ForAll;Gammad;Gbreve;Gcedil;Hstrok;HARDcy;Iacute;Igrave;Itilde;Jsercy;Kcedil;Lacute;Lambda;Lcaron;Lcedil;Lmidot;Lstrok;Nacute;Ncaron;Ncedil;Ntilde;Oacute;Odblac;Ograve;Oslash;Otilde;Otimes;Racute;Rarrtl;Rcaron;Rcedil;Sacute;Scaron;Scedil;Square;Subset;Supset;SHCHcy;SOFTcy;Tcaron;Tcedil;Tstrok;Uacute;Ubreve;Udblac;Ugrave;Utilde;Vdashl;Verbar;Vvdash;Yacute;Zacute;Zcaron;",
 		listeValeur=[];

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<!--
+demo.html
+
+Author: Benoit Mariat (b.mariat@gmail.com)
+Date: March 2013
+
+License: You are free to use, share, redistribute and modify it if you keep all authors and contributors names. ( http://creativecommons.org/licenses/by/3.0/)
+
+Vous êtes autorisés à utiliser, partager, redistribuer et modifier ce code tant que vous gardez les noms des auteurs et contributeurs. (http://creativecommons.org/licenses/by/3.0/deed.fr)
+
+
+Content: Lots of fun stuff ;)
+Original file: http://b.mariat.free.fr/
+
+	(')_(')
+	( °-° )
+	(__.__)
+	(") (")
+
+-->
+<title>Démonstrations et jeux</title>
+<link rel="stylesheet" type="text/css" href="menu.css">
+</head>
+<body>
+<h1>Démonstrations et jeux</h1>
+<p></p>
+<section>
+
+	<section>
+		<h2>Démonstrations</h2>
+		<article>
+			<h3><a href="./labs/flamme.html">Flamme CSS</a></h3>
+			<p>
+				Une petite animation réalisée en CSS et JavaScript.<br>
+				Le but était de voir ce qu'il est possible de faire avec la propriété box-shadow.<br>
+				L'allumette s'éteint avec une force de vent de 10<br>
+				<a href="./labs/flamme.html">Accéder à la démo</a> <small title="l'affichage est en français mais il y a peu de texte">(fr)</small>
+			</p>
+		</article>
+		
+		<article>
+			<h3><a href="./poc/poc_reconnaissance.html">Reconnaissance vectoriel de caractère</a></h3>
+			<p>
+				Une petite petite reconnaissance de caractères vectoriel. Il s'appuit sur les caractères PALM.<br>
+				Il pourrait encore être amélioré afin de trouver un caractère avoisinant lorsque le mouvement n'a pas été reconnu.<br>
+				Ce script utilise canvas pour dessinner les mouvements effectués.<br>
+				<a href="./poc/poc_reconnaissance.html">Accéder à la démo</a> <small title="l'affichage est en français mais il y a peu de texte">(fr)</small>
+			</p>
+		</article>
+<!--Dégradé couleur selct (à retravailler)-->
+<!--Créer un dégradé de couleur sur un texte (à voir si en CSS ce n'est aps faisable autrement)-->
+<!--Bouton Interactif-->
+<!--Reversement de contenu-->
+<!--reconnaissance de caractères (à compléter) poc_reconnaissance.html -->
+<!--synchronisation d'image-->
+	</section>
+	<section>
+		<h2>Bibliothèque de codes</h2>
+		<article>
+			<h3><a href="./library/paging_demo.html">Performance Scrolling</a></h3>
+			<p>
+				Quand une page possède beaucoup d'éléments DOM, elle peut très fortement ralentir. Ce code permet de créer un objet gérant un élement de scroll. Les éléments HTML sont créés et détruits au fur et à mesure de ce qui est nécessaire pour l'affichage.<br>
+				<a href="./library/paging_demo.html">Accéder à la démo</a> <small title="sans texte">(*)</small>
+			</p>
+		</article>
+<!--Affichage de courbes-->
+<!--gestion de cartes (Google Map/Géoportail)-->
+	</section>
+	<section>
+		<h2>Jeux</h2>
+		<article>
+			<h3><a href="./games/tangram/tangram.html">Tangram</a></h3>
+			<p>
+				Le Tangram est un jeu où le but est de reproduire une figure à l'aide de 7 pièces géométriques appelées Tans.<br>
+				Canvas est utilisé pour réaliser ce jeu.<br>
+				Le script détecte lorsque le joueur arrive à reproduire la figure. Plusieurs figures à reproduire sont possibles.<br>
+				<a href="./games/tangram/tangram.html">Accéder au jeu</a> <small title="sans texte">(*)</small>
+			</p>
+		</article>
+<!--Editeur de Go-->
+<!--Resolveur solitaire-->
+<!--Resolveur Bloc-->
+		<article>
+			<h3><a href="./games/chiffres/index.html">Jeu des Chiffres</a></h3>
+			<p>
+				Le jeu des Chiffres et l'un des jeux des chiffres et des lettres. Cela consiste à trouver une valeur en réalisant des opérations sur 6 nombres définis au début du jeu.<br>
+				Le jeu donne la meilleure solution lorsque le temps est écoulé.<br>
+				La solution est recherchée pendant que le joueur cherche sans aucune interruption. Cela est possible est utilisant un thread différent grâce au web-worker.<br>
+				<a href="./games/chiffres/index.html">Accéder au jeu</a> <small title="Le jeu est en français">(fr)</small>
+			</p>
+		</article>
+	</section>
+
+</section>
+</body>
+</html>

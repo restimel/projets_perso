@@ -39,6 +39,12 @@
 							"label":"Performance JavaScript",
 							"info":"Synthèses et comparaison de nombreuses actions de base en javascript.<br>Le but est de pouvoir comparer différentes techniques et choisir la plus performante.",
 							"url":"./tools/perf.html"
+						},
+						{
+							"nom":"JS : coloration de code",
+							"label":"Coloration JS",
+							"info":"Petit outil permettant de créer une syntaxe HTML afin de colorier du code JS.",
+							"url":"./tools/jsColor.html"
 						}
 					]
 				},
