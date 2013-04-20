@@ -732,6 +732,50 @@ function rgxDragLeave(event,elem){
 	elem.className="none";
 }
 
+function saveToLocal(){
+//sauvegarde en localstorage
+//TODO TOFINISH
+	var storageMng = { //objet aidant à la gestion des localstorage (TODO à passer en global)
+		list:[],
+		getList: function() {
+			var i=0,li = localStorage.length;
+			this.list=[];
+			while(i<li) {
+				this.list.push(localStorage.key(i++));
+			}
+			return this.list;
+		},
+		write:function(key,value){
+			if(this.list.indexOf(key)!==-1){
+				if(!confirm("Un enregistrement nommé "+key+" existe déjà. Voulez-vous écraser cet enregistrement ?")){
+					return;
+				}
+			}else{
+				this.list.push(key);
+			}
+			localStorage.setItem(key,value);
+		},
+		get:function(key){
+			return localStorage.getItem(key);
+		},
+		delete:function(key){
+			var i=this.list.indexOf(key);
+			if(i!==-1){
+				this.list.splice(i,1);
+			}
+			localStorage.removeItem(key);
+		}
+	};
+	storageMng.getList();
+	localStorage.clear();
+}
+
+/*TODO pattern prédéfini
+[{"name":"delete empty lines","rgx":"(\\r\\n|[\\r\\n])(?:\\s*[\\r\\n]+)+","flg":"g","mode":false,"inc":false,"replace":"$1","deactivated":false}]
+[{"name":"Trim","rgx":"^[ \\t\\v]*(.*)[ \\t\\v]*$","flg":"gm","mode":false,"inc":false,"replace":"$1","deactivated":false}]
+[{"name":"Trim end of line","rgx":"^(.*)[ \\t\\v]+$","flg":"gm","mode":false,"inc":false,"replace":"$1","deactivated":false}]
+[{"name":"Numbering lines","rgx":"^","flg":"gm","mode":false,"inc":true,"replace":"§!1!§ ","deactivated":false}]
+*/
 
 window.onload=function(){
 	var zRgx = document.getElementById("zoneRegexp");
