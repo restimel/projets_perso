@@ -1,21 +1,90 @@
+/* mise en forme pour le texte*/
 .information{
 	display:block;
 	background-color: rgba(150,250,150,0.8);
+}
+.warning{
+	display:block;
+	background-color: rgba(250,250,150,0.8);
+}
+.attention{
+	display:block;
+	background-color: rgba(250,150,150,0.8);
 }
 .question{
 	display:block;
 	background-color: rgba(150,150,250,0.8);
 }
+.filename{
+	font-family: monospace;
+	font-size : 0.95em;
+}
+.exemple{
+	font-style: italic;
+	font-size : 0.95em;
+}
+.humour{
+	font-size: smaller;
+}
 
+details{
+	border : 1px solid black;
+	background-color: rgba(220,220,220,0.5);
+	display: block;
+	margin-bottom : 0.5em;
+}
+em{
+	font-size : 1.2em;
+	font-weight : 800;
+}
+
+
+/*affichage des listes*/
+section ol{
+	list-style-type: none;
+}
+section ol>li:before{
+	content : "☞\a0";
+}
+
+
+/*affichage des listes dans le menu*/
+nav>ol{
+	list-style-type: upper-roman;
+	font-size : x-large;
+}
+nav>ol ol{
+	font-size : smaller;
+	list-style-type: lower-roman;
+}
+nav>ol ol ol{
+	list-style-type: decimal;
+}
+nav>ol ol ol ol{
+	list-style-type: lower-alpha;
+}
+
+
+
+/*Mise en forme pour les codes JS*/
 .miniCodeJS,.minicodeJS,.minicodejs{
 	display:inline;
 	font-family:courier,monospace;
-	font-size:0.9em;
+	font-size:0.8em;
 }
 .codeJS,.codejs{
 	display:block;
 	font-family:courier,monospace;
+	font-size:0.9em;
+	background-color: rgba(220,220,200,0.6);
+	border: 1px solid rgba(120,120,0,0.9);
+	overflow:auto;
+	width:90%;
+	text-align:left;
+	margin-left: auto;
+	margin-right: auto;
 }
+
 .boolean{
 	color:#0000FF;
 }
@@ -59,7 +128,7 @@
 	font-size:0.85em;
 }
 .reservedWord{
-	color:#005511;
+	color:#001177;
 	font-weight:bold;
 }
 .futureReservedWord{

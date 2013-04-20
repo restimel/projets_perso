@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<title>HTML5 web-worker : Le monde parallèle du JavaScript</title>
 	<link rel="stylesheet" type="text/css" href="./tutoriel.css">
+	<script type="text/JavaScript" src="./miseEnPage.js"></script>
 </head>
 <body>
 <h1>HTML5 web-worker : Le monde parallèle du JavaScript</h1>
@@ -11,14 +12,26 @@
 <header>Table des matières</header>
 <ol>
 	<li><a href="./workers.html">Introduction</a></li>
-	<li><h2>Premiers Pas</h2>
+	<li>Premiers Pas
 		<ol>
-			<li><a href="./introduction.html">Introduction à la programmation parallèle</a></li>
+			<li><a href="./introduction.html">Introduction à la programmation parallèle</a><ol>
+			<li><a href="#programmationsequentielle">La programmation séquentielle</a>
+				<ol>
+					<li><a href="#programmationimperative">La programmation impérative</a></li>
+					<li><a href="#programmationevenementielle">La programmation événementielle</a></li>
+				</ol>
+			</li>
+			<li><a href="#programmationparallele">La programmation parallèle</a>
+				<ol>
+					<li><a href="#Communicationparmemoirepartagee">Communication par mémoire partagée</a></li>
+					<li><a href="#Communicationparpassagedemessage">Communication par passage de message</a></li>
+				</ol></li>
+			</ol></li>
 			<li><a href="./webWorker.html">Dedicated-Worker</a></li>
 			<li><a href="./SharedWorker.html">Shared-Worker</a></li>
 		</ol>
 	</li>
-	<li><h2>Pour en savoir plus</h2>
+	<li>Pour en savoir plus
 		<ol>
 			<li><a href="./communication.html">Communiquer avec des workers</a></li>
 			<li><a href="./manipulation.html">Manipulation des workers</a></li>
@@ -26,6 +39,7 @@
 			<li><a href="./compatibilite.html">Support des Workers dans les navigateurs</a></li>
 		</ol>
 	</li>
+</ol>
 </nav>
 <article>
 <h2>Introduction à la programmation parallèle</h2>
@@ -39,10 +53,10 @@ Avant de plonger dans les web-workers, nous allons d'abord voir, et surtout comp
 <p>Il s'agit d'un chapitre essentiellement théorique.</p>
 
 
-<section>
+<section id="programmationsequentielle">
 <h3>La programmation séquentielle</h3>
 
-	<section>
+	<section id="programmationimperative">
 		<h4>La programmation impérative</h4>
 		<p>Il s'agit sans doute de la méthode la plus naturelle, et il s'agit de la base de la programmation. Les instructions sont données les unes à la suites des autres. Lorsque l'ordinateur a fini de traiter une instruction, il exécute la suivante.</p>
 		<details>
@@ -57,13 +71,13 @@ Ainsi s'il s'agissait d'un programme, nous lui donnerions les tâches suivantes 
 			</ol>
 			<p>Ainsi il commence par arroser les plantes. Dès qu'il a fini, il va les soigner. Et lorsqu'il a fini de les soigner, il va répondre aux questions des curieux.</p>
 		</details>
-		<p>Bien sûr, une liste d'instructions n'est pas forcément linéaire. On peut ajouter des structures de contrôle (comme les structures conditionnelles avec les <span class="minicodeJS reservedWord">if</span>), des boucles (comme <span class="minicodeJS reservedWord">for</span> ou <span class="minicodeJS reservedWord">while</span>), ou des sous-ensembles d'instructions (comme les fonctions). Toutefois cela ne change pas le fait que l'exécution du code reste séquentiel : dès qu'une instruction est terminée, on passe à la suivante.</p>
+		<p>Bien sûr, une liste d'instructions n'est pas forcément linéaire. On peut ajouter des structures de contrôle (comme les structures conditionnelles avec les <samp class="JavaScript">if</samp>), des boucles (comme <samp class="JavaScript">for</samp> ou <samp class="JavaScript">while</samp>), ou des sous-ensembles d'instructions (comme les fonctions). Toutefois cela ne change pas le fait que l'exécution du code reste séquentiel : dès qu'une instruction est terminée, on passe à la suivante.</p>
 		<p>L'ordre d'exécution du code est prévisible. On sait exactement ce qu'il va se passer en lisant un code en programmation impérative.</p>
 		<p>Jusqu'ici, tout est clair ?<br>
-Cela vous paraît évident que le résultat d'un code est prévisible ? En fait, ça ne l'est pas tant que ça …</p>
+Cela vous paraît évident que le résultat d'un code est prévisible ? En fait, ça ne l'est pas tant que ça…</p>
 	</section>
 	
-	<section>
+	<section id="programmationevenementielle">
 		<h4>La programmation événementielle</h4>
 		<p>En <strong>programmation événementielle</strong>, un morceau de code (une action) est déclenché lors d'un événement.</p>
 		<p>Le résultat n'est plus prévisible, car l'ordre des actions dépendra de l'apparition des événements.</p>
@@ -72,7 +86,7 @@ Dans le cas d'une <strong>programmation synchrone</strong>, lorsqu'on exécute l
 	<details><summary>Étude d'un cas pratique : Le chargement d'image</summary>
 	<p>Si vous souhaitez afficher une nouvelle image et récupérer ses dimensions, qu'allez-vous faire ?</p>
 
-	<p>Si vous écrivez <span class="miniCodeJS"><span class="reservedWord">var</span> img <span class="operator">=</span> <span class="reservedWord">new</span> Image(); img<span class="operator">.</span>src <span class="operator">=</span> cheminImage; img.src = cheminImage;</span>, vous ne pourrez pas obtenir ses dimensions tout de suite. En effet l'objet image va charger l'image de manière asynchrone. Ainsi pour obtenir ses dimensions, il va falloir utiliser l'événement <span class="miniCodeJS">onload</span> pour lire les informations lorsque l'image est chargée.</p>
+	<p>Si vous écrivez <samp class="JavaScript">var img = new Image(); img.src = cheminImage;</samp>, vous ne pourrez pas obtenir ses dimensions tout de suite. En effet l'objet image va charger l'image de manière asynchrone. Ainsi pour obtenir ses dimensions, il va falloir utiliser l'événement <samp class="JavaScript">onload</samp> pour lire les informations lorsque l'image est chargée.</p>
 	</details>
 	<p class="info">Mais même si les séquences sont exécutées de manière asynchrone, à chaque fois il n'y en a qu'une qui travaille. Les autres séquences attendent que la séquence active se termine pour remplir leur tâche.</p>
 	<details><summary>Exemple : Analogie avec un jardinier</summary>
@@ -87,41 +101,82 @@ Dans le cas d'une <strong>programmation synchrone</strong>, lorsqu'on exécute l
 	<p>Notre jardinier termine alors son travail de soin, s'en va chercher de l'eau, les arrose. Puis, enfin, va rejoindre le curieux pour répondre à sa question. On peut alors facilement estimer que dans ce cas de figure, le curieux peut avoir passé beaucoup de temps à attendre. Et s'il s'agit d'une personne importante, comme un client, il serait dommage de le vexer en le faisant attendre aussi longtemps. ☹ </p>
 	</details>
 	<p>Malheureusement en JavaScript, il n'est pas possible d'ordonnancer les tâches qui ont été déclenchées en fonction de leur priorité. Elles seront exécutées dans l'ordre de déclenchement.<br>
- On pourrait essayer de le faire manuellement. Ainsi au début d'une nouvelle tâche, on vérifie s'il ne faut pas en exécuter d'abord une autre plus prioritaire, et remettre celle en cours à plus tard.<br>
- Non seulement c'est compliqué à mettre en place, mais on a toujours un problème : si la tâche en cours au moment du déclenchement de l'événement est très longue, notre important client devra toujours patienter jusqu'à la fin de celle-ci.</p>
-	 <p class="question">Mais alors comment faire ?</p>
-	 <p>Il suffit d'embaucher une nouvelle personne. ☺</p>
- 	</section>
- 	<section>
- 		<h3>La programmation parallèle</h3>
- 		<p>La <strong>programmation parallèle</strong> consiste à exécuter plusieurs tâches en même temps !</p>
- 		<p>À la question précédente, certains petits malins ont dû penser : il suffit que le jardinier arrose ses plantes et réponde en criant. ☺<br>
- 		Oui, mais le jardinier doit quand même faire deux actions en même temps : arroser et crier. Cela est possible, car l'humain est une machine formidable capable de réaliser de très nombreuses choses en même temps.<br>
- Cependant pour un ordinateur, ce n'est pas aussi simple. Car initialement, les ordinateurs sont conçus pour traiter les informations séquentiellement : le processeur exécute les instructions les unes à la suite des autres. Dans ce contexte, il est difficile d'imaginer de pouvoir réaliser plusieurs actions en même temps.</p>
+On pourrait essayer de le faire manuellement. Ainsi au début d'une nouvelle tâche, on vérifie s'il ne faut pas en exécuter d'abord une autre plus prioritaire, et remettre celle en cours à plus tard.<br>
+Non seulement c'est compliqué à mettre en place, mais on a toujours un problème : si la tâche en cours au moment du déclenchement de l'événement est très longue, notre important client devra toujours patienter jusqu'à la fin de celle-ci.</p>
+	<p class="question">Mais alors comment faire ?</p>
+	<p>Il suffit d'embaucher une nouvelle personne. ☺</p>
+</section>
+
+<section id="programmationparallele">
+	<h3>La programmation parallèle</h3>
+	<p>La <strong>programmation parallèle</strong> consiste à exécuter plusieurs tâches en même temps !</p>
+	<p>À la question précédente, certains petits malins ont dû penser : il suffit que le jardinier arrose ses plantes et réponde en criant. ☺<br>
+	Oui, mais le jardinier doit quand même faire deux actions en même temps : arroser et crier. Cela est possible, car l'humain est une machine formidable capable de réaliser de très nombreuses choses en même temps.<br>
+Cependant pour un ordinateur, ce n'est pas aussi simple. Car initialement, les ordinateurs sont conçus pour traiter les informations séquentiellement : le processeur exécute les instructions les unes à la suite des autres. Dans ce contexte, il est difficile d'imaginer de pouvoir réaliser plusieurs actions en même temps.</p>
+
+<p>Et pourtant, quand vous utilisez votre ordinateur et que vous copiez un (gros) fichier, vous pouvez toujours continuer à naviguer dans vos répertoires. Vous n'êtes pas (plus) obligé d'attendre la fin de la copie.<br>
+Ceci est possible, car votre système d'exploitation gère ce qu'on appelle un scheduler (ordonnanceur en français). Il va allouer un certain temps d'exécution à chaque code qui désire fonctionner à cet instant. Ainsi, il va exécuter un premier code (comme la copie du fichier), puis l'interrompre pour démarrer un deuxième code (comme la navigation dans les répertoires), puis interrompre ce dernier pour relancer le premier là où il en était précédemment … et alterner ainsi de suite avec tous les programmes qui tournent à ce moment.<br>
+Bien que chaque code s'exécute à tour de rôle, il s'agit bien d'actions simultanées puisque lorsque la première tâche est en cours d'exécution, la deuxième est également en cours d'exécution.</p>
+
+<p>Depuis les années 2000, les ordinateurs multiprocesseurs ou les processeurs multicœurs se sont généralisés. Aujourd'hui, pratiquement tout le monde possède un ordinateur disposant de cette technologie. Or cette technologie permet de réellement exécuter plusieurs instructions en même temps (1 par cœur ou par processeur).<br>
+Cependant, pour qu'un programme puisse bénéficier de ces avantages, et donc exécuter deux codes (ou plus) de manière concurrente, il doit indiquer qu'un certain code ne s'exécute plus dans la même pile que le code principal.</p>
+
+<p>Une pile, ou plutôt <strong>pile sémantique</strong> (pour ne pas la confondre avec la pile d'exécution qui liste les fonctions actives du programme, et même si dans chaque pile sémantique se trouve une pile d'exécution) est un ensemble d'instructions que l'ordinateur doit exécuter.<br>
+Il est possible que vous entendiez les termes <strong>thread</strong> ou <strong>processus</strong>.</p>
+<p class="information">Un <strong>thread</strong> (ou fil d'exécution en français) contient une pile sémantique et se charge de l'exécuter.<br>
+Un <strong>processus</strong> (ou process en anglais) contient un ou plusieurs threads. Le scheduler se chargera de séquencer ces processus afin qu'ils puissent tous fonctionner en même temps.<br>
+Les threads à l'intérieur du même processus peuvent partager une mémoire commune alors que les processus ne partagent pas de mémoire entre eux.</p>
+
+<p>En JavaScript, c'est au moteur de choisir s'il crée un nouveau thread dans le même processus, ou s'il crée un nouveau processus (avec un thread dedans bien sûr). Le programmeur ne peut pas choisir spécifiquement l'un ou l'autre.<br>
+Dans la suite de ce tutoriel, j'utiliserai le terme thread pour désigner ce qui est en fait une pile sémantique, car ce terme est très généralement utilisé sur le web sans faire la distinction entre ces différents concepts. Comme nous ne gérons pas le programme dans le système d'exploitation, nous n'aurons donc pas de quiproquo.</p>
+
+<p>En programmation parallèle, il est très souvent nécessaire d'avoir un système de communication entre les threads. Il existe deux principaux modèles de communication : le modèle par mémoire partagée, et le modèle par passage de messages.</p>
+
+	<section id="Communicationparmemoirepartagee">
+		<h4>Communication par mémoire partagée</h4>
+		<p>Dans un modèle utilisant la mémoire partagée (<strong>shared memory</strong> en anglais), chaque thread exécute sa propre séquence d'instructions, mais ils peuvent accéder à des données communes.<br>
+En gros, cela signifie qu'il existe une zone mémoire où sont stockées des variables utilisées par plusieurs threads.<br>
+Ce système présente des inconvénients très délicats, comme l'accès concurrent à la même variable, les deadlocks , etc…
+		</p>
+		<p class="information"><strong>Accès concurrent</strong> : Plusieurs threads accèdent aux mêmes ressources en même temps. Par exemple : <span class="exemple">Deux threads veulent incrémenter un compteur initialisé à 0. Si les deux threads y accèdent en même temps, ils lisent tous les deux 0, ajoutent 1 et enregistrent la modification. La valeur du compteur sera alors 1 au lieu de 2, car un thread aura écrasé la valeur enregistrée par l'autre thread.</span><br>
+<br>
+Les <strong>deadlocks</strong> : C'est un problème qui peut survenir quand plusieurs threads désirent accéder à plusieurs ressources partagées en même temps. Par exemple : <span class="exemple">Un thread bloque une ressource partagée (afin d'éviter un problème d'accès concurrent) et désire accéder à une autre ressource bloquée par un autre thread qui désire accéder à la ressource bloquée par le premier. Résultat : tout le monde attend et le programme est bloqué !</span></p>
+	<p>Désolé, je ne vais pas détailler ces problèmes plus que ça, car, en JavaScript, c'est l'autre modèle qui est utilisé ! Si le sujet vous intéresse, je vous invite à consulter de nombreux sites dédiés à ce sujet.</p>
+	</section>
  	
- 	<p>Et pourtant, quand vous utilisez votre ordinateur et que vous copiez un (gros) fichier, vous pouvez toujours continuer à naviguer dans vos répertoires. Vous n'êtes pas (plus) obligé d'attendre la fin de la copie.<br>
- Ceci est possible, car votre système d'exploitation gère ce qu'on appelle un scheduler (ordonnanceur en français). Il va allouer un certain temps d'exécution à chaque code qui désire fonctionner à cet instant. Ainsi, il va exécuter un premier code (comme la copie du fichier), puis l'interrompre pour démarrer un deuxième code (comme la navigation dans les répertoires), puis interrompre ce dernier pour relancer le premier là où il en était précédemment … et alterner ainsi de suite avec tous les programmes qui tournent à ce moment.<br>
- Bien que chaque code s'exécute à tour de rôle, il s'agit bien d'actions simultanées puisque lorsque la première tâche est en cours d'exécution, la deuxième est également en cours d'exécution.</p>
- 
- 	<p>Depuis les années 2000, les ordinateurs multiprocesseurs ou les processeurs multicœurs se sont généralisés. Aujourd'hui, pratiquement tout le monde possède un ordinateur disposant de cette technologie. Or cette technologie permet de réellement exécuter plusieurs instructions en même temps (1 par cœur ou par processeur).<br>
- Cependant, pour qu'un programme puisse bénéficier de ces avantages, et donc exécuter deux codes (ou plus) de manière concurrente, il doit indiquer qu'un certain code ne s'exécute plus dans la même pile que le code principal.</p>
- 
-	<p>Une pile, ou plutôt <strong>pile sémantique</strong> (pour ne pas la confondre avec la pile d'exécution qui liste les fonctions actives du programme, et même si dans chaque pile sémantique se trouve une pile d'exécution) est un ensemble d'instructions que l'ordinateur doit exécuter.<br>
- Il est possible que vous entendiez les termes <strong>thread</strong> ou <strong>processus</strong>.</p>
-	<p class="information">Un <strong>thread</strong> (ou fil d'exécution en français) contient une pile sémantique et se charge de l'exécuter.<br>
-Un <strong>processus</strong> (ou process en anglais) contient un ou plusieurs threads. Le scheduler se chargera de séquencer ces processus afin qu'ils puissent tous fonctionner en même temps.
- Les threads à l'intérieur du même processus peuvent partager une mémoire commune alors que les processus ne partagent pas de mémoire entre eux.</p>
- 
-	<p>En JavaScript, c'est au moteur de choisir s'il crée un nouveau thread dans le même processus, ou s'il crée un nouveau processus (avec un thread dedans bien sûr). Le programmeur ne peut pas choisir spécifiquement l'un ou l'autre.<br>
- Dans la suite de ce tutoriel, j'utiliserai le terme thread pour désigner ce qui est en fait une pile sémantique, car ce terme est très généralement utilisé sur le web sans faire la distinction entre ces différents concepts. Comme nous ne gérons pas le programme dans le système d'exploitation, nous n'aurons donc pas de quiproquo.</p>
- 
-	<p>En programmation parallèle, il est très souvent nécessaire d'avoir un système de communication entre les threads. Il existe deux principaux modèles de communication : le modèle par mémoire partagée, et le modèle par passage de messages.</p>
- 	
- 	<section>
- 		<h4>Communication par mémoire partagée</h4>
- 	</section>
+	<section id="Communicationparpassagedemessage">
+		<h4>Communication par passage de message</h4>
+		<p>Dans un modèle "passage de message" (<strong>message passing</strong> en anglais), contrairement au modèle précédent, chaque thread est complètement distinct des autres. Ils ne partagent rien. Le seul lien qu'ils peuvent avoir est un canal de communication afin qu'ils puissent s'envoyer des messages.<br>
+		Le principe le plus important du "message passing" c'est ça : on ne touche pas aux affaires des autres ! <span class="humour">(même pas avec les yeux)</span></p>
+		<details><summary>Exemple : Analogie avec un jardinier</summary>
+			<p>Nous désirons maintenant satisfaire au mieux les clients, et donc ne pas les faire patienter inutilement. Ainsi nous avons maintenant deux personnes : un jardinier qui s'occupe des plantes et un commercial qui s'occupe des clients. Le commercial ne va pas au jardin, et le jardinier ne se rend pas à la boutique. Mais régulièrement le jardinier envoie des messages au commercial pour lui donner un état des lieux. Et le commercial lui en envoie pour lui demander de préparer telle ou telle plante.<br>
+			Pendant que le jardinier travaille, le commercial peut s'occuper de prendre commande au près de plusieurs clients.</p>
+		</details>
+
+		<p>Comme il existe de nombreuses variantes, je vais me contenter de vous parler de celle qui concerne le JavaScript : le passage par message asynchrone, et on pourrait ajouter qu'il s'agit d'un dialogue.</p>
+		<details><summary>Dialogue par passage de message asynchrone</sumary>
+		<ul>
+			<li><strong>Dialogue</strong> : La communication ne se fait qu'entre deux tâches. On aurait pu imaginer envoyer un message à tout le monde et que seul celui que ça concerne le lit (c'est ce qu'on fait lorsqu'on crie à son copain qui est de l'autre côté de la rue : tous les passants reçoivent aussi le message). Mais là, non ! Il n'y a que le destinataire du message qui pourra le lire.<br>
+ Un dialogue signifie aussi que les deux peuvent initier un message. Une tâche n'est pas obligée d'attendre que l'autre lui parle pour lui envoyer un message. <span class="humour">Sinon ça serait un monologue.</span></li>
+			<li><strong>Asynchrone</strong> : Lorsqu'une tâche envoie son message, elle n'attend pas de réponse. C'est-à-dire que dès qu'elle a envoyé son message, elle peut s'occuper des instructions suivantes. Cela ne veut pas dire qu'il n'y aura pas de réponse, mais juste qu'elle pourra arriver (beaucoup) plus tard.<br>
+ Si vous appelez une amie au téléphone, votre communication sera synchrone car lorsque vous posez une question, vous attendez votre réponse et vous ne faites rien d'autre en attendant.<br>
+ Si par contre vous lui écrivez, votre communication est asynchrone. Car lorsque vous avez envoyé votre lettre, vous n'attendez pas devant la poste sa réponse.</li>
+			<li><strong>Passage par message</strong> : ben… euh, on communique avec des messages. ☺</li>
+		</ul>
+		<p>Un petit résumé de ce qu'il faut bien retenir de ce principe :
+		<ul><li>Les messages ne sont envoyés qu'à un seul autre thread.</li>
+		<li>L'envoi d'un message n'est pas bloquant.</li>
+		<li>La lecture des messages est événementielle, ce qui peut mener à avoir plusieurs messages en attente de lecture : ils sont en file d'attente (<strong>message queue</strong> en anglais).</li>
+		<li>Et surtout on ne sait rien de ce qu'il se passe chez son voisin mis à part ce qu'il nous dit dans ses messages.</li>
+		</ul></p>
+		</details>
+	</section>
 
 </section>
+<br><br>
+<p>Cela sera suffisant pour la partie théorique. Ces notions vont vous permettre de bien comprendre le fonctionnement des web-workers en JavaScript.<br>
+Nous allons pouvoir maintenant passé à la pratique, ceux qui se sont endormis peuvent se réveiller !<br>
+Le prochain chapitre est sur les <a href="./webWorker.html">web-workers</a></p>
 </article>
 </body>
 </html>

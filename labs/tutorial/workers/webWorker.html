@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8">
+	<title>HTML5 web-worker : Le monde parallèle du JavaScript</title>
+	<link rel="stylesheet" type="text/css" href="./tutoriel.css">
+	<script type="text/JavaScript" src="./miseEnPage.js"></script>
+</head>
+<body>
+<h1>HTML5 web-worker : Le monde parallèle du JavaScript</h1>
+<nav>
+<header>Table des matières</header>
+<ol>
+	<li><a href="./workers.html">Introduction</a></li>
+	<li>Premiers Pas
+		<ol>
+			<li><a href="./introduction.html">Introduction à la programmation parallèle</a></li>
+			<li><a href="./webWorker.html">Dedicated-Worker</a>
+			<ol>
+				<li><a href="#premierspas">Premiers pas</a>
+					<ol>
+						<li><a href="#1exemple">Exemple</a></li>
+						<li><a href="#1explication">Explications</a></li>
+					</ol>
+				</li>
+				<li><a href="#communication">La communication : Envoyer et recevoir des messages</a>
+					<ol>
+						<li><a href="#envoyerMessage">Envoyer un message : <samp class="JavaScript">postMessage()</samp></a></li>
+						<li><a href="#recevoirMessage">Recevoir des messages : <samp class="JavaScript">onmessage</samp></a></li>
+					</ol>
+				</li>
+				<li><a href="gererWorker">Gérer un worker</a>
+					<ol>
+						<li><a href="#restriction">Restrictions</a></li>
+						<li><a href="#espaceGlobal">L'espace global</a></li>
+						<li><a href="#arreterWorker">Arrêter un worker</a></li>
+					</ol>
+				</li>
+			</ol></li>
+			<li><a href="./SharedWorker.html">Shared-Worker</a></li>
+		</ol>
+	</li>
+	<li>Pour en savoir plus
+		<ol>
+			<li><a href="./communication.html">Communiquer avec des workers</a></li>
+			<li><a href="./manipulation.html">Manipulation des workers</a></li>
+			<li><a href="./utilisation.html">Utilisation des workers</a></li>
+			<li><a href="./compatibilite.html">Support des Workers dans les navigateurs</a></li>
+		</ol>
+	</li>
+</ol>
+</nav>
+<article>
+<h2>Les Dedicated Workers</h2>
+<p>Après avoir rapidement vu en quoi consistait la programmation concurrentielle, nous allons entrer dans le vif du sujet. Nous allons découvrir dans ce chapitre comment créer un code s'exécutant en parallèle en JavaScript.</p>
+<p>En JavaScript, il existe deux types de <strong>web-workers</strong>. Le premier que nous allons analyser ici correspond aux <strong>dedicated-workers</strong> (workers dédiés). Ces workers, une fois créés, sont liés à leur créateur et uniquement à celui-ci.</p>
+
+<section id="premierspas">
+	<h3>Premiers pas</h3>
+	<p>Pour commencer, nous allons tout de suite voir à quoi ressemble un dedicated-worker.</p>
+	<section id="1exemple">
+		<h4>Mon premier Worker</h4>
+		<p>Nous allons simuler un jardinier, qui arrosera continuellement ses plantes, et les récoltera quand elles auront bien grandi. Puis nous afficherons le nombre de plantes qui ont été récoltées.<br>
+ Nous avons donc deux fichiers : un qui est directement inclus dans la page web (que j'ai appelé <span class="filename">main.js</span>) qui sert à afficher le nombre de plantes récoltées&nbsp;; et un qui correspond au code devant s'exécuter en parallèle (que j'ai nommé <span class="filename">worker.js</span>) qui sert à simuler le potager du jardinier.</p>
+ 	<section>
+ 	<header class="filename">main.js</header>
+ 	<code class="JavaScript">
+//Création d'une zone d'affichage
+var elem = document.createElement("output");
+elem.value = "Le jardinier marche vers le potager";
+document.body.appendChild(elem);
+ 
+ 
+//Création d'un worker
+ 
+if(window.Worker){
+//le navigateur supporte les workers
+ 
+    var worker = new Worker("worker.js");
+	worker.onmessage = function(event){
+		elem.value = event.data;
+	};
+
+}else{
+//le navigateur ne supporte pas les workers
+	alert("Désolé votre navigateur ne supporte pas les workers ! ☹");
+}</code>
+ 	</section>
+ 	<section>
+ 		<header class="filename">worker.js</header>
+ 		<code class="JavaScript">
+setTimeout(function(){
+//le setTimeout ne sert qu'à permettre de bien voir les premiers messages
+ 
+	postMessage("Le jardinier est dans son potager et est en train de faire pousser ses premières plantes");
+
+	var jardin = [0,0,0,0,0];
+	var plantePrete = 0;
+	var parcelle;
+
+	while(true){
+	//boucle infinie, on arrose toujours les plantes
+
+		for(parcelle = 0; parcelle < 5; parcelle++){
+		//on arrose un peu, et ça fait grandir la plante
+			jardin[parcelle] += Math.random();
+
+			if(jardin[parcelle] > 1000000){
+			//la plante est suffisamment grande et on la cueille
+				jardin[parcelle] = 0;
+				plantePrete++;
+
+				postMessage("Le jardinier a pu récolter plantePrete +" plantes");
+			}
+
+		}//boucle de fin de la parcelle
+	}//boucle infinie
+},1000);
+</code>
+	</section>
+	<a href="http://restimel.github.com/Tutoriels/webWorkers/dedicated1/index.html" target="_blank">Essayer !</a>
+	
+	<p class="warning">Si vous testez ce code avec le moteur Webkit (qui est utilisé par Chrome et Safari), vous devez mettre la page en ligne. Car, <a href="compatibilite.html">comme nous le verrons à la fin de ce tutoriel</a>, webkit refuse d'utiliser les web-workers en local !</p>
+	
+	<p>Qu'observons-nous ? Juste un texte indiquant le nombre de plantes récoltées, et ce nombre qui grandit. Pas grand-chose d'impressionnant, certes ! Mais en analysant le code, vous devriez remarquer quelques subtilités.</p>
+	<p>Que pouvons-nous observer d'intéressant dans le fichier <span class="filename">main.js</span> ?
+	<ul>
+		<li>À la ligne 13 : <samp class="JavaScript">new Worker("worker.js")</samp>. C'est la création et le démarrage d'un nouveau worker. Le paramètre correspond à l'url du code JavaScript à exécuter dans ce worker.</li>
+		<li>À la ligne 14 : <samp class="JavaScript">worker.onmessage</samp>, il s'agit d'un listener appliqué sur le worker. Nous reviendrons là-dessus dans peu de temps.</li>
+		<li>À la ligne 15 : <samp class="JavaScript">event.data</samp>, il s'agit du message reçu. Nous reviendrons aussi là-dessus.</li>
+	</ul>
+	</p>
+	
+	<p>Pour le fichier <span class="filename">worker.js</span>, il y a deux choses à remarquer :
+	<ul>
+		<li>Ligne 5 et ligne 25 : <samp class="JavaScript">postMessage()</samp>, il s'agit d'une fonction permettant d'envoyer des messages au thread principal. Nous y reviendrons dans peu de temps.</li>
+		<li>Ligne 13 : <samp class="JavaScript">while(true)</samp> ! Une boucle infinie  ! Vous ne rêvez pas, à la ligne 8, c'est bien le commencement d'une boucle qui ne se termine jamais !<br>
+ Alors non, dans un worker il n'est pas nécessaire d'écrire une boucle infinie, c'est juste que dans cet exemple je voulais écrire une tâche qui ne se finissait jamais.</li>
+	</ul>
+	</p>
+	
+	<p>Et pour les plus perspicaces, cela signifie bien que dans ce thread, l'interpréteur JavaScript ne rend jamais la main. Or vous avez sans doute remarqué que le texte qui s'affichait correspond à celui de la ligne 25, et vous devriez savoir que d'habitude les modifications du DOM ne se font que lorsque l'interpréteur rend la main. Oui mais là, nous avons 2 threads, un qui garde toujours la main et l'autre qui gère l'affichage (et dans cet exemple, il est plutôt fainéant). <strong>Cela n'aurait donc pas été faisable sans la parallélisation.</strong></p>
+	
+	</section>
+	
+	<section id="1explication">
+		<h4>Explications</h4>
+		<p>Analysons un peu plus en détails le code précédant et regardons ce qu'il se passe.
+		<ol>
+			<li>Au commencement était la page HTML</li>
+			<li>La page charge le fichier <span class="filename">main.js</span></li>
+			<li>Une balise output est créée pour gérer l'affichage</li>
+			<li>On crée un worker :
+				<ol>
+					<li>Le fichier <span class="filename">worker.js</span> est chargé dans un environnement qui tourne en tâche de fond (qu'on nomme souvent <strong>background</strong>), il s'agit d'un thread différent du thread principal.</li>
+					<li>Un message est envoyé à <span class="filename">main.js</span> pour lui dire que le jardinier travaille.</li>
+					<li>On définit le jardin.</li>
+					<li>Dans la boucle infinie, pour chaque parcelle on fait pousser la plante (on incrémente une variable).</li>
+					<li>Lorsqu'une plante est cueillie, on envoie un message indiquant le nombre de plantes cueillies.</li>
+				</ol>
+				</li>
+			<li>Quand un message du worker est reçu, on l'affiche.</li>
+		</ol>
+		</p>
+		<p>Un worker n'est pas plus compliqué que ça.</p>
+		
+		<p class="information">Vous avez pu remarquer qu'à la ligne 10, la condition vérifie que le navigateur supporte l'objet Worker. Cela est fortement conseillé pour garder une compatibilité avec les vieux navigateurs et leur proposer une autre solution.<br>
+ Afin d'éviter de trop surcharger les codes qui suivent, je n'ajouterai plus ce test. Cependant, cela ne vous dispense pas de le faire quand même. ☺</p>
+ 
+ 		<p>Nous allons maintenant regarder comment créer et utiliser un worker.</p>
+	</section>
+	
+</section>
+
+<section id="communication">
+	<h3>La communication : Envoyer et recevoir des messages</h3>
+	
+	<p>Je vais me répéter, mais pour bien comprendre le modèle de passage de messages, il faut garder en tête que chaque thread travaille dans son coin. Et lorsque un thread désire donner un ordre ou une information à un autre thread, il va devoir lui envoyer un message.<br>
+Pour cela il devra prendre une lettre, écrire son message, et l'envoyer par la poste. Son destinataire n'a plus qu'à lire le message et lui répondre par le même intermédiaire.<br>
+Vous croyez que je plaisante ? En fait pas du tout, c'est exactement ça ! Bien sûr la lettre n'est pas faite en papier, et la poste est électronique, mais le principe est exactement celui-ci.</p>
+
+	<p>Les plus perspicaces auront vite remarqué un petit problème dans cette méthode : pour avoir une réponse, il faut attendre. Il faut attendre que son interlocuteur prenne le temps de lire la réponse puis envoie à son tour un message. La communication est asynchrone. Toutefois cela ne devrait pas vous inquiéter, l'AJAX fonctionne exactement de la même manière.</p>
+	
+	<section id="envoyerMessage">
+		<h4>Envoyer un message : <samp class="JavaScript">postMessage()</samp></h4>
+		<p>Pour envoyer un message, il suffit d'utiliser <em><samp class="JavaScript">postMessage</samp></em>.<br>
+Cette fonction possède un paramètre de type string : c'est le message à envoyer !</p>
+
+<p>
+<samp class="JavaScript">postMessage</samp> est une méthode de l'objet <samp class="JavaScript">worker</samp>.
+<code class="JavaScript">var w = new Worker("cheminDuWorker.js"); //création du dedicated-worker
+w.postMessage("un message"); //on envoie "un message" au worker w</code>
+</p>
+
+<p>Depuis le worker c'est encore plus simple, il suffit d'utiliser directement la fonction <samp class="JavaScript">postMessage</samp>.
+<code class="JavaScript">postMessage("un message depuis le worker"); //le worker envoie son message au thread principal</code>
+</p>
+	</section>
+	
+	<section id="recevoirMessage">
+		<h4>Recevoir des messages : <samp class="JavaScript">onmessage</samp></h4>
+		<p>Envoyer des messages, c'est bien, mais il faut aussi pouvoir les lire. ☺<br>
+On peut le faire grâce au listener <em><samp class=JavaScript">onmessage</samp></em>. Comme c'est un listener (comme onclick, onload, etc...) il va falloir lui passer une fonction callback qui sera exécutée lors de son déclenchement.
+ Pour lire le message, il suffira d'accéder à la propriété <em><samp class=JavaScript">data</samp></em> de l'événement.
+		</p>
+		<p>Vous êtes maintenant capable d'écrire un petit échange avec le worker. En voici un par exemple :</p>
+				<section><header class="filename">main.js</header>
+		<code class="JavaScript">
+//création du worker
+var w = new Worker("worker.js");
+ 
+//réception des messages
+w.onmessage = function(event){
+    alert("Le worker a répondu :\n" + event.data);
+    if(event.data.substr(0,7) == "Bonjour"){
+        //Si le message commence par "Bonjour"
+        var nom=prompt("Quel est ton nom ?");
+        w.postMessage("L'utilisateur s'appelle : "+nom);
+    }
+};
+ 
+w.postMessage("Bonjour");
+		</code>
+		</section>
+		<section><header class="filename">worker.js</header>
+		<code class="JavaScript">//réception d'un message
+onmessage=function(event){
+	if(event.data == "Bonjour"){
+		postMessage("Bonjour, je suis un worker");
+	}else{
+		postMessage("Maintenant je sais que tu es "+ event.data.substr(26) +" !");
+	}
+};
+		</code>
+		</section>
+		<a href="http://restimel.github.com/Tutoriels/webWorkers/dedicated2/index.html" target="_blank">Essayer !</a><br>
+		<p>On commence par créer un worker, on met en place un listener puis on lui envoie "Bonjour".<br>
+ Du côté du worker, il n'y a qu'un listener qui répond au message reçu.</p>
+		<details><summary>Remarque</summary>
+		<p>Dans de très nombreuses fonctions liées aux listeners, vous devez être habitué à voir une ligne du style : <samp class="JavaScript">event=event||window.event;</samp>. Cette ligne sert à assurer la compatibilité avec IE. Toutefois, comme les workers ne fonctionnent qu'à partir de IE10 et que celui-ci supporte la gestion des événements préconisée par le DOM, il n'est pas nécessaire d'ajouter cette ligne. ☺</p>
+		</details>
+		
+		<details>
+		<summary class="question">Est-ce qu'il est possible d'utiliser addEventListener ?</summary>
+		<p>Bien sûr, il s'agit d'un événement comme un autre, il est donc possible d'ajouter des listeners. Ainsi les codes précédents donneraient :</p>
+		<section><header class="filnename">main.js</header>
+		<code class="JavaScript">//création du worker
+var w = new Worker("worker.js");
+ 
+//ajout d'un listener pour réception d'un message
+w.addEventListener("message", function(event){
+	alert("Le worker a répondu :\n" + event.data);
+	if(event.data.substr(0,7) == "Bonjour"){
+		var nom=prompt("Quel est ton nom ?");
+		w.postMessage("L'utilisateur s'appelle : "+ nom);
+	}
+},false);
+ 
+w.postMessage("Bonjour");
+		</code>
+		</section>
+		<section><header class="filnename">worker.js</header>
+		<code class="JavaScript">function reponse(event){
+	if(event.data == "Bonjour"){
+		postMessage("Bonjour, je suis un worker");
+	}else{
+		postMessage("Maintenant je sais que tu es "+ event.data.substr(26) +" !");
+	}
+}
+ 
+//ajout d'un listener
+addEventListener("message",reponse,false);
+		</code>
+		</section>
+		<a href="http://restimel.github.com/Tutoriels/webWorkers/dedicated3/index.html" target="_blank">Essayer !</a>
+	</details>
+	</section>
+</section>
+
+<section id="gererWorker">
+	<h3>Gérer un worker</h3>
+	
+	<section id="restriction">
+		<h4>Restrictions</h4>
+		<p>Comme je l'ai déjà répété plusieurs fois, le worker travaille dans un espace qui lui est dédié et qui est complètement séparé de l'environnement d'origine. Cela a pour conséquence de ne pouvoir accéder à de nombreuses ressources comme l'objet <samp class=JavaScript">document</samp> et l'objet <samp class="JavaScript">window</samp>. Cela signifie donc que les variables globales dans la tâche principale ne sont pas accessibles dans le worker. Cela signifie aussi que la page (et le DOM) n'est pas accessible. Il n'est donc pas possible de manipuler ces éléments depuis le worker.
+		</p>
+	</section>
+	
+	<section id="espaceGlobal">
+		<h4>L'espace global dans le worker</h4>
+		<p>L'espace global est l'espace de nom principal qui contient tous les autres espaces de noms qui sont utilisés.</p>
+		<p>L'espace global est à l'intérieur du worker, il ne peut pas accéder à l'extérieur et il n'est pas accessible depuis l'extérieur.<br>
+ À l'intérieur du worker, on peut y faire référence, non pas avec <samp class="JavaScript">window</samp>, mais grâce à la variable <samp class="JavaScript">self</samp>.</p>
+ 		<code class="JavaScript">var toto = 1;
+var tata = self.toto; //vaut 1</code>
+	</section>
+	
+	<section id="arreterWorker">
+		<h4>Arrêter un worker</h4>
+		<p>Jusqu'à présent, nous avons créé et fait vivre un worker. Maintenant on va voir comment le tuer.</p>
+		<details><summary class="question">Pourquoi avons-nous besoin de tuer un worker ?</summary>
+		<p>La raison principale est d'économiser des ressources. Car un worker consomme de la mémoire et du CPU. Si vous n'avez plus besoin de ses services, alors il est intéressant de libérer les ressources consommées. D'autant plus que certains navigateurs, comme Firefox, gèrent très mal la consommation excessive de mémoire. Le worker devient alors inaccessible mais existe toujours (et donc la mémoire est toujours consommée).</p>
+		</details>
+		
+		<details><summary class="information">Exemple d'action ne terminant pas un worker</summary>
+		<p>Tout d'abord on peut remarquer que désassigner la variable qui a servi à créer le worker ne suffit pas à l'arrêter.<br>
+		Prenons ces codes :</p>
+		<section><header class="filename">main.js</header>
+		<code class="JavaScript">// initialisation du worker
+var w = new Worker("worker.js");
+delete w;
+		</code>
+		<section><header class="filename">worker.js</header>
+		<code class="JavaScript">var l = 50000000;
+var tab = [];
+ 
+//on remplit un tableau
+for(var i = 0; i < l; i++){
+//À chaque itération la mémoire consommée augmente
+  tab.push("message");
+}
+		</code>
+		<p>Afin de constater l'état de la mémoire lors de l'exécution de ce code, vous pouvez ouvrir le "Gestionnaire des tâches"/onglet "Performances" (sous Windows) ou le "Moniteur système"/onglet "Ressources" (sous Linux). Les graphiques que vous pouvez observer indiquent le pourcentage de capacités du processeur et la quantité de mémoire vive (RAM) utilisés par les programmes en cours d'exécution.</p>
+		<p>Vous remarquerez le taux d'utilisation de la mémoire qui continue de monter, alors que juste après sa création, à la ligne 3, nous n'avons plus aucune référence au worker. Le garbage collector ne s'occupe pas du worker car il s'agit d'un script indépendant. Il faut donc explicitement arrêter ce script.
+ Vous avez pu remarquer que lorsque la boucle s'est terminée, la mémoire est restée stable. Elle n'a pas diminué. Car même si le script n'a plus de code à exécuter, il n'est pas fini pour autant. Donc le tableau reste dans l'environnement global du script et donc en mémoire.</p>
+ 		<p class="attention">Si vous générez une erreur dans le worker, vous verrez que cela revient au même. En effet, lorsqu'une erreur survient, l'interpréteur s'arrête, mais le script vit toujours. Il est toujours possible de lancer d'autres fonctions.
+ 		</p>
+		</details>
+		<p>On peut toujours fermer la page, mais c'est un peu violent quand même.  
+ Il existe donc des méthodes propres aux workers pour les arrêter.</p>
+ 
+ 		<h5>Éliminer un worker : <samp class="JavaScript">terminate()</samp></h5>
+		<p>La fonction la plus efficace est <em><samp class="JavaScript">terminate</samp></em> qui permet d'arrêter brutalement le worker. Elle s'applique sur le worker : <samp class="JavaScript">worker.terminate()</samp></p>
+		<p>Lorsqu'on fait appel à cette méthode, le worker arrête immédiatement sa tâche en cours puis libère les ressources dont il avait besoin.</p>
+		<details><summary>Exemple</summary>
+		<section><header class="filename">main.js</header>
+		<code class="JavaScript">//préparation pour l'affichage
+var elem = document.createElement("output");
+elem.value = "en cours de création";
+document.body.appendChild(elem);
+ 
+// initialisation du worker
+var w=new Worker("worker.js");
+ 
+//ajout d'un listener
+w.addEventListener("message", function(event){
+	elem.value="Le worker a déjà fait "+ event.data +" tours";
+});
+ 
+setTimeout(function(){
+// Au bout d'une seconde, on arrête le worker
+	w.terminate();
+	document.body.appendChild(document.createTextNode("Worker Éliminé"));
+},1000);</code>
+		<section><header class="filename">worker.js</header>
+		<code class="JavaScript">var l = 50000000;
+var tab = [];
+ 
+//on remplit un tableau
+for(var i = 0; i < l; i++){
+//À chaque itération la mémoire consommée augmente
+	tab.push("message");
+ 
+//tous les 100 tours, on informe le thread principal
+	if(i%100 === 0){
+		postMessage(i);
+	}
+}</code>
+		<a href="http://restimel.github.com/Tutoriels/webWorkers/dedicated7/index.html" target="_blank">Essayer !</a>
+		<p>Vous pouvez maintenant voir que la mémoire consommée augmente pendant une seconde puis revient à son niveau initial. Car cette fois le worker a été éliminé.</p>
+		<p>Désormais si vous essayez de lui envoyer un message, vous rencontrerez une erreur car le worker n'existe plus.</p>
+		</details>
+		<p class="information">Si vous voulez relancer le worker, il faut en créer un nouveau ! Il n'est pas possible de le relancer là où il en était.</p>
+	</section>
+	
+</section>
+<br><br>
+<p>Maintenant vous pouvez utiliser les dedicated-workers pour embellir vos programmes. Dans les parties avancées on étudieras d'autres techniques pour mieux manipuler les workers. Mais avant cela nous allons découvrir le deuxième type de worker : <a href="./SharedWorker.html">le shared-worker</a>.</p>
+</article>
+</body>
+</html>
