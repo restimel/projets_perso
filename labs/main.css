@@ -24,6 +24,7 @@ iframe{
 	right:0;
 	left:2em;
 	overflow:hidden;
+	-ms-transition: left 0.5s;
 	-webkit-transition: left 0.5s;
 	transition: left 0.5s;
 	
@@ -43,6 +44,7 @@ nav{
 	box-shadow:inset -4em 0 3em -3em #FC9325;
 	background-color:#F3D9BF;
 	/*animation*/
+	-ms-transition: left 0.5s;
 	-webkit-transition: left 0.5s;
 	transition: left 0.5s;
 	
@@ -73,11 +75,11 @@ nav>label{
 	right: -3.5em;
 	z-index:1; /*pour être en dessous du div*/
 	/*orientation du texte*/
-	writing-mode: bt-lr;/*pour les vieux IE*/
+	/*writing-mode: bt-lr;/*pour les vieux IE -- mais ça oriente mal pour les nouveaux...*/
+	-ms-transform: rotate(270deg);
 	-moz-transform: rotate(270deg);
 	-o-transform: rotate(270deg);
 	-webkit-transform: rotate(270deg);
-	-ms-transform: rotate(270deg);
 	transform: rotate(270deg);
 }
 
@@ -160,16 +162,16 @@ nav button{
 }
 nav button[disabled]{
 	/*color: #CCCCCC;
-	cursor: forbidden;
-	
-	box-shadow: inset 0px 0px 20px 0px #707D72,0px 0px 2px 0px #707D72;
-	background-color: #CBE2CE;
-	background-image: -ms-linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
-	background-image: -moz-linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
-	background-image: -o-linear-gradient(top, #CBE2CE -5%, #FFFFFF 30%, #CBE2CE);
-	background-image: -webkit-linear-gradient(top, #CBE2CE -5%, #FFFFFF 30%, #CBE2CE);
-	background-image: linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
-	*/
+	 *	cursor: forbidden;
+	 *	
+	 *	box-shadow: inset 0px 0px 20px 0px #707D72,0px 0px 2px 0px #707D72;
+	 *	background-color: #CBE2CE;
+	 *	background-image: -ms-linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
+	 *	background-image: -moz-linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
+	 *	background-image: -o-linear-gradient(top, #CBE2CE -5%, #FFFFFF 30%, #CBE2CE);
+	 *	background-image: -webkit-linear-gradient(top, #CBE2CE -5%, #FFFFFF 30%, #CBE2CE);
+	 *	background-image: linear-gradient(top, #39e24d -5%, #FFFFFF 30%, #39e24d);
+	 */
 	opacity: 0;
 }
 
