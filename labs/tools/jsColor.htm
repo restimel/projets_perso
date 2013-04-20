@@ -423,6 +423,7 @@ function color(source,inline){
 	rslt += part;
 	
 	if(!inline){
+	//permet d'ajouter la définition des classes utilisé&
 		part="<style>\n";
 		for(i in liste_classes){
 			part+="."+i+"{"+classes[i]+"}\n";
@@ -449,7 +450,7 @@ function manage_color(){
 	var source = document.getElementById("source").value;
 	var html = color(source,document.getElementById("inline").checked);
 	var i=1;
-	if(typeof nb !== "undefined" && nb){
+	if(typeof nb !== "undefined" && nb){ //POC
 		//numérotation des lignes
 		html = html.replace(/^/gm,function(){return (i++)+":&emsp;";});//TODO coloration unique
 	}

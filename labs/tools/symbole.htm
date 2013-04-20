@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta charset="UTF-8">
 <title>Caractères et Symboles UTF-8</title>
 <style>
 #corps table{
@@ -17,6 +17,9 @@
 	position: absolute;
 	width:100%;
 }
+#display{
+	font-family:"Times New Roman",Times,serif;
+}
 </style>
 </head>
 <body>
@@ -29,7 +32,7 @@
 	
 		Début:<input id="start" type="number" min="0" value="65">
 		Fin:<input id="end" type="number" min="1" value="122">
-		<input type="button" id="btnDisplay" value="Display">
+		<input type="button" id="btnDisplay" value="Afficher">
 		<div style="position:absolute; top: 1em;right:5em;">
 			<input type="text" id="search" placeholder="caractères à trouver">
 			<button id="btnSearch">Chercher</button><br>
@@ -39,7 +42,107 @@
 		<br>
 		<label title="Search HTML code">
 			<input type="checkbox" id="syhtml" title="Afficher les entités HTML"> HTML
-		</label>
+		</label><br>
+		<details>
+			<summary>Font</summary>
+			<label>Style
+				<select id="fontStyle" name="fontStyle">
+					<option value="normal" selected>normal</option>
+					<option value="italic">italic</option>
+					<option value="oblique">oblique</option>
+				</select>
+			</label>
+			<label>Weight
+				<select id="fontWeight" name="fontWeight">
+					<option value="lighter">lighter (-)</option>
+					<option value="bolder">bolder (+)</option>
+					<option value="normal" selected>normal</option>
+					<option value="bold">bold</option>
+					<option value="100">100</option>
+					<option value="200">200</option>
+					<option value="300">300</option>
+					<option value="400">400 (normal)</option>
+					<option value="500">500</option>
+					<option value="600">600</option>
+					<option value="700">700 (bold)</option>
+					<option value="800">800</option>
+					<option value="900">900</option>
+				</select>
+			</label>
+			<label>Size
+				<select id="fontSize" name="fontSize">
+					<option value="xx-small">xx-small</option>
+					<option value="x-small">x-small</option>
+					<option value="small">small</option>
+					<option value="medium" selected>medium</option>
+					<option value="large">x-large</option>
+					<option value="xx-large">xx-large</option>
+					<option value="smaller">smaller (-)</option>
+					<option value="larger">larger (+)</option>
+					<option value="7px">7px</option>
+					<option value="8px">8px</option>
+					<option value="9px">9px</option>
+					<option value="10px">10px</option>
+					<option value="11px">11px</option>
+					<option value="12px">12px</option>
+					<option value="15px">15px</option>
+					<option value="18px">18px</option>
+					<option value="20px">20px</option>
+					<option value="25px">25px</option>
+				</select>
+			</label>
+			<label>Variant
+				<select id="fontVariant" name="fontVariant">
+					<option value="normal" selected>normal</option>
+					<option value="small-caps">small-caps</option>
+				</select>
+			</label>
+			<label>Family
+				<select id="fontFamily" name="fontFamily">
+					<optgroup label="serif">
+						<option value="serif" selected>serif</option>
+						<option value="Palatino">Palatino</option>
+						<option value="Palatino Linotype">"Palatino Linotype"</option>
+						<option value="Palladio">Palladio</option>
+						<option value="URW Palladio">"URW Palladio"</option>
+						<option value="Times New Roman">"Times New Roman"</option>
+						<option value="Times">Times</option>
+						<option value="Georgia">Georgia</option>
+						<option value="Garamond">Garamond</option>
+					</optgroup>
+					<optgroup label="sans-serif">
+						<option value="sans-serif">sans-serif</option>
+						<option value="Arial">Arial</option>
+						<option value="Helvetica">Helvetica</option>
+						<option value="Verdana">Verdana</option>
+						<option value="Trebuchet MS">"Trebuchet MS"</option>
+						<option value="Liberation Sans">"Liberation Sans"</option>
+						<option value="Nimbus Sans L">"Nimbus Sans L"</option>
+						<option value="Gill">Gill</option>
+						<option value="Sans Extrabold">"Sans Extrabold"</option>
+					</optgroup>
+					<optgroup label="monospace">"DejaVu Sans Mono", Menlo, Consolas, "Liberation Mono", Monaco, "Lucida Console"
+						<option value="monospace">monospace</option>
+						<option value="Courier">Courier</option>
+						<option value="DejaVu Sans Mono">"DejaVu Sans Mono"</option>
+						<option value="Menlo">Menlo</option>
+						<option value="Consolas">"Consolas"</option>
+						<option value="Liberation Mono">"Liberation Mono"</option>
+						<option value="Andele Mono">"Andele Mono"</option>
+						<option value="Monaco">Monaco</option>
+						<option value="Lucida Console">"Lucida Console"</option>
+						<option value="Courier New">"Courier New"</option>
+					</optgroup>
+					
+					<optgroup label="cursive">
+						<option value="cursive">cursive</option>
+					</optgroup>
+					<optgroup label="fantasy">
+						<option value="fantasy">fantasy</option>
+					</optgroup>
+				</select>
+			</label>
+		</details>
 		<hr>
 	</aside>
 	<div id="display">
@@ -321,10 +424,20 @@ function display_html(){
 	document.getElementById("display").innerHTML=html;
 }
 
+//permet de modifier la font
+function change_font(e){
+	document.getElementById("display").style[e.target.name]=e.target.value;
+}
+
 //ajout des événements sur les éléments
 document.getElementById("btnDisplay").onclick=display_symb;
 document.getElementById("btnSearch").onclick=search_symb;
 document.getElementById("btnDspHTML").onclick=display_html;
+document.getElementById("fontStyle").onchange=change_font;
+document.getElementById("fontWeight").onchange=change_font;
+document.getElementById("fontSize").onchange=change_font;
+document.getElementById("fontVariant").onchange=change_font;
+document.getElementById("fontFamily").onchange=change_font;
 </script>
 </body>
 </html>
