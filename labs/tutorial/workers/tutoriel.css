@@ -2,18 +2,22 @@
 .information{
 	display:block;
 	background-color: rgba(150,250,150,0.8);
+	padding : 0.5em;
 }
 .warning{
 	display:block;
-	background-color: rgba(250,250,150,0.8);
+	background-color: rgba(240,210,100,0.8);
+	padding : 0.5em;
 }
 .attention{
 	display:block;
 	background-color: rgba(250,150,150,0.8);
+	padding : 0.5em;
 }
 .question{
 	display:block;
 	background-color: rgba(150,150,250,0.8);
+	padding : 0.5em;
 }
 .filename{
 	font-family: monospace;
