@@ -16,7 +16,20 @@
 		<ol>
 			<li><a href="./introduction.html">Introduction à la programmation parallèle</a></li>
 			<li><a href="./webWorker.html">Dedicated-Worker</a></li>
-			<li><a href="./SharedWorker.html">Shared-Worker</a></li>
+			<li><a href="./SharedWorker.html">Shared-Worker</a>
+				<ol>
+					<li><a href="#premierspas">Premiers pas</a></li>
+					<li><a href="#communication">La communication</a>
+						<ol>
+							<li><a href="#nouvelleConnexion">Recevoir une nouvelle connexion : <samp class="JavaScript">onconnect</samp></a></li>
+							<li><a href="#ports">Les ports</a></li>
+							<li><a href="#postonmessage"><samp class="JavaScript">postMessage()</samp> et <samp class="JavaScript">onmessage</samp></a></li>
+						</ol>
+					</li>
+					<li><a href="#nommer">Nommer vos Shared-workers</a></li>
+					<li><a href="#arreter">Ne plus utiliser un shared-worker</a></li>
+				</ol>
+			</li>
 		</ol>
 	</li>
 	<li>Pour en savoir plus
@@ -33,9 +46,240 @@
 <article>
 	<h2>Shared-Worker</h2>
 
-<p>Désolé cette page n'a pas encore été retranscrite sur mon site. J'y travaille aussi vite que possible.<br>
-Merci de votre patience.<br>
-<br>En attendant vous pouvez consulter le <a href="http://www.siteduzero.com/informatique/tutoriels/html5-web-workers-le-monde-parallele-du-javascript">tutoriel sur le site du zéro</a>.</p>
+<p>Nous avons vu dans le précédent chapitre comment manipuler un worker et plus particulièrement les dedicated-workers.<br>
+Nous allons maintenant voir un deuxième type de workers disponible en JavaScript : les <strong>shared-workers</strong> (workers partagés en français). Contrairement aux dedicated-workers, ils peuvent être contrôlés par plusieurs threads.
+Il est donc possible de créer plusieurs références vers le même worker, et ces références peuvent même provenir de pages différentes.</p>
+
+<section id="premierspas">
+	<h3>Premiers pas</h3>
+	<p>Un exemple vaudra sans doute bien mieux qu'une longue explication.</p>
+	<section><header class="filename">main.js</header>
+	<code class="JavaScript">
+//Création d'une zone d'affichage
+var elem = document.createElement("output");
+elem.value = "Log :";
+document.body.appendChild(elem);
+ 
+if(window.SharedWorker){
+//le navigateur supporte les shared-workers
+	var w = new SharedWorker("worker.js");
+	w.port.onmessage = function(e){
+		elem.innerHTML += "<br />" + e.data;
+	};
+	w.port.postMessage("Bonjour");
+ 
+}else{
+	elem.textContent="Votre navigateur ne supporte pas les shared-workers ☹";
+}
+	</code>
+	</section>
+	<section><header class="filename">worker.js</header>
+	<code class="JavaScript">var num = 0;
+ 
+//nouvelle connexion
+onconnect=function(e){
+	var port = e.ports[0];
+	port.postMessage("pret #" + num);
+	num++;
+
+	//réception des messages
+	port.onmessage = function(event){
+		port.postMessage("réponse à "+ event.data);
+	};
+};</code>
+	</section>
+	<a href="http://restimel.github.com/Tutoriels/webWorkers/shared1/index.html" target="_blank">Essayer à partir de la page 1 !</a> - <a href="http://restimel.github.com/Tutoriels/webWorkers/shared1/index2.html" target="_blank">Essayer à partir de la page 2 !</a>
+
+
+	<p>À première vue, en essayant ce code, vous vous dîtes qu'il n'y a rien de bien exceptionnel.<br>
+	Essayez maintenant d'ouvrir la page contenant ce code une deuxième fois (donc cette page sera ouverte dans deux onglets ou deux fenêtres). Qu'observez-vous ?<br>
+	L'affichage de la page est différent alors qu'il s'agit du même code qui est exécuté !</p>
+
+	<p>Et si vous l'ouvrez une troisième fois, un #3 apparaît alors. Et le numéro s'incrémente pour chaque nouvelle page. Ou plus précisément pour chaque nouvelle connexion au worker.
+	Car contrairement aux dedicated-workers, celui-ci est partagé entre toutes ces pages. C'est-à-dire que ces pages communiquent avec le même thread, et <samp class="JavaScript">num</samp> s'incrémente à chaque nouvelle connexion.</p>
+
+	<p>Et lorsqu'on ouvre ce code depuis une autre page, c'est toujours la même chose ! Les pages d'un même site communiquent entre elles.</p>
+
+	<p class="information">Il n'est pas possible de communiquer avec un autre utilisateur. Les workers, étant des composants JavaScript, sont toujours exécutés "côté client", c'est-à-dire au niveau du navigateur d'un utilisateur.<br>
+	Les workers possèdent aussi une restriction : ces pages doivent provenir du même domaine (same origin policy).</p>
+	
+	<p>Le shared-worker sera éliminé dès qu'il n'y a plus aucune référence à celui-ci. Ainsi si vous fermez toutes vos pages, et que vous en rouvrez une, <samp class="JavaScript">num</samp> repartira de 0.</p>
+	
+	<p>Le principe d'utilisation reste le même que pour les dedicated-workers et s'utilise de la même manière. Cependant vous avez pu remarquer que l'appel des méthodes diffère légèrement. Nous allons voir comment appréhender tout ça.</p>
+</section>
+
+<section id="communication">
+	<h3>La communication</h3>
+	<p>Le concept est toujours le même, les objets appartenant au worker ne sont accessibles que par lui, et lui ne peut pas accéder aux objets extérieurs. Leur seul lien reste toujours un canal de communication.</p>
+	
+	<section id="nouvelleConnexion">
+		<h4>Recevoir une nouvelle connexion : <samp class="JavaScript">onconnect</samp></h4>
+		<p>La première nouveauté par rapport aux dedicated-workers est le listener <samp class="JavaScript">onconnect</samp>.<br>
+Ce listener est appelé à chaque fois qu'un code fait appel à ce worker. Il est donc particulièrement pratique pour adapter son code au nouveau venu (et surtout communiquer avec lui).</p>
+<p>Dans l'événement généré, il y a une propriété qui va particulièrement nous intéresser. Il s'agit de <em><samp class="JavaScript">ports</samp> qui est une liste d'objets de type port.</p>
+
+<p>Avant d'aller plus loin, nous allons regarder ce qu'est un port.<br>
+<span class="humour">Non ! Ce n'est pas là où on abrite les bateaux. ☺</span></p>
+	</section>
+	
+	<section id="ports">
+		<h4>Les ports</h4>
+		<p>Un <strong>port logiciel</strong> est un point de contact qui permet de communiquer avec un interlocuteur. Cela permet de bien distinguer tous les interlocuteurs puisqu'ils seront associés chacun à un port différent.</p>
+		
+		<p>On peut considérer les ports comme des portes. Quand vous ouvrez une porte vous pouvez accéder à une autre pièce. Si vous désirez atteindre une troisième pièce, vous allez utiliser une porte différente. Si vous voulez que deux pièces de votre maison communiquent ensemble, il vous faudra une porte entre elles.</p>
+		
+		<p>En informatique, c'est un peu la même chose ! Les ports vont nous servir à communiquer entre deux threads.</p>
+		
+		<p>Ainsi quand on crée un shared-worker, deux ports sont aussi créés :
+		<ul><li>L'un est attaché à l'objet shared-worker créé et se nomme <samp class="JavaScript">port</samp>.</li>
+		<li>L'autre est envoyé au thread du worker via l'événement <samp class="JavaScript">connect</samp>, et est accessible via le premier attribut de <samp class="JavaScript">ports</samp>.</li></ul>
+		</p>
+		
+		<p>Dans le code d'introduction, vous pouvez remarquer qu'à la ligne 4 du worker, je récupère explicitement ce port. Et dans le code de <span class="filename">main.js</span>, je fais appel à son frère en utilisant la syntaxe : <samp class="JavaScript">w.port</samp>.
+	</section>
+	
+	<section id="postonmessage">
+		<h4><samp class="JavaScript">postMessage()</samp> et <samp class="JavaScript">onmessage</samp></h4>
+		<p><samp class="JavaScript">postMessage()</samp> et <samp class="JavaScript">onmessage</samp> s'utilisent exactement de la même manière qu'avec les dedicated-workers. La seule différence est qu'ils sont associés à un port.</p>
+		
+		<p>En réalité, avec les dedicated-workers il y a aussi des ports, mais ils sont intégrés à l'objet et à l'espace global. Du coup il n'est pas nécessaire d'y faire appel explicitement. Cela se justifie facilement puisqu'un dedicated-worker est dédié à celui qui l'a créé et donc ne communique qu'avec lui.<br>
+Il en va autrement des shared-workers qui peuvent avoir une multitude de correspondants. Il est donc nécessaire de bien préciser avec lequel on souhaite s'adresser.</p>
+
+	<details>
+		<summary class="question">J'ai voulu utiliser <samp class="JavaScript">addEventListener</samp> mais ça ne marche pas ! Pourquoi ?</summary>
+		<p>Effectivement, il s'agit de la principale différence avec les dedicated-workers. Sur un port, si on souhaite lire les messages en attente il faut explicitement démarrer la distribution.<br>
+Ce démarrage se fait grâce à la fonction <em><samp class="JavaScript">start()</samp></em>.
+		<section><header class="filename">main.js</header>
+			<code class="JavaScript">//Création d'une zone d'affichage
+var elem = document.createElement("output");
+elem.textContent = "Log :";
+document.body.appendChild(elem);
+ 
+//Création du worker
+var w = new SharedWorker("worker.js");
+ 
+w.port.addEventListener("message",
+	function(e){
+		elem.innerHTML += "<br />"+ e.data;
+	},false);
+
+w.port.start(); //cette ligne est importante pour démarrer la réception des messages sur ce port
+
+w.port.postMessage("Bonjour");
+			</code>
+		</section>
+		<section><header class="filename">worker.js</header>
+			<code class="JavaScript">var num = 0;
+ 
+//ajout d'un listener de connexion
+addEventListener("connect",
+	function(e){
+		var port = e.ports[0];
+		port.postMessage("Pret #" + num);
+		num++;
+
+		//On écoute sur le port
+		port.addEventListener("message",
+			function(e){
+				port.postMessage("Réponse à "+ e.data);
+			},false);
+
+		port.start(); //Pour démarrer la réception des messages sur ce port
+	},false);
+			</code>
+		</section>
+		<a href="http://restimel.github.com/Tutoriels/webWorkers/shared3/index.html" target="_blank">Essayer !</a>
+		<p>Il n'est pas nécessaire d'utiliser <samp class="JavaScript">port.start()</samp> lorsqu'on utilise <samp class="JavaScript">port.onmessage</samp>, car avec cette méthode il n'y a pas de "distribution" puisqu'il s'agit du seul endroit où est réceptionné le message. Le démarrage est donc réalisé de manière implicite.</p>
+	</details>
+	</section>
+
+</section>
+
+<section id="nommer">
+	<h3>Nommer vos Shared-workers</h3>
+	<p>Si dans un code on veut créer deux shared-workers distincts à partir du même fichier, on ne pourra pas s'y prendre de cette façon :
+		<code class="JavaScript">var w1 = new SharedWorker("toto.js");
+var w2 = new SharedWorker("toto.js");</code>
+Puisque <samp class="JavaScript">w1</samp> et <samp class="JavaScript">w2</samp> feront appel au même worker partagé.
+	</p>
+	
+	<p>Le constructeur <samp class="JavaScript">SharedWorker</samp> possède un deuxième argument qui permet de nommer un shared-worker.</p>
+	
+	<p>Si maintenant je fais :
+		<code class="JavaScript">var w1 = new SharedWorker("toto.js","toto");
+var w2 = new SharedWorker("toto.js","tata");</code>
+		Je possède désormais deux workers distincts car ils ne possèdent pas le même nom. Il est aussi possible d'utiliser ce nom pour faire explicitement appel à un worker existant.
+	</p>
+	<section><header class="filename">main.js</header>
+	<code class="JavaScript">//Création d'une zone d'affichage
+var elem = document.createElement("div");
+elem.textContent = "Log :";
+document.body.appendChild(elem);
+ 
+//Création de workers
+var w1 = new SharedWorker("worker.js", "monWorker");
+w1.port.onmessage = function(e){
+	elem.innerHTML += "<br>W1 " + e.data;
+};
+ 
+var w2 = new SharedWorker("worker.js", "worker2");
+w2.port.onmessage = function(e){
+	elem.innerHTML += "<br>W2 " + e.data;
+};
+ 
+var w3=new SharedWorker("worker.js", "monWorker");
+w3.port.onmessage = function(e){
+	elem.innerHTML += "<br>W3 "+ e.data;
+};
+
+
+w1.port.postMessage("Bonjour");
+w2.port.postMessage("Bonjour");
+w3.port.postMessage("Bonjour");
+	</code>
+	</section>
+	<section><header class="filename">worker.js</header>
+	<code class="JavaScript">var num = 0;
+ 
+onconnect = function(e){
+	var port = e.ports[0];
+
+	port.postMessage("pret #" + num + " ? " + self.name);
+	num++;
+
+	port.onmessage=function(event){
+		port.postMessage("réponse à " + event.data);
+	};
+};
+	</code>
+	</section>
+	<a href="http://restimel.github.com/Tutoriels/webWorkers/shared2/index.html" target="_blank">Essayer !</a>
+	
+	<p><samp class="JavaScript">w1</samp> et <samp class="JavaScript">w2</samp> ne partagent pas le même worker. Par contre <samp class="JavaScript">w1</samp> et <samp class="JavaScript">w3</samp> partagent le même worker. Car ils ont utilisé le même nom.</p>
+	
+	<p class="warning">Si on crée un shared-worker à partir d'un nom qui existe déjà et d'une url différente de celle utilisée, alors une erreur apparaît.</p>
+	
+	<p class="information">Au passage, vous avez pu remarquer que <em><samp class="JavaScript">self.name</samp></em> permet de connaître le nom attribué à ce worker.</p>
+</section>
+
+
+<section id="arreter">
+	<h3>Ne plus utiliser un shared-worker</h3>
+	
+	<p style="color=red;">Il est bien sûr toujours possible d'utiliser <samp class="JavaScript">worker.terminate()</samp> pour l'achever. Cela signifie que le worker se terminera pour toutes les pages qui utilisent ce worker.</p>
+	
+	<p>Avec un dedicated-worker, lorsque vous fermiez la page, vous étiez assuré que le worker disparaissait. Avec les shared-workers, ce n'est plus aussi évident car il se peut qu'une autre page fasse toujours appel à celui-ci. Assurez-vous de bien fermer les shared-workers lorsque vous ne les utilisez plus. Cela vous évitera une consommation de mémoire inutile.</p>
+	
+	<p>Mais à l'inverse, faites aussi attention à ne pas terminer un shared-worker prématurément s'il est toujours utilisé par une autre page.</p>
+	
+	<p>Si vous désirez juste interrompre la connexion entre deux threads mais laisser le worker intact pour les autres threads, alors je vous propose d'utiliser la fermeture de port que nous verrons dans le chapitre pour en savoir plus sur <a href="./communication.html">la communication avec les workers</a>.
+</section>
+
+<p>À présent vous savez manipuler tous les types de workers disponibles en JavaScript. Vous pouvez dès à présent vous entraîner pour mieux comprendre leur fonctionnement.</p>
+
+<p>Dans la suite de ce tutoriel, nous allons donc mettre en pratique ensemble ces connaissances nouvellement acquises en travaillant sur un <!--<a href="./TP1.html">-->TP<!--</a>-->.<br>
+Ou alors vous pouvez continuer le cours pour en savoir plus sur <a href="./communication.html">la communication avec les web-workers</a>.
+</p>
 </article>
 </body>
 </html>

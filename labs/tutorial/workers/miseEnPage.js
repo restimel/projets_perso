@@ -7,7 +7,7 @@ function codeColorisation(){
 	
 	for(i=0;i<li;i++){
 		elem = liste[i];
-		elem.innerHTML = color(elem.textContent.replace(/^\s+|\s+$/g,""),false);
+		elem.innerHTML = color(elem.innerHTML.replace(/^\s+|\s+$/g,""),false);
 		elem.className = "codeJS";
 	}
 	
@@ -15,7 +15,7 @@ function codeColorisation(){
 	li=liste.length;
 	for(i=0;i<li;i++){
 		elem = liste[i];
-		elem.innerHTML = color(elem.textContent,false);
+		elem.innerHTML = color(elem.innerHTML,false);
 		elem.className = "miniCodeJS";
 	}
 }
