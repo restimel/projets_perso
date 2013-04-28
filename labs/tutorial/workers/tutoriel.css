@@ -31,15 +31,64 @@
 	font-size: smaller;
 }
 
+em{
+	font-size : 1.2em;
+	font-weight : 800;
+}
+
+
+article{
+	margin-left: 1.5em;
+	margin-right: 1.5em;
+	text-align : justify;
+	font-family : sans-serif;
+}
+p{
+	margin-left: 1em;
+}
+
+
 details{
 	border : 1px solid black;
 	background-color: rgba(220,220,220,0.5);
 	display: block;
 	margin-bottom : 0.5em;
 }
-em{
-	font-size : 1.2em;
-	font-weight : 800;
+summary{
+	cursor:pointer;
+}
+/*fallback pourles navigateur ne sachant pas gérer les balises details/summary*/
+summary.detailsClosed~*{
+	display:none;
+}
+summary.detailsClosed:before{
+	content:"▸ ";
+}
+summary.detailsOpen:before{
+	content:"▾ ";
+}
+
+
+/*Lien courant du chapitre*/
+.current{
+	padding: 0.25em;
+	margin-top: 0.5em;
+	background-color: rgba(247,230,83,0.9);
+}
+
+/*liens suivant/precedentdans le footer*/
+.lienPrecedent{
+	float : left;
+}
+.lienPrecedent:before{
+	content : "↩\a0";
+}
+
+.lienSuivant{
+	float : right;
+}
+.lienSuivant:after{
+	content : "\a0↪";
 }
 
 
@@ -67,6 +116,7 @@ nav>ol ol ol{
 nav>ol ol ol ol{
 	list-style-type: lower-alpha;
 }
+
 
 
 
@@ -149,3 +199,4 @@ nav>ol ol ol ol{
 	color:#00EEFF;
 	font-style:italic;
 }
+

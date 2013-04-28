@@ -200,7 +200,7 @@ w.postMessage("un message"); //on envoie "un message" au worker w</code>
 	<section id="recevoirMessage">
 		<h4>Recevoir des messages : <samp class="JavaScript">onmessage</samp></h4>
 		<p>Envoyer des messages, c'est bien, mais il faut aussi pouvoir les lire. ☺<br>
-On peut le faire grâce au listener <em><samp class=JavaScript">onmessage</samp></em>. Comme c'est un listener (comme onclick, onload, etc...) il va falloir lui passer une fonction callback qui sera exécutée lors de son déclenchement.
+On peut le faire grâce au listener <em><samp class=JavaScript">onmessage</samp></em>. Comme c'est un listener (comme onclick, onload, etc...), il va falloir lui passer une fonction callback qui sera exécutée lors de son déclenchement.
  Pour lire le message, il suffira d'accéder à la propriété <em><samp class=JavaScript">data</samp></em> de l'événement.
 		</p>
 		<p>Vous êtes maintenant capable d'écrire un petit échange avec le worker. En voici un par exemple :</p>
@@ -214,8 +214,8 @@ w.onmessage = function(event){
     alert("Le worker a répondu :\n" + event.data);
     if(event.data.substr(0,7) == "Bonjour"){
         //Si le message commence par "Bonjour"
-        var nom=prompt("Quel est ton nom ?");
-        w.postMessage("L'utilisateur s'appelle : "+nom);
+        var nom = prompt("Quel est ton nom ?");
+        w.postMessage("L'utilisateur s'appelle : "+ nom);
     }
 };
  
@@ -251,7 +251,7 @@ var w = new Worker("worker.js");
 w.addEventListener("message", function(event){
 	alert("Le worker a répondu :\n" + event.data);
 	if(event.data.substr(0,7) == "Bonjour"){
-		var nom=prompt("Quel est ton nom ?");
+		var nom = prompt("Quel est ton nom ?");
 		w.postMessage("L'utilisateur s'appelle : "+ nom);
 	}
 },false);
@@ -340,11 +340,11 @@ elem.value = "en cours de création";
 document.body.appendChild(elem);
  
 // initialisation du worker
-var w=new Worker("worker.js");
+var w = new Worker("worker.js");
  
 //ajout d'un listener
 w.addEventListener("message", function(event){
-	elem.value="Le worker a déjà fait "+ event.data +" tours";
+	elem.value = "Le worker a déjà fait "+ event.data +" tours";
 });
  
 setTimeout(function(){
@@ -377,5 +377,6 @@ for(var i = 0; i < l; i++){
 <br><br>
 <p>Maintenant vous pouvez utiliser les dedicated-workers pour embellir vos programmes. Dans les parties avancées on étudieras d'autres techniques pour mieux manipuler les workers. Mais avant cela nous allons découvrir le deuxième type de worker : <a href="./SharedWorker.html">le shared-worker</a>.</p>
 </article>
+<footer></footer>
 </body>
 </html>
