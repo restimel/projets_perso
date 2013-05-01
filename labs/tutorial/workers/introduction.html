@@ -41,6 +41,8 @@
 	</li>
 </ol>
 </nav>
+<hr>
+
 <article>
 <h2>Introduction à la programmation parallèle</h2>
 <p>
@@ -154,7 +156,7 @@ Les <strong>deadlocks</strong> : C'est un problème qui peut survenir quand plus
 		</details>
 
 		<p>Comme il existe de nombreuses variantes, je vais me contenter de vous parler de celle qui concerne le JavaScript : le passage par message asynchrone, et on pourrait ajouter qu'il s'agit d'un dialogue.</p>
-		<details><summary>Dialogue par passage de message asynchrone</sumary>
+		<details><summary>Dialogue par passage de message asynchrone</summary>
 		<ul>
 			<li><strong>Dialogue</strong> : La communication ne se fait qu'entre deux tâches. On aurait pu imaginer envoyer un message à tout le monde et que seul celui que ça concerne le lit (c'est ce qu'on fait lorsqu'on crie à son copain qui est de l'autre côté de la rue : tous les passants reçoivent aussi le message). Mais là, non ! Il n'y a que le destinataire du message qui pourra le lire.<br>
  Un dialogue signifie aussi que les deux peuvent initier un message. Une tâche n'est pas obligée d'attendre que l'autre lui parle pour lui envoyer un message. <span class="humour">Sinon ça serait un monologue.</span></li>
