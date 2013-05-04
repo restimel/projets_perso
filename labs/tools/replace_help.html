@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Tools: Text switching - help page</title>
+	<style>
+article{
+	margin-left:1em;
+	margin-right:1em;
+}
+p{
+	margin-left:2em;
+	margin-right:2em;
+	font-family : sans-serif;
+}
+	</style>
+</head>
+<body>
+<article lang="en">
+<h1>Help Page for Text switching tool</h1>
+
+<p>Text switching tool could help to get information from a text or to run several modification on a text.
+This tool is also helpful to repeat same modification on other text as you can save and load your rules.</p>
+
+<h2>Getting start</h2>
+<h3>Load your text</h3>
+<p>The <em>source text</em> is the original text on which you want to apply modification.<br>
+You could paste your text in the source area. You could also load your source from a local file by clicking on the appropriate button near this area.</p>
+<p>In this help document, we will use this source text for example: <pre>This is a sample text.
+With a simple text.
+</pre></p>
+
+<h3>Filling a rule</h3>
+<p>A <em>Rule</em> is an action to apply on the text. It first looks for the pattern (using JavaScript Regular Expression) and then replace it by your replace pattern.<br>
+A rule is applied on the result of previous rule. So it is possible to chain many rules.<br>
+To add a new rule form click on the "+" button.</p>
+<p>In the replace field, you don't need to escape character like \ . There are some special sequences:
+<ul>
+<li><em>$n</em> : Line Feed (\0x0A or \n in many program languages).</li>
+<li><em>$r</em> : Carriage Return (\0x0D or \r in many program languages).</li>
+<li><em>$t</em> : Horizontal Tabulation (\0x09 or \t in many program languages).</li>
+<li><em>$v</em> : Vertical Tabulation (\0x0B or \v in many program languages).</li>
+<li><em>$f</em> : Form Feed (\0x0C or \f in many program languages).</li>
+<li><em>$0</em> : To write the whole pattern that was found by RegExp for this replacement.</li>
+<li><em>$1</em> : To write the first pattern matched by parentheses in the RegExp for this replacement.</li>
+<li><em>$2</em> : To write the second pattern matched by parentheses in the RegExp for this replacement.</li>
+<li><em>...$9</em> : To write the ninth pattern matched by parentheses in the RegExp for this replacement.</li>
+<li><em>$$</em> : To write a single $ (dollar sign \0x24).</li>
+<li><em>$!...!$</em> : To write a value which increments on each replacement (see the incremental value section in advanced features).</li>
+</ul>
+</p>
+<p>For example, as a rule you could use the regexp pattern : <samp>text</samp>, the flag : <samp>g</samp> and the replace : <samp>example</samp>.<br>
+You'll get <pre>This is a sample example.
+With a simple example.</pre>
+</p>
+
+<p>An other example by using two rules, with the first one use the regexp pattern : <samp>sam</samp>, no flag and the replace : <samp>sim</samp>.<br>
+with the second rule use the regexp pattern : <samp>simple</samp>, the flag : <samp>g</samp> and the replace : <samp>great</samp>.<br>
+You'll now get <pre>This is a great example.
+With a great example.</pre>
+It is also possible to do it with a single rule (by using the regexp pattern <samp>s[ai]mple</samp>) but it is just an example to show you how rules could be combined.
+</p>
+
+<h3>Execute Replacement</h3>
+<p>Finally you execute the replacement by clicking on "Execute Replacement". It runs all activated rules one by one.<br> You get your modified text in the result area.<br>
+You could copy and paste it in a file.</p>
+<p>When you click on "Execute Replacement" all previous results are erased.</p>
+
+<p>Currently this is basic use. You could do the same with any editor. Although chaining rules is helpful we could do a lot more with some advanced feature we will see now.</p>
+
+
+<h2>Advanced Features</h2>
+<h3>Save and Load your Rules</h3>
+<p>You wrote a script with many rules and you want to use it later or share it. Click on "Save Rule" button on the top right. It generates a JSON in the textarea that you could copy in a file.</p>
+<p>To reuse a saved copy of rules, paste the JSON in the textarea on the top right and click on "Load Rules" button. You previous rules will be loaded. Be careful it will also removed current rules.</p>
+
+<p>In the next version, it will be possible to save rules in local-storage. So you'll not have to copy/paste it in a file (except if you want to share your script with someone else).</p>
+
+<h3>Using incremental String replace</h3>
+<p>You could use this mode when you want to replace a pattern with different values.</p>
+<p>When selecting incremental String replace, you get a new area instead the previous replacement field. Each line of this area is a replacement value. When the RegExp search found the first time it replaces the pattern with the first value, at the second time with the second value. etc. When there is not enough line it restarts with the first line.<br>
+There is two behavior depending on your RegExp pattern.</p>
+<p>If you don't use matching parentheses in your RegExp pattern, the whole pattern found is replaced by the current replacement line.</p>
+<p>If you use matching parentheses, only matched pattern are replaced. Pattern which are not caught by parentheses are kept and not replaced. The replacement line is split in different sub-pattern. The first sub-pattern will replace the first matched pattern, etc. if no sub-pattern was found it is replaced by an empty string.<br>
+Sub-patterns are separated in the line by the string "~~". E.g.  here is a replacement line <samp>foo~~foo2~~foo3</samp> foo will replace the first matching pattern, foo2 the second and foo3 the third.</p>
+
+<p>As an example, with the source text used as example you could set a rule with the regexp pattern : <samp>a s[ai]mple text</samp>, the flag : <samp>g</samp> and the incremental replace : <pre>a text replaced
+another line</pre>.<br>
+You'll get <pre>This is a text replaced.
+With another line.</pre>
+The regexp pattern was found twice in the text. As there is no matching parentheses, pattern has been replaced by lines value.</p>
+
+<p>Now consider the regexp pattern : <samp>(a) s[ai]mple (text)</samp>, the flag : <samp>g</samp> and the incremental replace : <pre>a small~~for example
+a wonderful~~replacement</pre>.<br>
+You'll get <pre>This is a small sample for example.
+With a wonderful simple replacement.
+</pre>
+The regexp pattern was found twice in the text. As there is matching parentheses, only these patterns will be replaced by sub-pattern.</p>
+
+<p>Note this replacement mode should be used with the flag 'g'.</p>
+
+<h3>Using incremental value</h3>
+<p>The incremental value is a replacement with a value which increased at each replacement.<br>
+In the replacement field set the following string <samp>$!X!$</samp> where X is the number where it starts.</p>
+
+<p>For example, you could define the regexp pattern : <samp>text</samp>, the flag : <samp>g</samp> and the replace : <samp>t$!1!$</samp>.<br>
+You'll get <pre>This is a sample t1.
+With a simple t2.
+</pre>
+At the first replacement the value was 1. However for the second replacement the value was incremented, so it was replaced by 2.</p>
+
+<p>It is possible to set several incremental value in the same replacement with different starting value.</p>
+
+<h3>Have more space to write</h3>
+<p>If you think that you have not enough space to build your regexp or your replacement string, you could double click on the rule and you'll get bigger place to write.</p>
+<p>In the future, there'll be more feture from this place but it is not currently developed. :(</p>
+
+<h3>Change your Rule order</h3>
+<p>You have added new rules but the last one should be run before previous rules. Just drag and drop your rules to place them in the right order.</p>
+
+<h3>Add comments on your rules</h3>
+<p>When you write some complicated rules that you will reuse later it is good to keep some notes on them. You have a field on the right of rules where you can put some word to explain the rule.<br>
+This field has no impact on rule (it is just for comments). It is saved by the "Save Rule" option.</p>
+
+<h3>De/Activate Rules</h3>
+<p>When you develop a script sometimes you want to try other pattern or other rules. Sometimes you want to deactivate a rule to see what happens without this rule.<br>
+You could Deactivate a rule by unchecking the Activate checkbox on the right.<br>
+To reactivate a rule just check the same checkbox.</p>
+<p>When a rule is deactivated, the rule is skipped. It is not applied to the text. The next activated rule will be applied.</p>
+<p>A deactivated rule is still saved in the "Save Rules" action but it is kept as not activated.
+To remove a rule (to not save it), you have to clear the regex field. A rule without a regex field is not applied and not saved.</p>
+
+<h3>Usable RegExp</h3>
+<p>All JavaScript RegExp are usable. JS RegExp are a kind of PERL RegExp but with some unimplemented features.<br>
+For example, it is not possible to use look-behind assertions.<br>
+only 3 flags are available (g, i and m). With Firefox you could also use the y flag.</p>
+<p>The regexp field are checked on each changes to prevent failed regexp. This warning message would be improved to identify in an easier way what is wrong.</p>
+
+
+<h2>Some Example</h2>
+<p>Here will be some basic example to show what it is possible by combining rules.</p>
+
+</article>
+</body>
+</html>

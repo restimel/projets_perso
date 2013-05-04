@@ -93,6 +93,11 @@ menu>aside{
 	font-style:italic;
 	font-size:0.8em;
 }
+
+menu>a{
+	font-size:x-small;
+	cursor:help;
+}
 	</style>
 </head>
 <body>
@@ -101,10 +106,11 @@ menu>aside{
 	ajouter sauvegarde localstore
 	Ajout de règles avec pattern prédéfini
 	Faire Analyseur syntaxique de regexp + test
-	Ajout manuel d'aide
+	Intégrer les incremental value et les $1 dans les incremental replace
 -->
 
 <menu title="Rules manager">
+	<a href="./replace_help.html" target="_blank">Need help?</a><br>
 	<button id="saveReg">Save Rules</button> <button id="loadReg">Load Rules</button><br>
 	<textarea id="manageCode" placeholder="Rules to load"></textarea>
 	<aside id="infoSave">You should copy this line to reuse it later</aside>
@@ -156,6 +162,7 @@ menu>aside{
 	</fieldset>
 </div>
 
+
 <script type="text/javascript">
 var rulesOrder=[]; //donne l'ordre des règles à effectuer
 
@@ -171,14 +178,14 @@ var addReg=(function(){
 		text+='<input type="text" id="name'+nbElement+'" title="name to explain this regexp, this has no impact on RegExp" placeholder="name to explain this regexp" style="width:20em;"><br>';
 		text+='<label><input type="checkbox" id="active'+nbElement+'" title="Activate this RegExp" checked>Activate</label><br>';
 		text+='<div class="information" id="information'+nbElement+'">id:'+nbElement+'</div>';
-		text+='<output id="message'+nbElement+'"></output>';
+		text+='<div class="output" id="message'+nbElement+'"></div>';
 		text+='</aside>';
 		text+='<br>';
-		text+='<label title="\\n, \\r and \\t should be writen §n, §r and §t">replace:<input id="replace'+nbElement+'"></label>';
+		text+='<label title="\\n, \\r and \\t should be writen $n, $r and $t">replace:<input id="replace'+nbElement+'"></label>';
 		text+='<label style="display:none;" title="each line represents an occurence. Pattern should be separated by ~~">Incremental&nbsp;Replace:<textarea id="iReplace'+nbElement+'" placeholder="each line represents an occurence. Pattern should be separated by ~~. When all occurence are used, it comes back to the first. Exemple:occurence1_pattern1~~pattern2~~pattern3 of the first occurence"></textarea></label> ';
 		text+='<label>use&nbsp;incremental&nbsp;string&nbsp;replace:<input id="modeReplace'+nbElement+'" type="checkbox"></label> ';
 		text+='<label>use&nbsp;incremental&nbsp;value:<input id="modeIncReplace'+nbElement+'" type="checkbox"></label>';
-		text+='<aside style="display:none;font-style:italic;font-size:0.8em;">The incremental value should be encapsuled by §! and !§. Example: to start from 0, you should write §!0!§</aside>';//doit être placé juste derrière le label de modeIncReplace
+		text+='<aside style="display:none;font-style:italic;font-size:0.8em;">The incremental value should be encapsuled by $! and !$. Example: to start from 0, you should write $!0!$</aside>';//doit être placé juste derrière le label de modeIncReplace
 		text+='<br>';
 		text+='</form>';
 		
@@ -334,77 +341,86 @@ function verifForm(event){
 		msg = "RegExp is not valid: "+tmp;
 		status = "error";
 	}
-	message.value = msg;
+	message.innerHTML = msg;
 	message.className = status;
 }
+
 
 function isValidRegExp(str){
 	//permet de vérifier que la chaine est une regexp valide
 	//retourne "OK" si c'est valide sinon retourne le message d'erreur
-	var i=0,
+	
+	var i=0, //position actuelle dans la chaine
 		li=str.length,
-		open = [],
-		lastOpen = "",
-		char = "",
-		lastChar,
-		nxtChar = str.charAt(0);
+		open = [], //liste des carctères d'ouverture qui ne sont pas encore fermé
+		position = [], //liste des positions des caractères d'ouverture
+		lastOpen = "", //le dernier caractère rencontré qui ouvrait une section [,( ou {
+		char = "", //le caractère courant
+		lastChar, //le dernier caractère
+		nxtChar = str.charAt(0); //le prochain caractère
 		msg = "";
+	
 	for(i=0;i<li;i++){
 		lastChar = char;
 		char = nxtChar;
 		nxtChar=str.charAt(i+1);
+		
 		if(char==="\\"){ //caractère d'échappement
 			if(i===li-1){
-				return "(c"+i+") escaped character at the end";
+				return "(c"+i+") escaped character at the end<br>"+dspShortStr(i);
 			}
-			char+=nxtChar;
+			char+=nxtChar; //TODO \u2356
 			nxtChar = str.charAt(++i+1);
 			continue;
 		}
+		
 		switch(lastOpen){
 			case "[": //mode class
 				switch(char){
 					case "]":
-						open.pop();
-						lastOpen=open[open.length-1];
+						lastOpen=removeOpenCar();
 					break;
 					case "-":
 						if(lastChar!=="[" && nxtChar!=="]" && lastChar>nxtChar){
-							return "(c"+i+") Range out of order in character class";
+							return "(c"+i+") Range out of order in character class<br>"+dspShortStr(i);
 						}
 					break;
 				}
-			break;
+			break; //fin mode class
+			
 			case "(": //mode parenthèse
 				switch(char){
 					case ")":
-						open.pop();
-						lastOpen=open[open.length-1];
+						lastOpen=removeOpenCar();
+					break;
+					case "(":
+						lastOpen="(";
+						addOpenCar(lastOpen,i);
 					break;
 					case "?":
 						if(lastChar==="(" && nxtChar!==":" && nxtChar!=="!" && nxtChar!=="="){
-							return "(c"+i+") Invalid group";
+							return "(c"+i+") Invalid group<br>"+dspShortStr(i);
 						}else if(lastChar==="^" || lastChar==="$" || (lastChar===":" || lastChar==="!") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
-							return "(c"+i+") Nothing to repeat";
+							return "(c"+i+") Nothing to repeat<br>"+dspShortStr(i);
 						}else if((lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="|") && (str.charAt(i-2)==="?" || str.charAt(i-2)==="*" || str.charAt(i-2)==="+" || str.charAt(i-2)==="¤}")){
-							return "(c"+i+") Nothing to repeat";
+							return "(c"+i+") Nothing to repeat<br>"+dspShortStr(i);
 						}
 					break;
 					case "*":
 						if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!" || lastChar==="=") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
-							return "(c"+i+") Nothing to repeat";
+							return "(c"+i+") Nothing to repeat<br>"+dspShortStr(i);
 						}
 					break;
 					case "+":
 						if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!" || lastChar==="=") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
-							return "(c"+i+") Nothing to repeat";
+							return "(c"+i+") Nothing to repeat<br>"+dspShortStr(i);
 						}
 					break;
 					case "{":
 						if(char = str.substr(i).match(/{[0-9]+,[0-9]*}/)){
 							char=char[0];
 							if(lastChar==="(" || lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="|" || (lastChar===":" || lastChar==="!" || lastChar==="=") && str.charAt(i-2)==="?" && str.charAt(i-3)==="("){
-								return "(c"+i+") Nothing to repeat";
+								return "(c"+i+") Nothing to repeat<br>"+dspShortStr(i);
 							}
 							i+=char.length-1;
 							nxtChar=str.charAt(i+1);
@@ -413,51 +429,52 @@ function isValidRegExp(str){
 					break;
 					case "[":
 						lastOpen="[";
-						open.push(lastOpen);
+						addOpenCar(lastOpen,i);
 						if(nxtChar==="]"){
-							msg+="Empty class [] could not match any string.";
+							msg+="Empty class [] could not match any string.<br>"+dspShortStr(i); //warning
 						}
 					break;
 				}
-			break;
+			break;//fin mode parenthèse
+			
 			default: //mode normal
 				switch(char){
 					case "[":
 						lastOpen="[";
-						open.push(lastOpen);
+						addOpenCar(lastOpen,i);
 						if(nxtChar==="]"){
-							msg+="Empty class [] could not match any string.";
+							msg+="Empty class [] could not match any string.<br>"+dspShortStr(i); //warning
 						}
 					break;
 					case "(":
 						lastOpen="(";
-						open.push(lastOpen);
+						addOpenCar(lastOpen,i);
 					break;
 					case "?":
 						if(lastChar==="" || lastChar==="^" || lastChar==="$" || lastChar==="|"){
-							return "(c"+i+") Nothing to repeat";
+							return "(c"+i+") Nothing to repeat<br>"+dspShortStr(i);
 						}else if((lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}") && (str.charAt(i-2)==="?" || str.charAt(i-2)==="*" || str.charAt(i-2)==="+" || str.charAt(i-2)==="¤}")){
-							return "(c"+i+") Nothing to repeat";
+							return "(c"+i+") Nothing to repeat<br>"+dspShortStr(i);
 						}
 					break;
 					case "*":
 						if(lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="" || lastChar==="^" || lastChar==="$" || lastChar==="|"){
-							return "(c"+i+") Nothing to repeat";
+							return "(c"+i+") Nothing to repeat<br>"+dspShortStr(i);
 						}
 					break;
 					case "+":
 						if(lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="" || lastChar==="^" || lastChar==="$" || lastChar==="|"){
-							return "(c"+i+") Nothing to repeat";
+							return "(c"+i+") Nothing to repeat<br>"+dspShortStr(i);
 						}
 					break;
 					case "{":
 						if(char = str.substr(i).match(/{([0-9]+),([0-9]*)}/)){
 							if(typeof char[2] !== "undefined" && parseInt(char[1],10)>parseInt(char[2],10)){
-								return "(c"+i+") numbers out of order in {} quantifier";
+								return "(c"+i+") numbers out of order in {} quantifier<br>"+dspShortStr(i);
 							}
 							char=char[0];
 							if(lastChar==="?" || lastChar==="*" || lastChar==="+" || lastChar==="¤}" || lastChar==="^" || lastChar==="$" || lastChar==="" || lastChar==="|"){
-								return "(c"+i+") Nothing to repeat";
+								return "(c"+i+") Nothing to repeat<br>"+dspShortStr(i);
 							}
 							i+=char.length-1;
 							nxtChar=str.charAt(i+1);
@@ -465,13 +482,57 @@ function isValidRegExp(str){
 						}
 					break;
 				}
+				//fin mode normal
 		}
 	}
+	
 	if(open.length){
-		return "Unterminated group "+open.join(",")+(open.length===1?" is":" are")+" not closed";
+		msg = "Unterminated group "+open.join(",")+(open.length===1?" is":" are")+" not closed";
+		position.forEach(function(pst){msg+="<br>"+dspShortStr(pst);});
+		return msg;
 	}
+	
 	return "OK"; //TODO warning message
-}
+	
+	
+	/*fonction interne à la vérification*/
+	
+//fonction permettant d'afficherjuste la partie où se trouve le problème (à +-5 caractères)
+	function dspShortStr(i){
+		var s = ""; //string de construction
+		if(i>10){
+			s += "…";
+		}
+		s += safeHTMl(str.substring(i-10,i)) + "<strong>" + safeHTMl(str.charAt(i)) + "</strong>" + safeHTMl(str.substring(i+1,i+11));
+		if(i<str.length-10){
+			s += "…";
+		}
+		return s;
+	}
+	
+//fonction permettant de sauvegarder un caractère d'ouverture [ ou (
+	function addOpenCar(char,i){
+		open.push(char);
+		position.push(i);
+	}
+	
+//fonction permettant de récupérer un caractère d'ouverture (parce qu'il est fermé)
+//retourne le dernier caractère ouvert
+	function removeOpenCar(){
+		open.pop();
+		position.pop();
+		return open[open.length-1];
+	}
+
+//fonction permettant d'afficher des balises HTML
+	function safeHTMl(str){
+		return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+	}
+
+}//fin fonction isValidRegExp
+
+
+
 
 function prepareReplace(){
 	//permet d'afficher que c'est en cours de traitement
@@ -518,19 +579,19 @@ function doReplace(){
 			}();
 		}else{
 			//mode remplacement normal
-			rplc = document.getElementById("replace"+i).value.replace(/§n/g,"\n").replace(/§r/g,"\r").replace(/§t/g,"\t");
+			rplc = document.getElementById("replace"+i).value.replace(/\$n/g,"\n").replace(/\$r/g,"\r").replace(/\$t/g,"\t").replace(/\$v/g,"\v").replace(/\$f/g,"\f");
 			if(modeValueInc){
 				//mode valeur incrémentale
 				rplc = function(r){
-					var values = r.match(/§!([\s\S]+?)!§/g) || [];
+					var values = r.match(/\$!([\s\S]+?)!\$/g) || [];
 					values.forEach(function(v,i){
-						values[i]=v.replace(/^§!|!§$/g,"");
+						values[i]=v.replace(/^\$!|!\$$/g,"");
 						if(!isNaN(values[i])){
 							values[i] = parseFloat(values[i]);
 						}
 					});
 					var nb=0;
-					var mtf = r.replace(/§!([\s\S]+?)!§/g,function(){return "§!"+(nb++);});
+					var mtf = r.replace(/\$!([\s\S]+?)!\$/g,function(){return "$!"+(nb++);});
 					//console.debug(values);
 					return function(motif){
 						var rslt = mtf;
@@ -539,7 +600,7 @@ function doReplace(){
 							rslt = rslt.replace(/\$([1-9])/g,function(m,nb){return arg[nb*1];});
 						}
 						//effectue les remplacements incrémentaux
-						rslt = rslt.replace(/§!(\d+)/g,function(m,nb){return values[nb*1]++;});
+						rslt = rslt.replace(/\$!(\d+)/g,function(m,nb){return values[nb*1]++;});
 						return rslt;
 					};
 				}(rplc);
@@ -557,8 +618,9 @@ function doReplace(){
 	document.getElementById("loading").style.display="none";
 }
 
+
 function saveReg(){
-//permet de sauvegarder des Regexp dans un JSON
+//permet de sauvegarder les Rules dans un JSON
 	var rslt=[],
 		c=0,i=rulesOrder[0],
 		rgx=document.getElementById("regexp"+i),
@@ -570,15 +632,18 @@ function saveReg(){
 		if(!rgx) continue; // il n'y a pas de valeur donnée à cet regexp
 		flg = document.getElementById("flag"+i).value;
 		name = document.getElementById("name"+i).value;
+		
 		if(mode=document.getElementById("modeReplace"+i).checked){
 			rplc = document.getElementById("iReplace"+i).value;
 		}else{
 			rplc = document.getElementById("replace"+i).value;
 		}
+		
 		inc=document.getElementById("modeIncReplace"+i).checked;
 		deactivated=!document.getElementById("active"+i).checked;
 		rslt.push({name:name,rgx:rgx,flg:flg,mode:mode,inc:inc,replace:rplc,deactivated:deactivated});
 	}while(rgx=document.getElementById("regexp"+(i=rulesOrder[++c])));
+	
 	document.getElementById("manageCode").value=JSON.stringify(rslt);
 	document.getElementById("infoSave").style.visibility="visible";
 }
@@ -770,11 +835,12 @@ function saveToLocal(){
 	localStorage.clear();
 }
 
+
 /*TODO pattern prédéfini
 [{"name":"delete empty lines","rgx":"(\\r\\n|[\\r\\n])(?:\\s*[\\r\\n]+)+","flg":"g","mode":false,"inc":false,"replace":"$1","deactivated":false}]
 [{"name":"Trim","rgx":"^[ \\t\\v]*(.*)[ \\t\\v]*$","flg":"gm","mode":false,"inc":false,"replace":"$1","deactivated":false}]
 [{"name":"Trim end of line","rgx":"^(.*)[ \\t\\v]+$","flg":"gm","mode":false,"inc":false,"replace":"$1","deactivated":false}]
-[{"name":"Numbering lines","rgx":"^","flg":"gm","mode":false,"inc":true,"replace":"§!1!§ ","deactivated":false}]
+[{"name":"Numbering lines","rgx":"^","flg":"gm","mode":false,"inc":true,"replace":"$!1!$ ","deactivated":false}]
 */
 
 window.onload=function(){
