@@ -12,6 +12,10 @@ html{ /*Ipad hack for iframe scrolling*/
 }
 */
 
+body{
+	background-image:url('./ressources/fond_jaune.png');
+}
+
 body>section{
 	-moz-column-count:2;
 	-webkit-column-count:2;
