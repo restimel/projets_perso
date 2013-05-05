@@ -23,6 +23,7 @@ function codeColorisation(){
 /**
 	écrit la syntaxe permettant de colorier la source
 	Script original : http://b.mariat.free.fr/tools/jsColor.htm
+	author : Benoit Mariat
 **/
 function color(source,inline){
 	"use strict";
