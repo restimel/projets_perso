@@ -4,16 +4,17 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: switch</aside>
-thème: condition<br>
+thème: comparaison<br>
 niveau: 1<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var i="1";
-var c="1";
+var i = "1";
+var c = "1";
+
 switch(i){
-	case c: alert("c");break;
-	case 1: alert("nb");break;
-	case "1": alert("str");break;
+	case c: alert("c"); break;
+	case 1: alert("number"); break;
+	case "1": alert("string"); break;
 	default: alert("other");
 }
 </textarea>
@@ -22,8 +23,8 @@ switch(i){
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
 	<li class="bonneReponse">"c"</li>
-	<li>"nb"</li>
-	<li>"str"</li>
+	<li>"number"</li>
+	<li>"string"</li>
 	<li>"other"</li>
 	<li>Plusieurs alert s'affichent</li>
 	<li>Une erreur se produit</li>
@@ -37,6 +38,7 @@ switch(i){
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+	<minicode type="javascript">switch</minicode> correspond a des comparaisons strictes. Or <minicode type="javascript">c</minicode> vaut <minicode type="javascript">"1"</minicode> et <minicode type="javascript">i</minicode> aussi. Donc <minicode type="javascript">switch</minicode> arrête sa recherche dès le premier cas.
 </details>
 
 <script>

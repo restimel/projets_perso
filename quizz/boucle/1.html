@@ -3,26 +3,33 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 </head>
 <body>
-<aside style="display:none;">connaissances nécessaire: opérateur, priorité</aside>
-thème: comparaison,Array<br>
+<aside style="display:none;">connaissances nécessaire: opérateur, ASCII</aside>
+thème: boucle,comparaison<br>
 niveau: 1<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var arr1 = [];
-var arr2 = [];
+var i=0, j=0;
 
-alert(arr1 == arr2);
-alert(arr1 === arr2);
+while(i++<1){
+	j++;
+}
+
+alert(i+"/"+j);
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li class="bonneReponse">false puis false</li>
-	<li>false puis true</li>
-	<li>true puis false</li>
-	<li>true puis true</li>
-	<li>Une erreur apparait</li>
+	<li>0/0</li>
+	<li>0/1</li>
+	<li>0/2</li>
+	<li>1/0</li>
+	<li>1/1</li>
+	<li>1/2</li>
+	<li>2/0</li>
+	<li class="bonneReponse">2/1</li>
+	<li>2/2</li>
+	<li>Il y a une erreur de syntaxe</li>
 </ul>
 <hr>
 <br>
@@ -33,7 +40,6 @@ alert(arr1 === arr2);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-	Les tableaux sont des objets. leur comparaison se fait donc par leur référence. Ils sont des instance différentes et ne sont donc jamais égals.
 </details>
 
 <script>

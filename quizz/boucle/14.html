@@ -4,36 +4,31 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: opérateur, ASCII</aside>
-thème: comparaison<br>
+thème: comparaison,boucle<br>
 niveau: 1<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var i=0,j=0,k=0,l=0;
-while(i++<1){
-    j++;
-}
+var i=0, j=0;
 
 do{
-    k++;
-}while(l++<1);
-alert(i+"/"+j+"/"+k+"/"+l);
+	j++;
+}while(i++<1);
+
+alert(i+"/"+j);
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li>"0/0/1/1"</li>
-	<li>"0/0/1/2"</li>
-	<li>"0/0/2/2"</li>
-	<li>"0/1/1/1"</li>
-	<li>"0/1/1/2"</li>
-	<li>"0/1/2/2"</li>
-	<li>"1/0/1/1"</li>
-	<li>"1/0/1/2"</li>
-	<li>"1/0/2/2"</li>
-	<li>"1/1/1/1"</li>
-	<li>"1/1/1/2"</li>
-	<li class="bonneReponse">"1/1/2/2"</li>
+	<li>0/0</li>
+	<li>0/1</li>
+	<li>0/2</li>
+	<li>1/0</li>
+	<li>1/1</li>
+	<li>1/2</li>
+	<li>2/0</li>
+	<li>2/1</li>
+	<li class="bonneReponse">2/2</li>
 	<li>Il y a une erreur de syntaxe</li>
 </ul>
 <hr>
