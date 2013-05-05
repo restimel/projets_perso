@@ -354,21 +354,24 @@ function jsonVerify(str,inside,offset){
 	}while(++i<li);
 	if(inside) return "Character "+(i+offset)+": End of object not found, character "+inside+" was open at position "+offset+" and was not closed";
 	else return "No problem detected";
+	
 }
+
+
 
 function jsonReader(str,elem_id){
 	var element=document.getElementById(elem_id);
 	try{
 		var obj=JSON.parse(str);
 	}catch(e){
-		var msg=jsonVerify(str,"",0),pst=(/Caractère (\d+).+(?:position (\d+))/i).exec(msg);
+		var msg=jsonVerify(str,"",0),pst=(/Character (\d+).+(?:position (\d+))/i).exec(msg);
 		element.innerHTML='<font color="red"><b>Format error</b></font>: '+e+"<br>"+msg+"<br><br>";
 		if(pst){
-			element.innerHTML+="<i>"+str.substring(0,pst[2]-1)+'<font color="blue">'+str.substring(pst[2]-1,pst[1]-1)+'</font><font color="red">'+str[pst[1]-1]+'</font>'+str.substring(pst[1])+"</i>";
+			element.innerHTML+="<i>"+str.substring(0,pst[2]-1)+'<span style="color:blue;font-size:larger;">'+str.substring(pst[2]-1,pst[1]-1)+'</span><span style="color:red;font-size:larger;">'+str[pst[1]-1]+'</span>'+str.substring(pst[1])+"</i>";
 		}else{
-			pst=(/Caractère (\d+)/i).exec(msg);
+			pst=(/Character (\d+)/i).exec(msg);
 			if(pst){
-				element.innerHTML+="<i>"+str.substring(0,pst[1]-1)+'<font color="red">'+str[pst[1]-1]+'</font>'+str.substring(pst[1])+"</i>";
+				element.innerHTML+="<i>"+str.substring(0,pst[1]-1)+'<span style="color:red;font-size:larger;">'+str[pst[1]-1]+'</span>'+str.substring(pst[1])+"</i>";
 			}else{
 				element.innerHTML+="<i>"+str+"</i>";
 			}
