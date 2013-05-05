@@ -1,0 +1,107 @@
+<!DOCTYPE>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>JS Quizz</title>
+	<meta author="Benoit Mariat">
+	<meta date="20/01/2013">
+	
+	<link rel="stylesheet" type="text/css" href="quizz.css">
+</head>
+<body>
+
+<nav>
+	<ul>
+		<li><button id="btn_quizzPreparation">Accueil</button></li>
+		<li><button id="btn_quizzQuestion">Quizz (debug)</button></li>
+		<li><button id="btn_quizzAnalyze">Analyse (debug)</button></li>
+		<li><button id="btn_searchQuizz">Explore</button></li>
+	</ul>
+</nav>
+
+<section id="quizzPreparation" class="sectionActive">
+	<form>
+		<label for="prepThemes" lang="fr">Thème :</label>
+		<select id="prepThemes" multiple></select>
+		<br><br>
+		
+		<label lang="fr">Difficultée :
+			<select id="prepNiveau" multiple>
+				<option value="-1">Tous</option>
+				<option value="0">Débutant</option>
+				<option value="1">Facile</option>
+				<option value="2">Moyen (développeur confirmé)</option>
+				<option value="3">Assez difficile</option>
+				<option value="4">Difficile</option>
+				<option value="5">Très difficile</option>
+			</select>
+		</label>
+		
+		<br><br>
+		
+		<label for="prepNbQ" lang="fr" title="0 siginifie toutes les questions">Nombre de questions : </label>
+		<input type="number" min="0" max="0" value="0" id="prepNbQ">
+		<br><br>
+		
+		<label lang="fr"><input type="checkbox" id="prepIsTime"> Répondre en temps limité </label>
+		<input type="time" value="00:10:00" id="prepTime" step="1">
+	</form>
+	<button id="prepRunQuizz"><span>Lancer le QUIZZ</span></button>
+</section>
+
+<section id="searchQuizz">
+	<form>
+		<label for="theme" lang="fr">Thème :</label>
+		<select id="srchTheme" multiple></select>
+		
+		<label for="srchNiveau" lang="fr">Difficultée :</label>
+		<select id="srchNiveau" multiple>
+			<option value="-1">Tous</option>
+			<option value="0">Débutant</option>
+			<option value="1">Facile</option>
+			<option value="2">Moyen (développeur confirmé)</option>
+			<option value="3">Assez difficile</option>
+			<option value="4">Difficile</option>
+			<option value="5">Très difficile</option>
+		</select>
+		
+		<br>
+		
+		<!--<label for="nbQ" lang="fr" title="0 siginifie toutes les questions">Nombre de questions : </label>
+		<input type="number" min="0" max="0" value="0" id="nbQ">-->
+	</form>
+</section>
+
+<section id="quizzQuestion">
+	<fieldset class="code">
+		<legend>Code&nbsp;:</legend>
+		<code id="questionCode">test
+		</code>
+	</fieldset>
+	<fieldset class="reponse">
+		<legend>Qu'est-ce qui s'affiche si on exécute ce code&nbsp;?</legend>
+		<form id="form_quizz"></form>
+		<button id="btnRepondre">Répondre</button>
+	</fieldset>
+	<aside id="questionOption">
+		<header>Options</header>
+		<input type="checkbox" id="optAutoNext" checked><label for="opt_autoNext" lang="fr">Passage automatique à la question suivante (pas de confirmation lors d'une réponse)</label><br>
+		
+	</aside>
+</section>
+
+<section id="quizzAnalyze">
+	<textarea id="code"></textarea><br>
+	<button>Test it</button>
+	<details style="margin-top:3em;border:1px solid black;display:block;">
+		<summary>Explication</summary>
+		<span id="explication"></span>
+	</details>
+</section>
+
+<script src="./quizzItems.js" type="text/javascript"></script>
+<script src="./quizzTest.js" type="text/javascript"></script>
+<script src="./jsColor.js" type="text/javascript"></script>
+<script src="./quizz.js" type="text/javascript"></script>
+</body>
+</html>
