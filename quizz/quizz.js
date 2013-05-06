@@ -93,6 +93,7 @@ function runQuizz(){
 //vérification lorsque l'utilisateur a choisi sa réponse
 function answerDirectQuizz(e){
 	if(!document.getElementById("optAutoNext").checked){
+		document.getElementById("btnRepondre").className = "ready";
 		return;
 	}
 	currentTest.reponse(this.value);

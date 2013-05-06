@@ -65,10 +65,13 @@ function quizzTest(){
 	this.liste = quizzItems.get(this.filtre); //TODO limiter par le nombre de question
 	this.length = this.liste.length;
 	
-	this.timerInit = this.timerLast = Date.now();
+	//ajout d'événement sur des éléments static
+	document.querySelector("#questionOption>button").onclick = this.stop.bind(this);
+	document.getElementById("questionTime").textContent = this.tempTotal;//TODO faire bouger le temps
 	
 	//lancer la session de questions
-	this.current = 0;
+	this.timerInit = this.timerLast = Date.now();
+	this.current = 0; //numéro de la question
 	this.displayQuestion();
 
 }
@@ -96,8 +99,7 @@ quizzTest.prototype.reponse = function(rps){
 quizzTest.prototype.displayQuestion = function(){
 	var item = this.liste[this.current];
 	if(!item){
-		alert("TODO fin des questions\n"+this.nbBonneReponse+"/"+this.length);
-		//TODO fin
+		this.stop();
 		return;
 	}
 
@@ -114,16 +116,15 @@ quizzTest.prototype.displayQuestion = function(){
 		input.type = "radio";
 		input.name = "reponsesQuizz";
 		input.value = item.reponses[i];
-		input.id = "reponse"+i;
 		input.onchange = answerDirectQuizz;
 
 		label = document.createElement("label");
-		label.htmlFor = "reponse"+i;
-		label.textContent = item.reponses[i];
+		label.appendChild(input);
+		label.appendChild(document.createTextNode(item.reponses[i]));
+		
 
-		elem.appendChild(input);
 		elem.appendChild(label);
-		elem.appendChild(document.createElement("br"));		
+		elem.appendChild(document.createElement("br"));
 	}
 	
 	elemQst.appendChild(elem);
@@ -131,12 +132,21 @@ quizzTest.prototype.displayQuestion = function(){
 	//affichage du code
 	document.getElementById("questionCode").innerHTML = color(item.code,false);
 	
+	//maj des informations
+	document.getElementById("questionScore").value = this.nbBonneReponse;
+	document.getElementById("questionNum").textContent = this.current+" / "+this.length;
+	
+	//remise en état du bouton Répondre
+	document.getElementById("btnRepondre").className = "notReady";
+	
 	//(ré)affichage de la bonne section
 	changeSession("quizzQuestion");
 };
 
 //permet d'arrêter le test en cours
 quizzTest.prototype.stop = function(){
-	alert("TODO: arreter le test"); //TODO
+	alert("TODO fin des questions\n"+this.nbBonneReponse+"/"+this.length);
+	//changment de session
+	changeSession("quizzResult");
 };
 

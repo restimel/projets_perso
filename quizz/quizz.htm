@@ -1,30 +1,41 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
 	<title>JS Quizz</title>
 	<meta author="Benoit Mariat">
 	<meta date="20/01/2013">
-	
+
 	<link rel="stylesheet" type="text/css" href="quizz.css">
 </head>
 <body>
 
 <nav>
 	<ul>
-		<li><button id="btn_quizzPreparation">Accueil</button></li>
-		<li><button id="btn_quizzQuestion">Quizz (debug)</button></li>
+		<li><button id="btn_quizzPreparation">Démarrer un Quizz</button></li>
+		<li><button id="btn_quizzQuestion">Quizz en cours(debug)</button></li>
 		<li><button id="btn_quizzAnalyze">Analyse (debug)</button></li>
 		<li><button id="btn_searchQuizz">Explore</button></li>
 	</ul>
 </nav>
+
+<section id="accueil">
+	<p>Bonjour et bienvenue dans le Quizz intéractif sur le JavaScript.<br>
+	Ici vous pourrez tester votre nivea de connaissance en JavaScript. Le but de chaque question est de dire ce qui s'afficherait dans les <samp class="commonMethod">alert</samp>.<br>
+	Les questions s'appuient sur l'ECMAscript 5.1 selon la norme <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" target="_blank">ECMA-262</a>.<br>
+	De nombreuses questions s'appuient sur des pièges (classique ou non)<br><br>
+	Dans le mode exploration, il est possible de tester le code des questions mais aussi de le modifier afin de bien comprendre les variations possible.<br>
+	<br>
+	Le niveau de difficulté a été choisi arbitrairement et certaines questions peuvent vous paraître plus facile ou plus difficile selon vos conaissances.</p>
+	<button>Affronter une série de Questions</button> <button>Découvrir & Analyser des questions</button>
+</section>
 
 <section id="quizzPreparation" class="sectionActive">
 	<form>
 		<label for="prepThemes" lang="fr">Thème :</label>
 		<select id="prepThemes" multiple></select>
 		<br><br>
-		
+
 		<label lang="fr">Difficultée :
 			<select id="prepNiveau" multiple>
 				<option value="-1">Tous</option>
@@ -36,13 +47,13 @@
 				<option value="5">Très difficile</option>
 			</select>
 		</label>
-		
+
 		<br><br>
-		
+
 		<label for="prepNbQ" lang="fr" title="0 siginifie toutes les questions">Nombre de questions : </label>
 		<input type="number" min="0" max="0" value="0" id="prepNbQ">
 		<br><br>
-		
+
 		<label lang="fr"><input type="checkbox" id="prepIsTime"> Répondre en temps limité </label>
 		<input type="time" value="00:10:00" id="prepTime" step="1">
 	</form>
@@ -53,7 +64,7 @@
 	<form>
 		<label for="theme" lang="fr">Thème :</label>
 		<select id="srchTheme" multiple></select>
-		
+
 		<label for="srchNiveau" lang="fr">Difficultée :</label>
 		<select id="srchNiveau" multiple>
 			<option value="-1">Tous</option>
@@ -64,30 +75,60 @@
 			<option value="4">Difficile</option>
 			<option value="5">Très difficile</option>
 		</select>
-		
+
 		<br>
-		
+
 		<!--<label for="nbQ" lang="fr" title="0 siginifie toutes les questions">Nombre de questions : </label>
 		<input type="number" min="0" max="0" value="0" id="nbQ">-->
 	</form>
 </section>
 
 <section id="quizzQuestion">
-	<fieldset class="code">
-		<legend>Code&nbsp;:</legend>
-		<code id="questionCode">test
-		</code>
-	</fieldset>
-	<fieldset class="reponse">
-		<legend>Qu'est-ce qui s'affiche si on exécute ce code&nbsp;?</legend>
-		<form id="form_quizz"></form>
-		<button id="btnRepondre">Répondre</button>
-	</fieldset>
+	<aside id="questionEntete">
+		<output id="questionScore" value="1" title="Votre score actuel">1</output>
+		<output id="questionTime" value="00:07:24" title="Temps">00:07:24</output>
+		<header id="questionNum">2&nbsp;/&nbsp;10</header>
+	</aside>
+	<div>
+		<fieldset class="code">
+			<legend>Code&nbsp;:</legend>
+			<code id="questionCode">test
+			</code>
+		</fieldset>
+		<fieldset class="reponse">
+			<legend>Qu'est-ce qui s'affiche si on exécute ce code&nbsp;?</legend>
+			<form id="form_quizz"></form>
+			<button id="btnRepondre">Répondre</button>
+		</fieldset>
+	</div>
 	<aside id="questionOption">
 		<header>Options</header>
-		<input type="checkbox" id="optAutoNext" checked><label for="opt_autoNext" lang="fr">Passage automatique à la question suivante (pas de confirmation lors d'une réponse)</label><br>
-		
+		<input type="checkbox" id="optAutoNext" checked><label for="optAutoNext" lang="fr">Passage automatique à la question suivante <small>(pas de confirmation lors d'une réponse)</small></label>
+		<button title="Arrêter le test">Stop</button>
 	</aside>
+</section>
+
+<section id="quizzResult">
+	<aside>
+		<label>Résultat Final&nbsp;: <output id="rsltScore">2 / 10</output></label>
+		<label>Durée du test : <output id="rsltTemps">00:10:00</output></label>
+	</aside>
+	<table>
+		<thead>
+			<tr>
+				<th></th>
+				<th>N° de question</th>
+				<th>id</th>
+				<th>Thème</th>
+				<th>Difficultée</th>
+				<th>Temps passé</th>
+				<th>Votre réponse</th>
+				<th>La bonne réponse</th>
+			</tr>
+		</thead>
+		<tbody id="rsltDetail"></tbody>
+	</table>
+	<button>Voir le détail des questions</button>
 </section>
 
 <section id="quizzAnalyze">

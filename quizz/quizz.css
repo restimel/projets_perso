@@ -1,3 +1,6 @@
+/**
+ *	Mise en page globale
+ **/
 nav li{
 	display: inline-block;
 	height: 2em;
@@ -21,7 +24,7 @@ section{
 code{
 	display:block;
 	font-family:courier,monospace;
-	font-size:0.9em;
+	font-size:1em;
 	background-color: rgba(220,220,200,0.6);
 	border: 1px solid rgba(120,120,0,0.9);
 	overflow:auto;
@@ -30,12 +33,12 @@ code{
 	text-align:left;
 	margin-left: auto;
 	margin-right: auto;
-
-	background-image: -ms-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
-	background-image: -moz-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
-	background-image: -o-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
-	background-image: -webkit-linear-gradient(top, rgba(0,0,0,0.05) 20%, rgba(250,250,250,0));
-	background-image: linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	
+	background-image: -ms-linear-gradient(-45deg, rgba(0,0,0,0.2) 20%, rgba(250,250,250,0));
+	background-image: -moz-linear-gradient(-45deg, rgba(0,0,0,0.2) 20%, rgba(250,250,250,0));
+	background-image: -o-linear-gradient(-45deg, rgba(0,0,0,0.2) 20%, rgba(250,250,250,0));
+	background-image: -webkit-linear-gradient(-45deg, rgba(0,0,0,0.2) 20%, rgba(250,250,250,0));
+	background-image: linear-gradient(-45deg, rgba(0,0,0,0.2) 20%, rgba(250,250,250,0));
 }
 
 samp{
@@ -44,7 +47,11 @@ samp{
 	font-size:0.8em;
 }
 
-/*mise en page de quizz preparation*/
+/**
+ *	Mise en page par section
+ **/
+
+/*mise en page de "quizz preparation"*/
 #quizzPreparation form{
 	display: block;
 	position: absolute;
@@ -73,40 +80,157 @@ samp{
 	font-weight: bold;
 	font-size: xx-large;
 	color: white;
-	text-shadow: 2px 2px black, -1px -1px #464;
+	text-shadow: 2px 2px black, -1px -1px #406640;
 }
 
-/*mise en page de quizz question*/
-#quizzQuestion>fieldset{
+/*mise en page de "quizz question"*/
+/*entetes*/
+#quizzQuestion>aside{
 	display: block;
+	height: 2em;
+	background-color: #55CC66;
+	width: 98%;
+}
+
+/*#quizzQuestion>aside>header{
+ *	display: inline;
+ * }*/
+/*entete haut*/
+aside#questionEntete{
 	position: absolute;
+	top:0;
+	
+	background-image: -ms-linear-gradient(top, rgba(250,250,250,0.3) 20%, rgba(250,250,250,0));
+	background-image: -moz-linear-gradient(top, rgba(250,250,250,0.3) 20%, rgba(250,250,250,0));
+	background-image: -o-linear-gradient(top, rgba(250,250,250,0.3) 20%, rgba(250,250,250,0));
+	background-image: -webkit-linear-gradient(top, rgba(0,0,0,0.3), rgba(250,250,250,0));
+	background-image: linear-gradient(top, rgba(250,250,250,0.3), rgba(250,250,250,0));
+}
+
+aside#questionEntete>header{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 8em;
+	
+	font-weight: bold;
+	font-size: x-large;
+	color: #FFFFFF;
+	text-shadow: 2px 2px 3px black, -1px -1px #406640;
+	
+	float: center;
+}
+
+#questionScore{
+	font-family: monospace;
+	font-size: x-large;
+	font-weight: bold;
+	color: #458AFF;
+	text-shadow: 1px 1px black;/*, -1px -1px #0F1A68;*/
+	
+	float: left;
+	margin-left: 1em;
+	margin-top: 0.2em;
+}
+
+#questionTime{
+	float: right;
+	
+	margin-right: 1em;
+	margin-top: 0.2em;
+	
+	font-family: monospace;
+	font-size: x-large;
+	color: #EBEBB7;
+	text-shadow: 1px 1px #C2C293, -1px -1px #4A4A37;
+}
+
+/*entete bas*/
+aside#questionOption{
+	position: absolute;
+	bottom:0;
+	
+	background-image: -ms-linear-gradient(bottom, rgba(250,250,250,0.3), rgba(250,250,250,0));
+	background-image: -moz-linear-gradient(bottom, rgba(250,250,250,0.3), rgba(250,250,250,0));
+	background-image: -o-linear-gradient(bottom, rgba(250,250,250,0.3), rgba(250,250,250,0));
+	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.3), rgba(250,250,250,0));
+	background-image: linear-gradient(bottom, rgba(250,250,250,0.3), rgba(250,250,250,0));
+}
+
+
+aside#questionOption>header{
+	display: inline;
+	margin-left: 1em;
+	margin-right: 2em;
+}
+
+aside#questionOption>button{
+	float: right;
+	height: 100%;
+	width: 5em;
+	color: white;
+	text-shadow: 2px 2px black, -1px -1px #664040;
+	background-color: #FF5511;
+	cursor: pointer;
+	text-align:center;
+}
+
+/*corps*/
+#quizzQuestion>div{
+	position: absolute;
+	top: 2em;
+	bottom: 2em;
+	width: 99%;
+	white-space: nowrap;
+	
+}
+
+#quizzQuestion>div>fieldset{
+	display: inline-block;
+	vertical-align: bottom;
+	position: static;
+	
 	padding: 1em;
-	left: 0.5em;
-	right: 20em;
-	height:40%;
+	width: 47%;
+	height:95%;
 	overflow: auto;
 }
 
-#quizzQuestion>fieldset.code{
-	top:0.5em;
+#quizzQuestion>div>fieldset.code{
+	/*top:0.5em;*/
 }
 
-#quizzQuestion>fieldset.reponse{
-	bottom:0.5em;
+#quizzQuestion>div>fieldset.reponse{
+	/*bottom:0.5em;*/
+}
+#quizzQuestion>div>fieldset.reponse label{
+	cursor: pointer;
+}
+#quizzQuestion>div>fieldset.reponse label:hover{
+	background-color: rgba(220,240,50,0.3);
 }
 
-#quizzQuestion>aside{
-	display: block;
-	position: absolute;
-	width: 19.5em;
-	right: 0em;
+button.notReady{
+	margin-top: 1em;
+	padding: 0.5em;
+	background-color : rgba(85,204,102,0.2);
+}
+button.ready{
+	margin-top: 1em;
+	padding: 0.5em;
+	background-color : rgba(85,204,102,1);
+	
+	-moz-transition: background-color 1s;
+	-o-transition: background-color 1s;
+	-webkit-transition: background-color 1s;
+	transition: background-color 1s;
 }
 
 
 
 /**
-	COLORATION JavaScript
-**/
+ *	COLORATION JavaScript
+ **/
 .boolean{
 	color:#0000FF;
 }
@@ -167,4 +291,3 @@ samp{
 	color:#00EEFF;
 	font-style:italic;
 }
-
