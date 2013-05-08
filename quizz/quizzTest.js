@@ -20,8 +20,9 @@
 		filtre (objet): filtre appliqué sur le questionnaire
 	
 	Méthodes:
-		reponse(str) : l'utilisateur répond à la question courante
 		displayQuestion() : permet d'afficher la question courante
+		reponse(str) : l'utilisateur répond à la question courante
+		resultat() : permet d'afficher le résultat du test
 		stop() : l'utilisateur arrête le test
 */
 
@@ -76,25 +77,6 @@ function quizzTest(){
 
 }
 
-//permet de rentrer une réponse de l'utilisateur
-quizzTest.prototype.reponse = function(rps){
-	var item = this.liste[this.current],
-		score = {
-			id : item.id,
-			reponse : rps,
-			bonneReponse : item.bonneReponse,
-			temps : (Date.now() - this.timerLast)/1000
-		};
-	this.tempsPasse = (Date.now() - this.timerInit)/1000;
-	this.score.push(score);
-	if(item.bonneReponse === rps){
-		this.nbBonneReponse++;
-	}
-	this.current++;
-	this.displayQuestion();
-	this.timerLast = Date.now();
-};
-
 //permet d'afficher une question
 quizzTest.prototype.displayQuestion = function(){
 	var item = this.liste[this.current];
@@ -102,6 +84,9 @@ quizzTest.prototype.displayQuestion = function(){
 		this.stop();
 		return;
 	}
+	
+	//(ré)affichage de la bonne section
+	changeSession("quizzQuestion");
 
 	//affichage des questions
 	var elemQst = document.getElementById("form_quizz"),
@@ -124,7 +109,7 @@ quizzTest.prototype.displayQuestion = function(){
 		
 
 		elem.appendChild(label);
-		elem.appendChild(document.createElement("br"));
+		//elem.appendChild(document.createElement("br"));
 	}
 	
 	elemQst.appendChild(elem);
@@ -134,19 +119,109 @@ quizzTest.prototype.displayQuestion = function(){
 	
 	//maj des informations
 	document.getElementById("questionScore").value = this.nbBonneReponse;
-	document.getElementById("questionNum").textContent = this.current+" / "+this.length;
+	document.getElementById("questionNum").textContent = (this.current+1)+" / "+this.length;
 	
 	//remise en état du bouton Répondre
 	document.getElementById("btnRepondre").className = "notReady";
 	
-	//(ré)affichage de la bonne section
-	changeSession("quizzQuestion");
 };
+
+//permet de rentrer une réponse de l'utilisateur
+quizzTest.prototype.reponse = function(rps){
+	var item = this.liste[this.current],
+	score = {
+		id : item.id,
+		reponse : rps,
+		bonneReponse : item.bonneReponse,
+		temps : (Date.now() - this.timerLast)/1000
+	};
+	this.tempsPasse = (Date.now() - this.timerInit)/1000;
+	this.score.push(score);
+	if(item.bonneReponse === rps){
+		this.nbBonneReponse++;
+	}
+	this.current++;
+	this.displayQuestion();
+	this.timerLast = Date.now();
+};
+
+//permet d'afficher le résultat du test
+quizzTest.prototype.resultat = function(){
+	var message = [
+		"Dommage mais ne désespérez pas. Si vraiment les questions sont trop dures, vous pouvez choisir des questions plus faciles.",
+		"Il ne faut pas baisser les bras. Vous pouvez essayer des questions plus faciles ou passer du temps à comprendre vos erreurs, vous progresserez rapidement.",
+		"Prenez du temps pour analyser vos erreurs. Vous ferez mieux la prochaine fois.",
+		"Encore quelques progrès et ce sera bon. Prenez du temps pour bien comprendre les pièges des questions et vous finirez par avoir un très bon score.",
+		"Bravo vous avez obtenu un bon score.",
+		"Bravo ! Vous avez correctement répondu à toutes les questions ! Félicitation."
+	]
+	
+	//changement de session
+	changeSession("quizzResult");
+	
+	//mise à jour de l'entête
+	var rating = Math.round(this.nbBonneReponse/this.length*100),
+		rsltScore = document.getElementById("rsltScore");
+	rsltScore.textContent = this.nbBonneReponse+" / "+this.length;
+	rsltScore.style.color = "rgb("+(rating<50?255:(405-rating*3))+","+(rating>50?200:(100+rating*2))+",50)";
+	document.getElementById("rsltTemps").textContent = timeFormat(this.tempsPasse);
+	document.getElementById("rsltMessage").textContent = message[Math.floor(rating/100*(message.length-1))]
+	
+	//affichage du détail
+	var table = document.getElementById("rsltDetail");
+	table.innerHTML = "";
+	
+	this.score.forEach(function(score){
+		var input,
+			question = quizzItems.get(score.id),
+			cell,
+			row = table.insertRow(-1);
+		
+		//gestion de la ligne
+		row.className = score.bonneReponse === score.reponse ? "bonneReponse": "mauvaiseReponse";
+		row.addEventListener("click",prepareListForAnalyze,false);
+		
+		//Colonne pour selection
+		cell = row.insertCell(-1);
+		input = document.createElement("input");
+		input.type = "checkbox";
+		input.value = '{"id":"'+score.id+'","reponse":"'+score.reponse.replace(/\\/g,'\\\\').replace(/"/g,'\\"')+'"}';
+		input.checked = true;
+		input.addEventListener("click",majSelectionneur,false); //l'événement change n'a pas été utilisé pour éviter une boucle infinie (à voir du côté de oninput)
+		cell.appendChild(input);
+		
+		//colonne num de question
+		cell = row.insertCell(-1);
+		cell.textContent = row.rowIndex;
+		
+		//colonne Thème
+		cell = row.insertCell(-1);
+		cell.textContent = question.theme.join(", ");
+		
+		//colonne niveau
+		cell = row.insertCell(-1);
+		cell.textContent = niveauToString(question.niveau);
+		
+		//colonne temps
+		cell = row.insertCell(-1);
+		cell.textContent = timeFormat(score.temps);
+		
+		//colonne reponse
+		cell = row.insertCell(-1);
+		cell.textContent = score.reponse;
+		
+		//colonne bonne réponse
+		cell = row.insertCell(-1);
+		cell.textContent = score.bonneReponse;
+		
+	});
+	//mise à jour de l'entête du tableau
+	majSelectionneur.call(document.getElementById("rsltSelect"));
+}
 
 //permet d'arrêter le test en cours
 quizzTest.prototype.stop = function(){
-	alert("TODO fin des questions\n"+this.nbBonneReponse+"/"+this.length);
-	//changment de session
-	changeSession("quizzResult");
+	this.length = this.current;
+	this.resultat();
 };
 

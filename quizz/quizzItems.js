@@ -39,7 +39,7 @@ var quizzItems = {
 			//recherche avec filtre
 			return this.liste.filter(function(item){
 				if(filter.id instanceof Array && filter.id.indexOf(item.id) === -1) return false; //id n'est pas présent dans la liste
-				if(filter.themes instanceof Array && filter.themes.indexOf("Tous") === -1 && item.theme.every(function(theme){return filter.themes.indexOf(theme) === -1;})) return false; //aucun theme n'est présent dans la liste
+				if(filter.themes instanceof Array && filter.themes.indexOf("Tous") === -1 && item.theme.every(function(theme){return filter.themes.indexOf(theme.toLowerCase()) === -1;})) return false; //aucun theme n'est présent dans la liste
 				if(filter.niveau instanceof Array && filter.niveau.indexOf(item.niveau) === -1 && filter.niveau.indexOf("-1") === -1) return false; //niveau n'est pas présent dans la liste
 				return true;
 			});

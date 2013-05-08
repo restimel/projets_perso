@@ -16,17 +16,18 @@
 		<li><button id="btn_quizzQuestion">Quizz en cours(debug)</button></li>
 		<li><button id="btn_quizzAnalyze">Analyse (debug)</button></li>
 		<li><button id="btn_searchQuizz">Explore</button></li>
+		<li><button id="btn_quizzResult">Résultat (debug)</button></li>
 	</ul>
 </nav>
 
 <section id="accueil">
 	<p>Bonjour et bienvenue dans le Quizz intéractif sur le JavaScript.<br>
-	Ici vous pourrez tester votre nivea de connaissance en JavaScript. Le but de chaque question est de dire ce qui s'afficherait dans les <samp class="commonMethod">alert</samp>.<br>
+	Ici vous pourrez tester votre niveau de connaissance en JavaScript. Le but de chaque question est de dire ce qui s'afficherait dans les <samp class="commonMethod">alert</samp>.<br>
 	Les questions s'appuient sur l'ECMAscript 5.1 selon la norme <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" target="_blank">ECMA-262</a>.<br>
 	De nombreuses questions s'appuient sur des pièges (classique ou non)<br><br>
-	Dans le mode exploration, il est possible de tester le code des questions mais aussi de le modifier afin de bien comprendre les variations possible.<br>
+	Dans le mode exploration, il est possible de tester le code des questions mais aussi de le modifier afin de bien comprendre les variations possibles.<br>
 	<br>
-	Le niveau de difficulté a été choisi arbitrairement et certaines questions peuvent vous paraître plus facile ou plus difficile selon vos conaissances.</p>
+	Le niveau de difficulté a été choisi arbitrairement et certaines questions peuvent vous paraître plus faciles ou plus difficiles selon vos conaissances.</p>
 	<button>Affronter une série de Questions</button> <button>Découvrir & Analyser des questions</button>
 </section>
 
@@ -36,7 +37,7 @@
 		<select id="prepThemes" multiple></select>
 		<br><br>
 
-		<label lang="fr">Difficultée :
+		<label lang="fr">Difficulté :
 			<select id="prepNiveau" multiple>
 				<option value="-1">Tous</option>
 				<option value="0">Débutant</option>
@@ -67,7 +68,7 @@
 
 		<label for="srchNiveau" lang="fr">Difficultée :</label>
 		<select id="srchNiveau" multiple>
-			<option value="-1">Tous</option>
+			<option value="-1" selected>Tous</option>
 			<option value="0">Débutant</option>
 			<option value="1">Facile</option>
 			<option value="2">Moyen (développeur confirmé)</option>
@@ -103,7 +104,7 @@
 	</div>
 	<aside id="questionOption">
 		<header>Options</header>
-		<input type="checkbox" id="optAutoNext" checked><label for="optAutoNext" lang="fr">Passage automatique à la question suivante <small>(pas de confirmation lors d'une réponse)</small></label>
+		<input type="checkbox" id="optAutoNext" checked><label for="optAutoNext" lang="fr" title="Pas de confirmation lors du choix de la réponse">Passage automatique à la question suivante</label>
 		<button title="Arrêter le test">Stop</button>
 	</aside>
 </section>
@@ -112,26 +113,51 @@
 	<aside>
 		<label>Résultat Final&nbsp;: <output id="rsltScore">2 / 10</output></label>
 		<label>Durée du test : <output id="rsltTemps">00:10:00</output></label>
+		<br>
+		<output id="rsltMessage">Peut mieux faire</output>
 	</aside>
+	<button><span>Analyser les questions</span></button>
 	<table>
 		<thead>
 			<tr>
-				<th></th>
-				<th>N° de question</th>
-				<th>id</th>
+				<th id="rsltSelect" title="Tout cocher ☒">☑</th>
+				<th title="N° de question">Ordre</th>
+				<!--<th>id</th>-->
 				<th>Thème</th>
-				<th>Difficultée</th>
+				<th>Difficulté</th>
 				<th>Temps passé</th>
 				<th>Votre réponse</th>
 				<th>La bonne réponse</th>
 			</tr>
 		</thead>
-		<tbody id="rsltDetail"></tbody>
+		<tbody id="rsltDetail">
+<!--debug-->
+<tr class="mauvaiseReponse"><td><input type="checkbox"></td>
+				<td>1</td>
+				<td>Opération</td>
+				<td>Difficulte</td>
+				<td>00:00:30</td>
+				<td>Toto</td>
+				<td>toto+toto=la tete à toto</td></tr>
+<tr class="bonneReponse"><td><input type="checkbox"></td>
+				<td>2</td>
+				<td>Opération</td>
+				<td>Facile</td>
+				<td>00:02:30</td>
+				<td>miaou</td>
+				<td>miaou</td></tr>
+<!-- fin debug-->
+</tbody>
 	</table>
-	<button>Voir le détail des questions</button>
 </section>
 
 <section id="quizzAnalyze">
+	<nav>
+		<button id="analyzeBack">↵</button>
+		<button>←</button>
+		<output>2 / 10</output>
+		<button>→</button>
+	</nav>
 	<textarea id="code"></textarea><br>
 	<button>Test it</button>
 	<details style="margin-top:3em;border:1px solid black;display:block;">
@@ -139,6 +165,8 @@
 		<span id="explication"></span>
 	</details>
 </section>
+
+<section id="sectionCopy"></section>
 
 <script src="./quizzItems.js" type="text/javascript"></script>
 <script src="./quizzTest.js" type="text/javascript"></script>
