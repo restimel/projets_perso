@@ -34,7 +34,7 @@ N'hésitez pas à me demander plus d'informations sur leur réalisation.</p>
 	<section>
 		<h2>Démonstrations</h2>
 		<article>
-			<h3><a href="./labs/flamme.html">Flamme CSS</a></h3>
+			<header><h3><a href="./labs/flamme.html">Flamme CSS</a></h3></header>
 			<p>
 				Une petite animation réalisée en CSS et JavaScript.<br>
 				Le but était de voir ce qu'il est possible de faire avec la propriété box-shadow.<br>
@@ -44,7 +44,7 @@ N'hésitez pas à me demander plus d'informations sur leur réalisation.</p>
 		</article>
 		
 		<article>
-			<h3><a href="./poc/poc_reconnaissance.html">Reconnaissance vectoriel de caractère</a></h3>
+			<header><h3><a href="./poc/poc_reconnaissance.html">Reconnaissance vectoriel de caractère</a></h3></header>
 			<p>
 				Une petite petite reconnaissance de caractères vectoriel. Il s'appuit sur les caractères PALM.<br>
 				Il pourrait encore être amélioré afin de trouver un caractère avoisinant lorsque le mouvement n'a pas été reconnu.<br>
@@ -62,7 +62,7 @@ N'hésitez pas à me demander plus d'informations sur leur réalisation.</p>
 	<section>
 		<h2>Bibliothèque de codes</h2>
 		<article>
-			<h3><a href="./library/paging_demo.html">Performance Scrolling</a></h3>
+			<header><h3><a href="./library/paging_demo.html">Performance Scrolling</a></h3></header>
 			<p>
 				Quand une page possède beaucoup d'éléments DOM, elle peut très fortement ralentir. Ce code permet de créer un objet gérant un élement de scroll. Les éléments HTML sont créés et détruits au fur et à mesure de ce qui est nécessaire pour l'affichage.<br>
 				<a href="./library/paging_demo.html">Accéder à la démo</a> <small title="sans texte">(*)</small>
@@ -74,7 +74,7 @@ N'hésitez pas à me demander plus d'informations sur leur réalisation.</p>
 	<section>
 		<h2>Jeux</h2>
 		<article>
-			<h3><a href="./games/tangram/tangram.html">Tangram</a></h3>
+			<header><h3><a href="./games/tangram/tangram.html">Tangram</a></h3></header>
 			<p>
 				Le Tangram est un jeu où le but est de reproduire une figure à l'aide de 7 pièces géométriques appelées Tans.<br>
 				Canvas est utilisé pour réaliser ce jeu.<br>
@@ -86,7 +86,7 @@ N'hésitez pas à me demander plus d'informations sur leur réalisation.</p>
 <!--Resolveur solitaire-->
 <!--Resolveur Bloc-->
 		<article>
-			<h3><a href="./games/chiffres/index.html">Jeu des Chiffres</a></h3>
+			<header><h3><a href="./games/chiffres/index.html">Jeu des Chiffres</a></h3></header>
 			<p>
 				Le jeu des Chiffres et l'un des jeux des chiffres et des lettres. Cela consiste à trouver une valeur en réalisant des opérations sur 6 nombres définis au début du jeu.<br>
 				Le jeu donne la meilleure solution lorsque le temps est écoulé.<br>
@@ -98,5 +98,10 @@ N'hésitez pas à me demander plus d'informations sur leur réalisation.</p>
 	</section>
 
 </section>
+
+<script>
+//pour ajouter une action sur les tiles
+Array.prototype.forEach.call(document.querySelectorAll("article"),function(elem){elem.onclick=function(){location.href=elem.querySelector("a").href;};});
+</script>
 </body>
 </html>

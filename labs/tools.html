@@ -26,29 +26,36 @@ Original file: http://b.mariat.free.fr/
 <link rel="stylesheet" type="text/css" href="menu.css">
 </head>
 <body>
-<h1>Outils en ligne</h1>
+<header><h1>Outils en ligne</h1>
 <p>Je vous présente ici une petite collection d'outils que j'ai développés en JavaScript. Ces outils sont disponibles directement en ligne et peuvent, pour la plupart, être déplacés facilement dans un environnement différent.<br>
 Ces outils ont été développés pour des besoins spécifiques et ont souvent été enrichis de fonctionnalités dépendant de l'usage. Ils restent donc très sobres et peuvent être difficiles d'accès.</p>
+</header>
+
 <section>
 
 	<section>
-		<h2>Manipulation de Textes</h2>
+		<header>
+			<h2>Manipulation de Textes</h2>
+		</header>
+
 		<article>
-			<h3><a href="./tools/replace.htm">Remplacement de texte</a></h3>
+			<header><h3><a href="./tools/replace.htm">Remplacement de texte</a></h3></header>
 			<p>
-				Permet d'effectuer plusieurs remplacements de chaînes de caractères en même temps. Permet de remplacer des passages par des nombres auto-incrémentés ou par une liste de valeurs prédéfinies.<br>
-				Cet outil dispose d'un système de sauvegarde et de rechargement afin de reproduire les mêmes traitements ultérieurement.<br>
+				Permet d'effectuer plusieurs remplacements de chaînes de caractères en même temps.<br>
 				Une vérification syntaxique des expressions régulières permet d'indiquer une erreur éventuelle.<br>
-				Une <a href="./replace_help.html">aide d'utilisation</a> est disponible en anglais.<br>
+				Une <a href="./tools/replace_help.html">aide d'utilisation</a> est disponible en anglais afin de comprendre les fonctions avancées de l'outil.<br>
+				<br>
 				L'outil a été conçu pour être facilement transportable : tout est intégré en une seule page et peut fonctionner en local. (la page d'aide est séparée)<br>
 				<a href="./tools/replace.htm">Accéder à l'outil</a> <small title="l'affichage est en anglais">(en)</small>
 			</p>
 		</article>
+
 		<article>
-			<h3><a href="./tools/symbole.htm">Caractères et Symboles UTF-8</a></h3>
+			<header><h3><a href="./tools/symbole.htm">Caractères et Symboles UTF-8</a></h3></header>
 			<p>
 				Permet d'afficher les caractères à partir de leur code UTF-8, ce qui permet d'aider à trouver plus facilement un symbole désiré. Cet outil permet aussi de connaître le code UTF-8 d'un ou plusieurs caractères.<br>
 				Les entités HTML (&amp;amp; pour afficher &) sont affichées à côté des caractères.<br>
+				<br>
 				L'outil a été conçu pour être facilement transportable : tout est intégré en une seule page et peut fonctionner en local.<br>
 				<a href="./tools/symbole.htm">Accéder à l'outil</a> <small title="l'affichage est en français">(fr)</small>
 			</p>
@@ -59,22 +66,22 @@ Ces outils ont été développés pour des besoins spécifiques et ont souvent �
 	<section>
 		<h2>Programmation Web</h2>
 		<article>
-			<h3><a href="./tools/jsColor.htm">JS Color</a></h3>
+			<header><h3><a href="./tools/jsColor.htm">JS Color</a></h3></header>
 			<p>
 				Cet outil permet d'obtenir une coloration syntaxique d'un code JavaScript. Le résultat est sous forme de balises HTML qu'il suffit de copier/coller.<br>
-				Cette fonction JavaScript pourrait être utilisée dans un site pour réaliser une coloration syntaxique à la volée.<br>
+				Cette fonction JavaScript peut être utilisée dans un site pour réaliser une coloration syntaxique à la volée (cf <a href="./tuto.html">tutoriels</a>).<br>
 				<a href="./tools/jsColor.htm">Accéder à l'outil</a> <small title="l'affichage est en anglais mais il y a peu de texte">(en)</small>
 			</p>
 		</article>
 		<article>
-			<h3><a href="./tools/perf.html">JS Performance</a></h3>
+			<header><h3><a href="./tools/perf.html">JS Performance</a></h3></header>
 			<p>
 				Cet outil permet de comparer la performance de différentes méthodes JavaScript afin de mieux choisir entre elles. Des modules ou de nouveaux tests peuvent être ajoutés régulièrement.<br>
 				<a href="./tools/perf.html">Accéder à l'outil</a> <small title="l'affichage est en anglais">(en)</small>
 			</p>
 		</article>
 		<article>
-			<h3><a href="./tools/box_shadow.html">CSS Box-shadow</a></h3>
+			<header><h3><a href="./tools/box_shadow.html">CSS Box-shadow</a></h3></header>
 			<p>
 				Permet de définir les ombres à appliquer à un objet en CSS en manipulant facilement les paramètres à l'aide de curseurs.<br>
 				<a href="./tools/box_shadow.html">Accéder à l'outil</a> <small title="l'affichage est en anglais">(en)</small>
@@ -85,14 +92,14 @@ Ces outils ont été développés pour des besoins spécifiques et ont souvent �
 	<section>
 		<h2>Outils d'analyse</h2>
 		<article>
-			<h3><a href="./tools/jsonReader.htm">Analyse de JSON</a></h3>
+			<header><h3><a href="./tools/jsonReader.htm">Analyse de JSON</a></h3></header>
 			<p>
 				Cet outil permet d'analyser un code <abbr title="JavaScript Object Notation">JSON</abbr>, de rechercher des éléments à l'intérieur de l'objet et de le comparer à un autre code JSON.<br>
 				<a href="./tools/jsonReader.htm">Accéder à l'outil</a> <small title="l'affichage est en anglais">(en)</small>
 			</p>
 		</article>
 		<article>
-			<h3><a href="./tools/ddate.htm">Comparateur de dates</a></h3>
+			<header><h3><a href="./tools/ddate.htm">Comparateur de dates</a></h3></header>
 			<p>
 				Cet outil permet de comparer des dates afin de connaître le temps écoulé entre ces deux dates. Cela est particulièrement utile pour des dates qui sont dans des formats différents, par exemple lorsqu'elles viennent de fichiers de log différents.<br>
 				Il est capable de reconnaître des dates dans de nombreux formats.<br>
@@ -103,5 +110,9 @@ Ces outils ont été développés pour des besoins spécifiques et ont souvent �
 
 </section>
 
+<script>
+//pour ajouter une action sur les tiles
+Array.prototype.forEach.call(document.querySelectorAll("article"),function(elem){elem.onclick=function(){location.href=elem.querySelector("a").href;};});
+</script>
 </body>
 </html>

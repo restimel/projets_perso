@@ -22,13 +22,14 @@ Original file: http://b.mariat.free.fr/
 </head>
 <body>
 <h1>Tutoriels</h1>
-<p></p>
+<p>Vous pouvez découvrir ici quelques-uns des tutoriels ou d'aide à l'apprentissage que j'ai écrit.<br>
+Si vous remarquez des erreurs merci de me prévenir.</p>
 <section>
 
 	<section>
 		<h2>Tutoriels JavaScript</h2>
 		<article>
-			<h3><a href="./tutorial/workers/workers.html">HTML5 web-worker : Le monde parallèle du JavaScript</a></h3>
+			<header><h3><a href="./tutorial/workers/workers.html">HTML5 web-worker : Le monde parallèle du JavaScript</a></h3></header>
 			<p>
 				Ce tutoriel vous permet de découvrir et d'utiliser les web-workers en JavaScript. Il s'agit d'une technique permettant la programmation parallèle en JS.<br>
 				Ce tutoriel a été initialement écrit pour le <a href="http://www.siteduzero.com/">Site du Zéro</a>. Suite à une nouvelle mise en page de leur site, le tutoriel est devenu difficilement lisible et la mise à jour beaucoup plus compliquée. Je le retranscris alors ici, cela me permet de le réactualiser plus facilement.<br>
@@ -41,5 +42,10 @@ Original file: http://b.mariat.free.fr/
 	</section>
 
 </section>
+
+<script>
+//pour ajouter une action sur les tiles
+Array.prototype.forEach.call(document.querySelectorAll("article"),function(elem){elem.onclick=function(){location.href=elem.querySelector("a").href;};});
+</script>
 </body>
 </html>
