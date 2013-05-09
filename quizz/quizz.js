@@ -185,11 +185,134 @@ function prepareListForAnalyze(e){
 		// reponse : reponse eventuelle donnée par l'utilisateur
 	//elemBack : section de retour
 	//num : numéro de la question de la liste à afficher en premier
-function displayAnalyze(liste,elemBack,num){
-	changeSession("quizzAnalyze");
-	alert("TODO ");//TODO
-	console.debug(liste);
-}
+var displayAnalyze = (function(){
+	var listeItems = [],
+		length = listeItems.length,
+		sectionBack = "accueil";
+		current = 0;
+	
+	window.addEventListener("load",function(){
+		//ajout/modification des événements sur les éléments
+		document.getElementById("analyzeBack").onclick = back;
+		document.getElementById("analyzePrevious").onclick = previous;
+		document.getElementById("analyzeNext").onclick = next;
+		document.getElementById("analyzeCodeEdit").onchange = majCode;
+		document.querySelector("#quizzAnalyze fieldset.code>button").onclick = test;
+	},false);
+		
+	return init;
+	
+	//permet d'initialiser la liste
+	function init(liste,elemBack,num){
+		//sauvegarde des valeurs
+		listeItems = liste;
+		length = liste.length;
+		sectionBack = elemBack;
+		
+		document.getElementById("analyzePrevious").disabled = false;
+		document.getElementById("analyzeNext").disabled = false;
+		
+		maj(num);
+	}
+	
+	//mise à jour de la page
+	function maj(num){
+		if(num < 0 || num >= length) return false;
+		
+		current = num;
+		changeSession("quizzAnalyze");
+		
+		//récupération de la question
+		var item = quizzItems.get(parseInt(listeItems[current].id,10));
+		
+		//enregistrement de la reponse de l'utilsiateur
+		var reponse = listeItems[current].reponse;
+		
+		//désactiver les boutons
+		if(current === 0){
+			document.getElementById("analyzePrevious").disabled = true;
+		}
+		if(current === 1){
+			document.getElementById("analyzePrevious").disabled = false;
+		}
+		if(current === length-1){
+			document.getElementById("analyzeNext").disabled = true;
+		}
+		if(current === length-2){
+			document.getElementById("analyzeNext").disabled = false;
+		}
+		
+		console.debug(item);
+		//remplissage des éléments
+		document.getElementById("analyzeCodeRead").innerHTML = color(item.code);
+		document.getElementById("analyzeCodeEdit").value = item.code;
+		document.querySelector("#quizzAnalyze>nav>output").textContent = (current+1) + " / "+ length;
+		
+		//remplissage des réponses
+		var elemReponse = document.getElementById("analyzeQst"),
+			nbQuestion = item.reponses.length,
+			elem = document.createDocumentFragment(),
+			i,elemLI,irps;
+		elemReponse.innerHTML = "";
+		
+		for(i=0;i<nbQuestion;i++){
+			irps = item.reponses[i];
+			
+			elemLI = document.createElement("li");
+			elemLI.textContent = irps;
+			
+			if(item.bonneReponse === irps){
+				if(reponse === irps){
+					elemLI.className = "bonneReponse userAnswer";
+				}else{
+					elemLI.className = "bonneReponse";
+				}
+			}else{
+				if(reponse === irps){
+					elemLI.className = "userAnswer";
+				}
+			}
+			
+			elem.appendChild(elemLI);
+		}
+		
+		elemReponse.appendChild(elem);
+		
+		
+		//mise à jour de l'affichage
+		if(typeof reponse === "string"){
+			document.getElementById("analyzeDonneReponse").checked = true;
+		}else{
+			document.getElementById("analyzeDonneReponse").checked = false;
+		}
+		//TODO ajouter l'explication
+	}
+	
+	//permet de revenir à la section précédente
+	function back(){
+		changeSession(sectionBack);
+	}
+	
+	//permet d'afficher l'item précédent
+	function previous(){
+		maj(current-1);
+	}
+	
+	//permet d'afficher l'item suivant
+	function next(){
+		maj(current+1);
+	}
+	
+	//met à jour le code depuis le textarea
+	function majCode(){
+		document.getElementById("analyzeCodeRead").innerHTML = color(this.value,false);
+	}
+	
+	//permet de tester le code JavaScript
+	function test(){
+		alert("TODO test"); //TODO 
+	}
+})();
 
 
 /**

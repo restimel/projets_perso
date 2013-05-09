@@ -9,7 +9,10 @@
 	<link rel="stylesheet" type="text/css" href="quizz.css">
 </head>
 <body>
-
+<!--TODO list
+	* Exploration de questions
+	* Personnalisation de liste de questions (load/export)
+-->
 <nav>
 	<ul>
 		<li><button id="btn_quizzPreparation">Démarrer un Quizz</button></li>
@@ -154,15 +157,28 @@
 <section id="quizzAnalyze">
 	<nav>
 		<button id="analyzeBack">↵</button>
-		<button>←</button>
+		<button id="analyzePrevious">←</button>
 		<output>2 / 10</output>
-		<button>→</button>
+		<button id="analyzeNext">→</button>
+		</header>
 	</nav>
-	<textarea id="code"></textarea><br>
-	<button>Test it</button>
+	<div>
+		<fieldset class="code">
+			<legend>Code</legend>
+			<code id="analyzeCodeRead"></code>
+			<textarea id="analyzeCodeEdit"></textarea><br>
+			<button title="Tester le code">Tester</button>
+		</fieldset>
+		<fieldset class="reponse">
+			<legend>Qu'est-ce qui s'affiche si on exécute ce code&nbsp;?</legend>
+			<input id="analyzeDonneReponse" type="checkbox">
+			<ul id="analyzeQst"></ul>
+			<label for="analyzeDonneReponse">Voir la bonne réponse</label>
+		</fieldset>
+	</div>
 	<details style="margin-top:3em;border:1px solid black;display:block;">
 		<summary>Explication</summary>
-		<span id="explication"></span>
+		<div id="analyzeExplication"></div>
 	</details>
 </section>
 
