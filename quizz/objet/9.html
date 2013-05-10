@@ -20,7 +20,7 @@ alert(identite.prenom);
 	<li>"Jean Dupont"</li>
 	<li>""</li>
 	<li class="bonneReponse">undefined</li>
-	<li>rien, une erreur est survenue</li>
+	<li>Il y a une erreur de syntaxe</li>
 </ul>
 <br>
 <hr>
@@ -33,10 +33,10 @@ alert(identite.prenom);
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
 	<minicode type="javascript">identite</minicode> est un objet qui ne possède qu'une seule propriété : <minicode type="javascript">nom</minicode>.
-	Du coup la propriété <minicode type="javascript">prenom</minicode> n'existe pas, il retourne donc <minicode type="javascript">undefined</minicode>.
-
-	Pour obtenir <minicode type="javascript">"Jean Dupont"</minicode>, il aurait fallu écrire <minicode type="javascript">alert(identie.nom);</minicode>
-	Pour obtenir <minicode type="javascript">"Jean"</minicode>, il aurait fallu ajouter une propriété <minicode type="javascript">prenom</minicode> ayant pour valeur <minicode type="javascript">"Jean"</minicode> ; ou alors le récupérer depuis la propriété <minicode type="javascript">nom</minicode>, par exemple <minicode type="javascript">alert(identite.nom.split(" ")[0]);</minicode>
+	Du coup la propriété <minicode type="javascript">prenom</minicode> n'existe pas, il retourne donc <minicode type="javascript">undefined</minicode>.<br>
+<br>
+	Pour obtenir <minicode type="javascript">"Jean Dupont"</minicode>, il aurait fallu écrire <minicode type="javascript">alert(identie.nom);</minicode><br>
+	Pour obtenir <minicode type="javascript">"Jean"</minicode>, il aurait fallu ajouter une propriété <minicode type="javascript">prenom</minicode> ayant pour valeur <minicode type="javascript">"Jean"</minicode> ; ou alors le récupérer depuis la propriété <minicode type="javascript">nom</minicode>, par exemple <minicode type="javascript">alert(identite.nom.split(" ")[0]);</minicode>.<br>
 	Et de même pour obtenir <minicode type="javascript">"Dupont"</minicode> (en utilisant l'index 1 à la place de 0).
 </details>
 

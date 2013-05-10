@@ -4,32 +4,29 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: référence, prototype</aside>
-thème: objet<br>
-niveau: 2<br><br>
+thème: objet,héritage<br>
+niveau: 3<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-	function Type1(){}
-	Type1.prototype.affiche = function(){
-		var name = "undefined";
-		if(this.constructor == Type1){
-			name="Type1";
-		}
-		if(this.constructor == Type2){
-			name="Type2";
-		}
-		alert(Type1.name);
-		alert(Type2.constructor.name);
-		alert(this.constructor.name);
-		return name+"-"+this.valeur;
-	};
-	Type1.prototype.valeur = "type1";
-	
-	function Type2(){}
-	Type2.prototype = new Type1();
-	Type2.prototype.valeur = "type2";
-	
-	var obj2 = new Type2();
-	alert(obj2.affiche());
+function Type1(){}
+Type1.prototype.valeur = "type1";
+Type1.prototype.affiche = function(){
+	var name = "undefined";
+	if(this.constructor == Type1){
+		name = "Type1";
+	}
+	if(this.constructor == Type2){
+		name = "Type2";
+	}
+	return name +"-"+ this.valeur;
+};
+
+function Type2(){}
+Type2.prototype = new Type1();
+Type2.prototype.valeur = "type2";
+
+var obj2 = new Type2();
+alert( obj2.affiche() );
 </textarea>
 
 <hr>
@@ -52,6 +49,10 @@ niveau: 2<br><br>
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+<minicode type="javascript">obj2</minicode> a été contruit à partir de la fonction <minicode type="javascript">Type2</minicode>. Or le prototype de <minicode type="javascript">Type2</minicode> a été remplacé par un objet construit à partir de <minicode type="javascript">Type1</minicode>. Ainsi <minicode type="javascript">obj2</minicode> va hériter du prototype de <minicode type="javascript">Type1</minicode>. Donc <minicode type="javascript">obj2.affiche</minicode> donc parfaitement être appelée. <minicode type="javascript">affiche</minicode> est exécutée dans le contexte de <minicode type="javascript">obj2</minicode>.<br>
+Ainsi <minicode type="javascript">this.constructor</minicode> fait appel à la propriété de <minicode type="javascript">obj2</minicode>. Cette propriété n'existe pas directement au niveau de l'objet, par héritage on regarde celle de son prototype. Or le prototype de <minicode type="javascript">Type2</minicode> a été remplacé par un objet construit à partir de <minicode type="javascript">Type1</minicode>. La propriété <minicode type="javascript">constructor</minicode> n'existe donc toujours pas à ce niveau et il faut regarder au niveau de son prototype qui est celui de <minicode type="javascript">Type1</minicode>. Ici la propriété <minicode type="javascript">constructor</minicode> existe et correspond à la fonction <minicode type="javascript">Type1</minicode>. Donc <minicode type="javascript">name</minicode> vaudra <minicode type="javascript">"Type1"</minicode>.<br>
+Pour <minicode type="javascript">this.valeur</minicode>, le procédé est le même. Sauf que la propriété <minicode type="javascript">valeur</minicode> a été redéfinie sur le prototype de <minicode type="javascript">Type2</minicode> après que celui-ci fut remplacé. La recherche de la propriété <minicode type="javascript">valeur</valeur> s'arrêtera donc là et vaut <minicode type="javascript">"type2"</minicode>.
+
 </details>
 
 <script>
