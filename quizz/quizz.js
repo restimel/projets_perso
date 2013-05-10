@@ -63,11 +63,12 @@ var changeSession = function(){
 			
 			//maj des listes de themes
 			removeOptionTheme();
-			createOptionTheme("Tous");
+			createOptionTheme("Tous",true);
 			quizzItems.themes.forEach(createOptionTheme);
 			
 			//maj du nombre max de questions
-			document.getElementById("prepNbQ").max = quizzItems.length;
+			var nbQ = document.getElementById("prepNbQ")
+			nbQ.value = nbQ.max = quizzItems.length;
 			
 		}else{
 			//console.debug("ajax : "+ajx.readyState+" "+ajx.status);
@@ -86,11 +87,19 @@ var changeSession = function(){
 		}
 		
 		//ajoute une nouvelle option aux select de themes
-		function createOptionTheme(theme){
+		function createOptionTheme(theme,selected){
 			var option = document.createElement("option");
 			option.value = option.text = theme;
+			if(selected === true){
+				option.selected = true;
+			}
 			document.getElementById("prepThemes").add(option);
-			document.getElementById("srchTheme").add(option.cloneNode(true));
+			
+			option = option.cloneNode(true);
+			if(selected === true){
+				option.selected = true;
+			}
+			document.getElementById("srchTheme").add(option);
 		}
 	};
 	ajx.open("get","./quizz.json",true);
@@ -166,7 +175,7 @@ function prepareListForAnalyze(e){
 	var section = searchParent.call(this,"section"),
 		liste = section.querySelectorAll("table input:checked"),
 		analyze = [],
-		num = this.indexRow-1 || 0; //TODO lorsqu'on clique sur ligne et que toutes les lignes ne sont psa selectionner
+		num = this.indexRow-1 || 0; //TODO lorsqu'on clique sur ligne et que toutes les lignes ne sont pas selectionner
 	Array.prototype.forEach.call(liste,function(input){
 		analyze.push(JSON.parse(input.value));
 	});
@@ -242,24 +251,27 @@ var displayAnalyze = (function(){
 			document.getElementById("analyzeNext").disabled = false;
 		}
 		
-		console.debug(item);
 		//remplissage des éléments
 		document.getElementById("analyzeCodeRead").innerHTML = color(item.code);
 		document.getElementById("analyzeCodeEdit").value = item.code;
 		document.querySelector("#quizzAnalyze>nav>output").textContent = (current+1) + " / "+ length;
 		
 		//remplissage des réponses
-		var elemReponse = document.getElementById("analyzeQst"),
-			nbQuestion = item.reponses.length,
-			elem = document.createDocumentFragment(),
-			i,elemLI,irps;
+		var elemReponse = document.getElementById("analyzeQst"), //element où doivent se mettre les réponses (le ul)
+			nbReponse = item.reponses.length, //nb de réponses possible
+			elem = document.createDocumentFragment(), //élément temporaire
+			i,elemLI,elemSpan,
+			irps; //une reponse de l'item
 		elemReponse.innerHTML = "";
 		
-		for(i=0;i<nbQuestion;i++){
+		//structure ul>li>span>text (ul existe déjà dans le document)
+		for(i=0;i<nbReponse;i++){
 			irps = item.reponses[i];
 			
+			elemSpan = document.createElement("span");
+			elemSpan.textContent = irps;
+			
 			elemLI = document.createElement("li");
-			elemLI.textContent = irps;
 			
 			if(item.bonneReponse === irps){
 				if(reponse === irps){
@@ -272,6 +284,7 @@ var displayAnalyze = (function(){
 					elemLI.className = "userAnswer";
 				}
 			}
+			elemLI.appendChild(elemSpan);
 			
 			elem.appendChild(elemLI);
 		}
@@ -285,7 +298,10 @@ var displayAnalyze = (function(){
 		}else{
 			document.getElementById("analyzeDonneReponse").checked = false;
 		}
-		//TODO ajouter l'explication
+		
+		//remplissage de l'explication
+		document.getElementById("analyzeExplication").innerHTML = codeColorisation(item.explication);
+		document.querySelector("#quizzAnalyze details").open = false;
 	}
 	
 	//permet de revenir à la section précédente
@@ -309,8 +325,26 @@ var displayAnalyze = (function(){
 	}
 	
 	//permet de tester le code JavaScript
+	//ATTENTION le code est exécutée dans un contexte EVAL et non GLOBAL
 	function test(){
-		alert("TODO test"); //TODO 
+		var code = document.getElementById("analyzeCodeEdit").value;
+		
+		if(!/alert\(/.test(code)){ //au cas où le code n'a pas de fonction alert, une alert est ajoutée sur le retour de la dernière action
+			code = code.replace(/(?:^|[\r\n])(?:[\r\n]|$)/g,"").replace(/(^|[\n\r;])([^;\r\n]+);?$/,"$1alert($2);");
+		}
+		
+		try{
+			var f = new Function(code); //interprétation du code
+		}catch(e){
+			alert("ERREUR de création\nUne erreur est apparue lors de l'interprétation :\n"+e.message);
+		}
+		if(f){
+			try{
+				f(); //exécution du code
+			}catch(e){
+				alert("ERREUR d'exécution\nUne erreur est survenue pendant l'exécution :\n"+e.message);
+			}
+		}
 	}
 })();
 
@@ -319,11 +353,15 @@ var displayAnalyze = (function(){
  * Initialisation des événements sur les éléments
 **/
 window.addEventListener("load",function(){
+	//boutons de navigation dans l'accueil
+	document.getElementById("accueilQuizz").onclick = changeSession.bind(window,"quizzPreparation");
+	document.getElementById("accueilExplore").onclick = changeSession.bind(window,"searchQuizz");
+	
 	//griser le temps dans la préparation du quizz
-	document.getElementById("prepIsTime").onchange=function(){
-		document.getElementById("prepTime").disabled=!this.checked;
+	document.getElementById("prepIsTime").onchange = function(){
+		document.getElementById("prepTime").disabled = !this.checked;
 	};
-	document.getElementById("prepTime").disabled=!document.getElementById("prepIsTime").checked;
+	document.getElementById("prepTime").disabled = !document.getElementById("prepIsTime").checked;
 	
 	//Utilisation du bouton "Lancer le Quizz"
 	document.getElementById("prepRunQuizz").onclick = runQuizz;
@@ -338,10 +376,50 @@ window.addEventListener("load",function(){
 	document.querySelector("#quizzResult>button").onclick = prepareListForAnalyze;
 },false);
 
+/**
+ * initialisation pour le fallback de navigateurs ne supportant pas les balises details/summary
+**/
+window.addEventListener("load",function(){
+	var liste,i,li;
 
+	if(typeof document.querySelector("details").open === "undefined"){
+		//la balise HTML5 details n'est pas connue
+		liste = document.querySelectorAll("summary");
+		i = 0;
+		li = liste.length,
+		getterSetter = {
+			get: getOpen,
+			set: setOpen
+		};
+		while(i<li){
+			Object.defineProperty(liste[i].parentNode, "open", getterSetter);
+			liste[i].onclick = openSwitch;
+			liste[i++].className = "detailsClosed";
+		}
+	}
+
+	//fonction permettant d'afficher ou de cacher le details
+	function openSwitch(status){
+		this.parentNode.open = !this.parentNode.open;
+	}
+	
+	//ouvre ou ferme l'élément en fonction du status
+	function setOpen(status){
+		if(status === false){
+			this.firstElementChild.className = "detailsClosed";
+		}else{
+			this.firstElementChild.className = "detailsOpen";
+		}
+	}
+	
+	//fonction permettant de récupérer le statut ouvert/fermé
+	function getOpen(){
+		return this.firstElementChild.className === "detailsOpen";
+	}
+},false);
 
 /**
- * Fonctions diverses pouvant être utilisées partour
+ * Fonctions diverses pouvant être utilisées partout
 **/
 
 //retourne le premier parent du type TAG

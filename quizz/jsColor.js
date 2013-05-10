@@ -5,6 +5,8 @@
 
 
 //gère la transformation du code JS dans la page en code HTML
+//		Si str est définie alors le changement ne s'applique qu'à cette chaine
+//		retourne une chaine correspondant au code
 function codeColorisation(str){
 	var liste,
 		i,
@@ -23,7 +25,7 @@ function codeColorisation(str){
 	
 	//modification dans la page
 	liste = document.querySelectorAll("code.JavaScript");
-	li=liste.length;
+	li = liste.length;
 	
 	for(i=0;i<li;i++){
 		elem = liste[i];
@@ -32,7 +34,7 @@ function codeColorisation(str){
 	}
 	
 	liste = document.querySelectorAll("samp.JavaScript");
-	li=liste.length;
+	li = liste.length;
 	for(i=0;i<li;i++){
 		elem = liste[i];
 		elem.innerHTML = color(elem.innerHTML,false);

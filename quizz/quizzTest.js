@@ -36,7 +36,7 @@ function quizzTest(){
 	//initialisation des propriétés
 	this.nbBonneReponse = 0;
 	this.tempTotal = document.getElementById("prepIsTime").checked ? document.getElementById("prepTime").value.replace(/^(?:(\d+):(\d+):)?(\d+)$/,function(mtf,h,mn,s){
-			return parseInt(h,10)*3600+parseInt(mn,10)*60+parseInt(s,10);
+			return parseInt(h,10)*3600 + parseInt(mn,10)*60 + parseInt(s,10);
 			}) : 0;
 	this.tempsPasse = 0;
 	this.score = [];
@@ -61,10 +61,15 @@ function quizzTest(){
 		filtre.niveau.push("-1");
 	}
 	
-	this.length = parseInt(document.getElementById("prepNbQ").value,10)
+	//récupération du nombre de question désiré
+	this.length = parseInt(document.getElementById("prepNbQ").value,10) || 1;
+	if(this.length<0) this.length = 1;
+	
+	
 	this.filtre = filtre;
-	this.liste = quizzItems.get(this.filtre); //TODO limiter par le nombre de question
-	this.length = this.liste.length;
+	
+	this.liste = quizzItems.get(this.filtre).sort(function(){return Math.random()-0.5;}).splice(0,this.length);
+	this.length = this.liste.length; //maj de la nouvelle longueur
 	
 	//ajout d'événement sur des éléments static
 	document.querySelector("#questionOption>button").onclick = this.stop.bind(this);

@@ -10,8 +10,9 @@
 </head>
 <body>
 <!--TODO list
-	* Exploration de questions
-	* Personnalisation de liste de questions (load/export)
+	* Exploration de questions [search]
+	* Personnalisation de liste de questions (load/export) [analyze/preparationQuizz]
+	* Information du nombre de questions disponible [preparationQuizz/search]
 -->
 <nav>
 	<ul>
@@ -23,39 +24,40 @@
 	</ul>
 </nav>
 
-<section id="accueil">
+<section id="accueil" class="sectionActive">
 	<p>Bonjour et bienvenue dans le Quizz intéractif sur le JavaScript.<br>
-	Ici vous pourrez tester votre niveau de connaissance en JavaScript. Le but de chaque question est de dire ce qui s'afficherait dans les <samp class="commonMethod">alert</samp>.<br>
+	Ici vous pourrez tester votre niveau de connaissance en JavaScript. Le but de chaque question est de dire ce qui s'afficherait dans les <samp class="commonMethod">alert</samp> si on exécute le code présenté.<br>
 	Les questions s'appuient sur l'ECMAscript 5.1 selon la norme <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" target="_blank">ECMA-262</a>.<br>
-	De nombreuses questions s'appuient sur des pièges (classique ou non)<br><br>
-	Dans le mode exploration, il est possible de tester le code des questions mais aussi de le modifier afin de bien comprendre les variations possibles.<br>
+	De nombreuses questions s'appuient sur des pièges (classique ou non).<br><br>
+	En mode exploration, il est possible de tester le code des questions mais aussi de le modifier afin de bien comprendre les variations possibles.<br>
 	<br>
-	Le niveau de difficulté a été choisi arbitrairement et certaines questions peuvent vous paraître plus faciles ou plus difficiles selon vos conaissances.</p>
-	<button>Affronter une série de Questions</button> <button>Découvrir & Analyser des questions</button>
+	Le niveau de difficulté a été choisi arbitrairement et certaines questions peuvent vous paraître plus faciles ou plus difficiles selon vos conaissances.
+	</p>
+	<button id="accueilQuizz"><span>Affronter une série de Questions</span></button> <button id="accueilExplore"><span>Découvrir & Analyser des questions</span></button>
 </section>
 
-<section id="quizzPreparation" class="sectionActive">
+<section id="quizzPreparation">
 	<form>
+		<input type="hidden"><!--ne sert à rien mais grâce à ça Firefox affiche correctement la selection dans le multi-select-->
 		<label for="prepThemes" lang="fr">Thème :</label>
-		<select id="prepThemes" multiple></select>
+		<select id="prepThemes" multiple><option></option></select>
 		<br><br>
 
-		<label lang="fr">Difficulté :
-			<select id="prepNiveau" multiple>
-				<option value="-1">Tous</option>
-				<option value="0">Débutant</option>
-				<option value="1">Facile</option>
-				<option value="2">Moyen (développeur confirmé)</option>
-				<option value="3">Assez difficile</option>
-				<option value="4">Difficile</option>
-				<option value="5">Très difficile</option>
-			</select>
-		</label>
+		<label for="prepNiveau" lang="fr">Difficulté :</label>
+		<select id="prepNiveau" multiple>
+			<option value="-1" selected>Tous</option>
+			<option value="0">Débutant</option>
+			<option value="1">Facile</option>
+			<option value="2">Moyen (développeur confirmé)</option>
+			<option value="3">Assez difficile</option>
+			<option value="4">Difficile</option>
+			<option value="5">Très difficile</option>
+		</select>
 
 		<br><br>
 
 		<label for="prepNbQ" lang="fr" title="0 siginifie toutes les questions">Nombre de questions : </label>
-		<input type="number" min="0" max="0" value="0" id="prepNbQ">
+		<input type="number" min="1" max="0" value="1" id="prepNbQ">
 		<br><br>
 
 		<label lang="fr"><input type="checkbox" id="prepIsTime"> Répondre en temps limité </label>
@@ -66,6 +68,7 @@
 
 <section id="searchQuizz">
 	<form>
+		<input type="hidden"><!--ne sert à rien mais grâce à ça Firefox affiche correctement la selection dans le multi-select-->
 		<label for="theme" lang="fr">Thème :</label>
 		<select id="srchTheme" multiple></select>
 
@@ -113,13 +116,13 @@
 </section>
 
 <section id="quizzResult">
+	<button><span>Analyser les questions</span></button>
 	<aside>
 		<label>Résultat Final&nbsp;: <output id="rsltScore">2 / 10</output></label>
 		<label>Durée du test : <output id="rsltTemps">00:10:00</output></label>
 		<br>
 		<output id="rsltMessage">Peut mieux faire</output>
 	</aside>
-	<button><span>Analyser les questions</span></button>
 	<table>
 		<thead>
 			<tr>
@@ -156,30 +159,36 @@
 
 <section id="quizzAnalyze">
 	<nav>
-		<button id="analyzeBack">↵</button>
-		<button id="analyzePrevious">←</button>
+		<button id="analyzeBack" title="Revenir à la liste">↵</button>
+		<button id="analyzePrevious" title="Question précédente">←</button>
 		<output>2 / 10</output>
-		<button id="analyzeNext">→</button>
+		<button id="analyzeNext" title="Question suivante">→</button>
 		</header>
 	</nav>
 	<div>
 		<fieldset class="code">
 			<legend>Code</legend>
+			<textarea id="analyzeCodeEdit" title="Vous pouvez modifier ce code pour le tester"></textarea>
 			<code id="analyzeCodeRead"></code>
-			<textarea id="analyzeCodeEdit"></textarea><br>
-			<button title="Tester le code">Tester</button>
+			<button title="Tester le code"><span>Tester</span></button>
 		</fieldset>
 		<fieldset class="reponse">
 			<legend>Qu'est-ce qui s'affiche si on exécute ce code&nbsp;?</legend>
 			<input id="analyzeDonneReponse" type="checkbox">
-			<ul id="analyzeQst"></ul>
+			<ul id="analyzeQst">
+<!--debug-->
+				<li class="bonneReponse"><span>12</span></li>
+				<li class="userAnswer bonneReponse"><span>toto le champion des erreurs</span></li>
+				<li><span>mauvais</span></li>
+<!--fin debug-->
+			</ul>
 			<label for="analyzeDonneReponse">Voir la bonne réponse</label>
+			<details>
+				<summary>Explication</summary>
+				<div id="analyzeExplication">debug test debug debug test debug debug test debug debug test debug debug test debug debug test debug debug test debug debug test debug debug test debug debug test debug debug test debug debug test debug </div>
+			</details>
 		</fieldset>
 	</div>
-	<details style="margin-top:3em;border:1px solid black;display:block;">
-		<summary>Explication</summary>
-		<div id="analyzeExplication"></div>
-	</details>
 </section>
 
 <section id="sectionCopy"></section>
