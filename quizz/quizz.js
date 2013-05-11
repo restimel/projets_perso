@@ -114,15 +114,19 @@ var changeSession = function(){
  * Lancer le quizz
 **/
 function runQuizz(){
+	if(currentTest){
+		currentTest.stop(false); //arrête un éventuel précédent test (au cas où il ne serait pas fini
+	}
 	currentTest = new quizzTest();
 }
 
 /**
- * verification de la réponse envoyé
+ * verification de la réponse envoyée
 **/
 //vérification lorsque l'utilisateur a choisi sa réponse
 function answerDirectQuizz(e){
 	if(!document.getElementById("optAutoNext").checked){
+		//on n'est pas en mode répondre directement. l'utilisateur doit cliquer sur le bouton "Répondre"
 		document.getElementById("btnRepondre").className = "ready";
 		return;
 	}

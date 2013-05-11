@@ -6,10 +6,12 @@
 		liste (Array) : liste des questions
 		length (number) : nombre de questions
 		nbBonneReponse (number) : nombre de bonne réponses
-		tempTotal (number) : temps total disponbile
+		tempAlloue (number) : temps total disponbile
 		tempsPasse (number) : temps total passé sur le test
 		timerInit (number timestamp) : timestamp correspondant au début du test
 		timerLast (number timestamp) : timestamp correspondant au dernier résultat
+		timer (number) : id du setInterval utilisé
+		elemTime (DOM element) : référence à l'élément d'affichage du temps (mise en cache afin d'éviter de le rechercher à chaque mise à jour)
 		score (Array) : liste de tous les résultats de l'utilisateur. Liste d'objet:
 			{
 				id (number): id de la question,
@@ -23,7 +25,8 @@
 		displayQuestion() : permet d'afficher la question courante
 		reponse(str) : l'utilisateur répond à la question courante
 		resultat() : permet d'afficher le résultat du test
-		stop() : l'utilisateur arrête le test
+		stop(stopRedirect) : l'utilisateur arrête le test. stopRedirect (boolean) : si vaut true alors ne redirige pas vers la page de résultat
+		time() : gestion du temps
 */
 
 function quizzTest(){
@@ -35,7 +38,7 @@ function quizzTest(){
 	
 	//initialisation des propriétés
 	this.nbBonneReponse = 0;
-	this.tempTotal = document.getElementById("prepIsTime").checked ? document.getElementById("prepTime").value.replace(/^(?:(\d+):(\d+):)?(\d+)$/,function(mtf,h,mn,s){
+	this.tempAlloue = document.getElementById("prepIsTime").checked ? document.getElementById("prepTime").value.replace(/^(?:(\d+):(\d+):)?(\d+)$/,function(mtf,h,mn,s){
 			return parseInt(h,10)*3600 + parseInt(mn,10)*60 + parseInt(s,10);
 			}) : 0;
 	this.tempsPasse = 0;
@@ -71,9 +74,13 @@ function quizzTest(){
 	this.liste = quizzItems.get(this.filtre).sort(function(){return Math.random()-0.5;}).splice(0,this.length);
 	this.length = this.liste.length; //maj de la nouvelle longueur
 	
-	//ajout d'événement sur des éléments static
+	//ajout de l'arrêt quand on clique sur le bouton
 	document.querySelector("#questionOption>button").onclick = this.stop.bind(this);
-	document.getElementById("questionTime").textContent = this.tempTotal;//TODO faire bouger le temps
+	
+	//gestion du temps
+	this.elemTime = document.getElementById("questionTime");
+	this.elemTime.textContent = timeFormat(this.tempAlloue);
+	this.timer = setInterval(this.time.bind(this),400);
 	
 	//lancer la session de questions
 	this.timerInit = this.timerLast = Date.now();
@@ -225,8 +232,30 @@ quizzTest.prototype.resultat = function(){
 }
 
 //permet d'arrêter le test en cours
-quizzTest.prototype.stop = function(){
+quizzTest.prototype.stop = function(stopRedirect){
+	clearInterval(this.timer);
 	this.length = this.current;
-	this.resultat();
+	if(!stopRedirect){
+		this.resultat();
+	}
 };
 
+//gestion du temps et de son affichage
+quizzTest.prototype.time = function(){
+	var duree = (Date.now() - this.timerInit)/1000;
+	if(this.tempAlloue){
+		//l'utilisateur a un temps alloué pour résoudre les questions
+		
+		this.elemTime.textContent = timeFormat(this.tempAlloue - duree);
+		
+		//vérification du temps restant
+		if(duree >= this.tempAlloue){
+			//temps alloué écoulé
+			this.reponse("… {Temps écoulé}");
+			this.stop();
+		}
+	}else{
+		//pas de temps alloué
+		this.elemTime.textContent = timeFormat(duree);
+	}
+};

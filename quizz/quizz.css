@@ -109,6 +109,7 @@ summary.detailsOpen:before{
 
 #accueil>button{
 	display: inline-block;
+	vertical-align: bottom;
 	width: 17em;
 	height: 17em;
 	margin-right: 5em;
@@ -208,7 +209,7 @@ aside#questionEntete>header{
 	margin-right: 1em;
 	margin-top: 0.2em;
 	
-	font-family: monospace;
+	font-family: heureNumerique,monospace;
 	font-size: x-large;
 	color: #EBEBB7;
 	text-shadow: 1px 1px #C2C293, -1px -1px #4A4A37;
@@ -332,8 +333,8 @@ button.ready{
 	display: block;
 	cursor: pointer;
 	
-	width: 15em;
-	height: 15em;
+	width: 17em;
+	height: 17em;
 	
 	margin-right: 5em;
 	margin-top: 4em;
@@ -641,4 +642,12 @@ li.userAnswer>span{
 .useStrict{
 	color:#00EEFF;
 	font-style:italic;
+}
+
+/*
+	Police spéciale
+*/
+@font-face{
+	font-family: heureNumerique;
+	src: url('./ressources/digital-7 (mono).ttf'); /*Author: Sizenko Alexander http://www.styleseven.com (ms-7@styleseven.com)*/
 }
