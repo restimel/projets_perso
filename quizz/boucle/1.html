@@ -14,7 +14,7 @@ while(i++<1){
 	j++;
 }
 
-alert(i+"/"+j);
+alert( i+"/"+j );
 </textarea>
 
 <hr>
@@ -40,6 +40,12 @@ alert(i+"/"+j);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+<minicode type="javascript">i++</minicode> retourne la valeur de <minicode type="javascript">i</minicode> puis incrémente <minicode type="javascript">i</minicode>.<br>
+Dans une boucle <minicode type="javascript">while</minicode>, le code à l'intérieur de la boucle est exécuté après le test de la condition.<br>
+<br>
+Au début, on vérifie que <minicode type="javascript">i</minicode> (qui vaut <minicode type="javascript">0</minicode>) est inférieure à <minicode type="javascript">1</minicode>. Puis on incrémente <minicode type="javascript">i</minicode>. Ensuite le code de la boucle est exécuté (donc <minicode type="javascript">j</minicode> vaut maintenant <minicode type="javascript">1</minicode>).<br>
+On vérifie à nouveau que <minicode type="javascript">i</minicode> (qui vaut <minicode type="javascript">1</minicode>) est inférieure à <minicode type="javascript">1</minicode>. Or ce n'est plus le cas, donc on arrête la boucle. Mais on incrémente quand même <minicode type="javascript">i</minicode>. Le code de la boucle n'est donc pas exécuté.<br>
+Finalement <minicode type="javascript">i</minicode> vaut <minicode type="javascript">2</minicode> et <minicode type="javascript">j</minicode> vaut <minicode type="javascript">1</minicode>.
 </details>
 
 <script>

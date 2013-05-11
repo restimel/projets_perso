@@ -4,7 +4,7 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: opérateur, ASCII</aside>
-thème: comparaison,boucle<br>
+thème: comparaison,boucle,opérateur<br>
 niveau: 1<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
@@ -14,7 +14,7 @@ do{
 	j++;
 }while(i++<1);
 
-alert(i+"/"+j);
+alert( i+"/"+j );
 </textarea>
 
 <hr>
@@ -40,6 +40,11 @@ alert(i+"/"+j);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+<minicode type="javascript">i++</minicode> retourne la valeur de <minicode type="javascript">i</minicode> puis incrémente <minicode type="javascript">i</minicode>.<br>
+Dans une boucle <minicode type="javascript">do … while</minicode>, le code à l'intérieur de la boucle est exécuté avant de tester la condition. Cela signifie que ce code est au moins exécuté une fois.<br>
+<br>
+Au début, le code de la boucle est exécuté (donc <minicode type="javascript">j</minicode> vaut maintenant <minicode type="javascript">1</minicode>). On vérifie que la valeur de <minicode type="javascript">i</minicode> (qui vaut <minicode type="javascript">0</minicode>) est inférieure à <minicode type="javascript">1</minicode>. Puis <minicode type="javascript">i</minicode> est incrémentée.<br>
+Le code de la boucle est à nouveau exécuté (donc <minicode type="javascript">j</minicode> vaut maintenant <minicode type="javascript">2</minicode>). On vérife que la valeur de <minicode type="javascript">i</minicode> (qui vaut <minicode type="javascript">1</minicode>) est inférieure à <minicode type="javascript">1</minicode>. Ce qui n'est plus le cas, donc on arrête la boucle. Mais <minicode type="javascript">i</minicode> est quand même incrémentée et vaut finalement <minicode type="javascript">2</minicode>.
 </details>
 
 <script>

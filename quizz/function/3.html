@@ -4,8 +4,8 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: déclaration</aside>
-thème: fonction<br>
-niveau: 2<br><br>
+thème: fonction,déclaration<br>
+niveau: 3<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var compteur = 0;
@@ -45,7 +45,7 @@ setTimeout(function(){
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-	Lorsque <minicode type="javascript">f</minicode> est déclarée, on lui affecte le résultat d'une "function expression". En exécutant cette fonction, on commence par incrémenter <minicode type="javascript">compteur</minicode> puis on lance la fonction <minicode type="javascript">f</minicode> 10ms plus tard. Or à ce moment <minicode type="javascript">f</minicode> n'est toujours pas définie, bien que <minicode type="javascript">f</minicode> sera définie dans 10ms <minicode type="javascript">setTimeout</minicode> ne s'exécute pas mais ne provoque pas d'erreur. <minicode type="javascript">compteur</minicode> n'a donc été incrémentée qu'une seule fois.
+Lorsque <minicode type="javascript">f</minicode> est déclarée, on veut lui affecter le résultat d'une "function expression". En exécutant cette fonction, on commence par incrémenter <minicode type="javascript">compteur</minicode> puis on lance la fonction <minicode type="javascript">f</minicode> 10ms plus tard. Or à ce moment <minicode type="javascript">f</minicode> n'est toujours pas définie, bien que <minicode type="javascript">f</minicode> sera définie dans 10ms <minicode type="javascript">setTimeout</minicode> ne s'exécutera pas mais ne provoquera pas d'erreur. <minicode type="javascript">compteur</minicode> n'a donc été incrémentée qu'une seule fois.
 </details>
 
 <script>

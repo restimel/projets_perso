@@ -4,24 +4,23 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: déclaration, bind</aside>
-thème: fonction<br>
+thème: fonction,contexte<br>
 niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var type = "abc";
 
 function f(type){
-	alert(this.type);
+	return this.type;
 }
 
-var r = f.bind({
-	click:function(){alert("def");},
-	load:function(){alert("ghi");},
-	type:"click",
-	jkl:function(){alert("mno");}
+var test = f.bind({
+	click : "def",
+	type : "click",
+	ghi : "jkl"
 });
 
-r("jkl");
+alert( test("ghi") );
 
 </textarea>
 
@@ -33,7 +32,6 @@ r("jkl");
 	<li>"def"</li>
 	<li>"ghi"</li>
 	<li>"jkl"</li>
-	<li>"mno"</li>
 	<li class="bonneReponse">"click"</li>
 	<li>undefined</li>
 	<li>Une erreur se produit</li>
@@ -47,6 +45,8 @@ r("jkl");
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+<minicode type="javascript">bind</minicode> sert à définir un contexte d'exécution à une référence de fonction. Ainsi <minicode type="javascript">test</minicode> reçoit la référence à la fonction <minicode type="javascript">f</minicode> dans le contexte de l'objet passé en paramètre à la méthode <minicode type="javascript">bind</minicode>.<br>
+Donc quand on appelle <minicode type="javascript">test</minicode>, cela appelle la fonction <minicode type="javascript">f</minicode> dans le contexte de l'objet. <minicode type="javascript">this.type</minicode> fait donc référence à la valeur de la propriété <minicode type="javascript">type</minicode> de l'objet, c'est-à-dire <minicode type="javascript">"click"</minicode>.
 </details>
 
 <script>

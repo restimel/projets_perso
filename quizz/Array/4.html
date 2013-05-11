@@ -3,24 +3,25 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 </head>
 <body>
-<aside style="display:none;">connaissances nécessaire: méhode Array, conversion</aside>
+<aside style="display:none;">connaissances nécessaire: Array, attributs spécifiques</aside>
 thème: Array<br>
-niveau: 1<br><br>
+niveau: 0<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var liste = [1024, 512, 32].sort();
-alert(liste.join(","));
+var liste = [1, 2, 3];
+alert( liste[2] );
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li>32,512,1024</li>
-	<li>32,1024,512</li>
-	<li>512,32,1024</li>
-	<li>512,1024,32</li>
-	<li class="bonneReponse">1024,32,512</li>
-	<li>1024,512,32</li>
+	<li>1</li>
+	<li>2</li>
+	<li class="bonneReponse">3</li>
+	<li>123</li>
+	<li>Array</li>
+	<li>null</li>
+	<li>undefined</li>
 	<li>Il y a une erreur de syntaxe</li>
 </ul>
 <hr>
@@ -32,7 +33,7 @@ alert(liste.join(","));
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-Le fonctionnement par défaut de <minicode type="javascript">sort</minicode> agit sur les strings. Ainsi les nombres sont convertis en string et sont triés en tant que chaînes de caractères. Or 1 est avant 3 dans l'ordre alphabétique, et donc <minicode type="javascript">1024</minicode> est avant <minicode type="javascript">32</minicode>.
+<minicode type="javascript">liste[2]</minicode> correspond à la valeur située à l'index 2 de la liste. C'est-à-dire à la 3<sup>e</sup> position car la première position correspond à l'index 0.
 </details>
 
 <script>

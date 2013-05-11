@@ -4,7 +4,7 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: opérateur</aside>
-thème: boucle<br>
+thème: boucle,comparaison<br>
 niveau: 0<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
@@ -13,7 +13,7 @@ while(i<10){
 	i++;
 	i++;
 }
-alert(i);
+alert( i );
 </textarea>
 
 <hr>
@@ -36,6 +36,17 @@ alert(i);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+Dans une boucle <minicode type="javascript">while</minicode>, le code à l'intérieur de la boucle est exécuté tant que la condition est vraie.<br>
+Dans le code de la boucle, on incrémente <minicode type="javascript">i</minicode> deux fois. Donc au moment des comparaisons les différentes valeurs de <minicode type="javascript">i</minicode> sont&nbsp;:
+<ol style="list-style-type:circle;">
+<li><minicode type="javascript">1</minicode> (valeur avant la boucle)</li>
+<li><minicode type="javascript">3</minicode></li>
+<li><minicode type="javascript">5</minicode></li>
+<li><minicode type="javascript">7</minicode></li>
+<li><minicode type="javascript">9</minicode></li>
+<li><minicode type="javascript">11</minicode> (à ce moment la condition devient fausse)</li>
+</ol>
+La boucle ne s'arrête qu'au moment où la condition est testée, c'est-à-dire avant le code de la boucle. Au moment où la première incrémentation de <minicode type="javascript">i</minicode> l'amène à la valeur <minicode type="javascript">10</minicode>, il n'y a pas de test. Le test de la condition ne se fait qu'entre deux itérations.
 </details>
 
 <script>

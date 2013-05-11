@@ -1,0 +1,72 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+<aside style="display:none;">connaissances nécessaire: opérateur, ASCII</aside>
+thème: boucle,comparaison<br>
+niveau: 0<br><br>
+<b>code:</b><br>
+<textarea rows="20" cols="100" id="question">
+var i = 0, j = 0;
+
+for( i=0; i<1; i++){
+	j++;
+}
+
+alert( i+"/"+j );
+</textarea>
+
+<hr>
+<b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
+<ul>
+	<li>0/0</li>
+	<li>0/1</li>
+	<li>0/2</li>
+	<li>1/0</li>
+	<li class="bonneReponse">1/1</li>
+	<li>1/2</li>
+	<li>2/0</li>
+	<li>2/1</li>
+	<li>2/2</li>
+	<li>Il y a une erreur de syntaxe</li>
+</ul>
+<hr>
+<br>
+<b>Résultat</b> <i>essayez vous-même</i>:
+<br>
+<input type="button" id="input" value="tester" onclick="test()">
+
+
+<details style="margin-top:3em;border:1px solid black;display:block;">
+	<summary>Explication</summary>
+La construction d'une boucle <minicode type="javascript">for</minicode> se compose de trois parties. La première est l'initialisation, elle est exécutée une seule fois au début de la boucle. La deuxième est la partie de la condition, au début de chaque itération on vérifie si la condition est vraie. Si elle l'est alors on démarre une nouvelle itération sinon on arrête la boucle. La troisième partie est celle de l'incrémentation, elle est exécutée après chaque itération.<br>
+<br>
+Au début, on initialise <minicode type="javascript">i</minicode> à <minicode type="javascript">0</minicode> (qui valait déjà <minicode type="javascript">0</minicode>). On vérifie la condition que <minicode type="javascript">i</minicode> est inférieure à <minicode type="javascript">1</minicode>. Comme elle est vraie on exécute le code de la boucle (donc <minicode type="javascript">j</minicode> vaut maintenant <minicode type="javascript">1</minicode>). À la fin de l'itération on incrémente <minicode type="javascript">i</minicode> qui vaut donc maintenant <minicode type="javascript">1</minicode>.<br>
+On vérifie à nouveau la condition que <minicode type="javascript">i</minicode> soit inférieure à <minicode type="javascript">1</minicode> mais ce n'est plus le cas donc on arrête la boucle ici.<br>
+Finalement <minicode type="javascript">i</minicode> vaut <minicode type="javascript">1</minicode> et <minicode type="javascript">j</minicode> vaut <minicode type="javascript">1</minicode>.
+</details>
+
+<script>
+function test(){
+	var code = document.getElementById("question").value;
+	if(!/alert\(/.test(code)){
+		code = code.replace(/(?:^|[\r\n])(?:[\r\n]|$)/g,"").replace(/(^|[\n\r;])([^;\r\n]+);?$/,"$1alert($2);");
+	}
+	try{
+		var f=new Function(code);
+	}catch(e){
+		alert("ERROR while creating test\n"+e.message);
+	}
+	if(f){
+		try{
+			f();
+		}catch(e){
+			alert("ERROR\n"+e.message);
+		}
+	}
+}
+</script>
+
+</body>
+</html>
