@@ -4,7 +4,7 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: objet, constructeur</aside>
-thème: objet<br>
+thème: objet,contexte,héritage<br>
 niveau: 3<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
@@ -21,7 +21,7 @@ function Constructeur(valeur){
 
 var obj1 = new Constructeur(1),
 	obj2 = new obj1.f(2);
-alert(obj2.get(3));
+alert( obj2.get(3) );
 
 </textarea>
 
@@ -32,7 +32,7 @@ alert(obj2.get(3));
 	<li>2</li>
 	<li>3</li>
 	<li>undefined</li>
-	<li class="bonneReponse">rien, une erreur est survenue</li>
+	<li class="bonneReponse">Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -44,7 +44,8 @@ alert(obj2.get(3));
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-	
+<minicode type="javascript">obj2</minicode> est construit à partir de la fonction <minicode type="javascript">obj1.f</minicode>. C'est-à-dire la fonction <minicode type="javascript">f</minicode> qui se trouve dans l'objet <minicode type="javascript">obj1</minicode> mais dans un nouveau contexte. On n'est plus dans le contexte de <minicode type="javascript">obj1</minicode> (à cause de l'opérateur <minicode type="javascript">new</minicode>).<br>
+Or <minicode type="javascript">calcul</minicode> n'a été affecté qu'au niveau de la fonction <minicode type="javascript">Constructeur</minicode> (c'est-à-dire <minicode type="javascript">obj1</minicode>). Ainsi <minicode type="javascript">this.calcul</minicode> dans la fonction <minicode type="javascript">get</minicode> dans le contexte de <minicode type="javascript">obj2</minicode> ne fait référence à rien et vaut <minicode type="javascript">undefined</minicode>. Comme on essaie de l'exécuter comme une fonction, alors une erreur survient.
 </details>
 
 <script>

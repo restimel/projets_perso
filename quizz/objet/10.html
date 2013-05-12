@@ -8,8 +8,10 @@ thème: objet,héritage<br>
 niveau: 3<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
+function f(){}
+
 function Constructeur(){
-	this.f = function(){};
+	this.f = f;
 }
 
 var obj1 = new Constructeur(),
@@ -22,8 +24,8 @@ alert(obj3 instanceof obj2.f);
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li class="bonneReponse">false</li>
-	<li>true</li>
+	<li>false</li>
+	<li class="bonneReponse">true</li>
 	<li>undefined</li>
 	<li>rien, une erreur est survenue</li>
 </ul>
@@ -39,7 +41,7 @@ alert(obj3 instanceof obj2.f);
 	<summary>Explication</summary>
 L'opérateur <minicode type="javascript">instanceof</minicode> permet de vérifier si l'objet possède parmis ses prototype celui de la deuxième opérande.<br>
 <br>
-<minicode type="javascript">obj1</minicode> et <minicode type="javascript">obj2</minicode> sont deux constructions indépendantes. Leur propriété <minicode type="javascript">f</minicode> est une référence à une fonction crée à l'intérieure de la fonction <minicode type="javascript">Constructeur</minicode>. Il ne s'agit donc pas de la même référence.<br>
+<minicode type="javascript">obj1</minicode> et <minicode type="javascript">obj2</minicode> sont deux constructions indépendantes. Leur propriété <minicode type="javascript">f</minicode> est une référence à une fonction crée à l'extérieure de la fonction <minicode type="javascript">Constructeur</minicode>. Il s'agit donc de la même référence.<br>
 <minicode type="javascript">obj3</minicode> est construit à partir de la fonction <minicode type="javascript">f</minicode> de <minicode type="javascript">obj1</minicode>. Il n'hérite donc pas du prototype de la fonction <minicode type="javascript">f</minicode> de <minicode type="javascript">obj2</minicode>.
 </details>
 

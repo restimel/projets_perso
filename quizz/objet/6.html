@@ -5,7 +5,7 @@
 <body>
 <aside style="display:none;">connaissances nécessaire: objet, prototype</aside>
 thème: objet<br>
-niveau: 2<br><br>
+niveau: 3<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var obj = {};
@@ -24,7 +24,7 @@ alert(obj.val);
 	<li>1</li>
 	<li>2</li>
 	<li class="bonneReponse">undefined</li>
-	<li>rien, une erreur est survenue</li>
+	<li>Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -36,7 +36,13 @@ alert(obj.val);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-	
+Attention&nbsp;! La propriété <minicode type="javascript">prototype</minicode> n'existe que pour les fonctions (objet de héritant de l'instance function). Pour accéder au prototype d'un objet (qu'il soit littéral ou créer à partir d'une instance d'une fonction), il faut utiliser la méthode<minicode type="javascript">getPrototypeOf()</minicode>. Une méthode non normalisée (mais presque standardisée, seul IE ne le supporte pas) est d'utiliser la méthode <minicode type="javascript">__proto__</minicode>.<br>
+Ainsi modifier la propriété <minicode type="javascript">prototype</minicode> de l'objet ne permet pas de lui faire connaitre de nouvelle propriétés (si ce n'est la propriété <minicode type="javascript">prototype</minicode>).<br>
+<br>
+<minicode type="javascript">constructor</minicode> est une propriété issue du prototype de l'objet qui désigne la fonction ayant servit à créer l'instance de l'objet. Pour un objet littéral, il s'agit de la fonction <minicode type="javascript">Object</minicode>. Toutefois modifier la référence du prototype du constructeur après la construction n'affectera pas l'instance.<br>
+Par contre il aurait été possible de rajouter une valeur au prototype du constructeur tant qu'ils partagent la même référence. Ainsi <minicode type="javascript">Object.prototype.val = 0;</minicode> aurait fonctionné ainsi que <minicode type="javascript">obj.constructor.prototype.val = 0;</minicode>.<br>
+<br>
+Mais avec le code actuel, aucune propriété nommée <minicode type="javascript">val</minicode> n'est accessible à <minicode type="javascript">obj</minicode>.
 </details>
 
 <script>

@@ -4,35 +4,28 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: objet, instance, constructeur</aside>
-thème: objet<br>
-niveau: 5<br><br>
+thème: objet,contexte<br>
+niveau: 3<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 function Constructeur(){
-	function getValue(){
-		return "A";
-	}
-	var obj = {};
-	obj.getValue = function(){
-		return "B";
-	};
-	this.getValue = function(){
-		return "C";
+	function get(){ return "A"; }
+	
+	var o = {
+		get : function(){ return "B"; }
 	};
 	
-	return obj;
+	this.get = function(){ return "C"; };
+	
+	return o;
 }
 
-Constructeur.prototype.getValue = function(){
-	return "D";
-};
+Constructeur.prototype.get = function(){ return "D"; };
 
-function getValue(){
-	return "E";
-}
+function get(){ return "E"; }
 
 var obj = new Constructeur();
-alert(obj.getValue());
+alert( obj.get() );
 </textarea>
 
 <hr>
@@ -43,7 +36,7 @@ alert(obj.getValue());
 	<li>"C"</li>
 	<li>"D"</li>
 	<li>"E"</li>
-	<li>rien, une erreur est survenue</li>
+	<li>Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -55,7 +48,12 @@ alert(obj.getValue());
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-	
+L'opérateur <minicode type="javascript">new</minicode> permet d'exécuter une fonction dans un nouveau contexte d'exécution. Ce contexte correspond à un objet ayant pour prototype celui de la fonction.<br>
+L'opérateur <minicode type="javascript">new</minicode> retourne le résultat de l'appel à cette fonction si celui-ci est une référence à un objet. Sinon il retourne la référence à l'objet ayant servit de contexte à la fonction.<br>
+<br>
+Vu que la fonction <minicode type="javascript">Constructeur</minicode> retourne une référence à l'objet <minicode type="javascript">o</minicode>. Donc le résultat de <minicode type="javascript">new Constructeur</minicode> est une référence à <minicode type="javascript">o</minicode>. Ainsi <minicode type="javascript">obj.get()</minicode> appelera la méthode de <minicode type="javascript">o</minicode> et retournera <minicode type="javascript">"B"</minicode>.<br>
+<br>
+Pour plus d'information sur l'opérateur <minicode type="javascript">new</minicode>, vous pouvez consulter la spécification <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" target="_blank">ECMAScript 5.1</a> aux sections 11.2.2 et 11.2.3.
 </details>
 
 <script>

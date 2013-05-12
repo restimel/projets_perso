@@ -4,23 +4,23 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: objet, prototype</aside>
-thème: objet<br>
-niveau: 2<br><br>
+thème: objet,héritage<br>
+niveau: 3<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-function Constructeur(){
-}
+function Constructeur(){}
+
 Constructeur.prototype.val = 0;
 Constructeur.prototype = {val:1};
 Constructeur.prototype.val = 2;
 
-var obj1 = new Constructeur();
+var obj = new Constructeur();
 
 Constructeur.prototype.val = 3;
 Constructeur.prototype = {val:4};
 Constructeur.prototype.val = 5;
 
-alert(obj1.val);
+alert( obj.val );
 
 </textarea>
 
@@ -46,7 +46,11 @@ alert(obj1.val);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-	
+Au moment de la construction de <minicode type="javascript">obj</minicode>, un prototype lui est assigné. À ce moment <minicode type="javascript">obj</minicode> et <minicode type="javascript">Constructeur</minicode> partagent le même prototype.<br>
+<minicode type="javascript">Constructeur.prototype.val = 3;</minicode> va modifier la valeur de la propriété <minicode type="javascript">val</minicode> du prototype de <minicode type="javascript">Constructeur</minicode>. Comme le prototype de <minicode type="javascript">obj</minicode> est la même référence que celui de <minicode type="javascript">Constructeur</moinicode>, sa propriété <minicode type="javascript">val</minicode> est aussi modifiée.<br>
+<minicode type="javascript">Constructeur.prototype = {val:4};</minicode> va changer la référence du prototype de <minicode type="javascript">Constructeur</minicode>. Maintenant <minicode type="javascript">obj</minicode> n'a plus le même prototype que <minicode type="javascript">Constructeur</minicode>.<br>
+<minicode type="javascript">Constructeur.prototype.val = 5;</minicode> va modifier uniquement le prototype de <minicode type="javascript">Constructeur</minicode>.<br>
+Ainsi, à la fin, <minicode type="javascript">obj.val</minicode> vaut <minicode type="javascript">3</minicode>.
 </details>
 
 <script>
