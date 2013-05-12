@@ -3,9 +3,17 @@
  <head>
  	<meta charset="utf-8">
 	<title>Reconnaissance vectorielle de caractères</title>
+	<!--
+	Il s'agit avant tout d'un proof of concept. Et la reconnaissance pourrait être grandement amélioré.
+	Mais cela montre au moins qu'il est possible d'identifier un tracé afin d'écrire des caractères.
+	La reconnaissance ne s'appuie que sur l'orientation des mouvements et non sur la position des tracés (c'est un axe d'amélioration).
+	
+	fichier original : http://b.mariat.free.fr/poc/poc_reconnaissance.html
+	Author : Benoit Mariat
+	-->
  </head>
  <body onload="erase();" style="padding:0;margin: 0;overflow:hidden;">
-   <button onclick="erase();">Effacer</button> <output type="text" id="demo" value=" "></output><br>
+   <button onclick="erase();">Effacer</button> <output type="text" id="demo" value=" ">Tracez votre caractère sur la surface grise</output><br>
    <canvas id="canvas" width="1050" height="850" style="background:#CCCCCC;margin:0;padding:0;" onmousedown="paint(event);">
      <p>This example requires a browser that supports the
      <a href="http://www.w3.org/html/wg/html5/">&lt;canvas&gt; feature.</a> 
@@ -134,6 +142,8 @@
 		gestion de l'action lorsqu'on clique sur l'élément
 		Cette fonction gère aussi les actions de mouseover et mouseup
 	*/
+		//on efface le(s) précédent(s) tracé(s)
+		erase();
 	
 		var old_x=offset_X(event), //ne sert qu'à l'affichage
 			old_y=offset_Y(event), //ne sert qu'à l'affichage
@@ -145,7 +155,6 @@
 		
 		function paint_move(event){
 		//fonction appelée lorsque le curseur bouge
-		
 			var seuil=10, //sensibilité
 				x=offset_X(event),
 				y=offset_Y(event);
