@@ -56,28 +56,37 @@ var chronometre=(function(){
 		var temps = (Date.now() - init)/1000; //temps écoulé depuis le début du jeu
 		jeuTemps.value = Math.round(regleTemps.value - temps);
 		if(temps>regleTemps.value){
-			//le temps est écoulé
-			clearInterval(timer);
-			
-			//On retire le formulaire
-			var inputFormule = document.getElementById("entreeFormule");
-			inputFormule.style.display = "none";
-			inputFormule.removeEventListener("blur",restoreFocus,false);
-			inputFormule.removeEventListener("keypress",analyseFormule,false);
-			inputFormule.removeEventListener("blur",analyseFormule,false);
-			
-			//on affiche l'analyse de l'ordinateur
-			analyseIA();
+			endGame();
 		}
 	}
 	
-	return function(){
-		//démarrage du chronomètre
-		init = Date.now();
-		clearInterval(timer);
-		timer = setInterval(chrono,400);
+	return function(stop){
+		if(stop === true){
+			//arrêt du chronomètre
+			clearInterval(timer);
+		}else{
+			//démarrage du chronomètre
+			init = Date.now();
+			clearInterval(timer);
+			timer = setInterval(chrono,400);
+		}
 	};
 })();
+
+function endGame(){
+	//arrêt du chronomètre
+	chronometre(true);
+
+	//On retire le formulaire
+	var inputFormule = document.getElementById("entreeFormule");
+	inputFormule.style.display = "none";
+	inputFormule.removeEventListener("blur",restoreFocus,false);
+	inputFormule.removeEventListener("keypress",analyseFormule,false);
+	inputFormule.removeEventListener("blur",analyseFormule,false);
+	
+	//on affiche l'analyse de l'ordinateur
+	analyseIA();
+}
 
 //permet de rechercher une solution et de l'afficher
 function analyseIA(){
@@ -280,6 +289,7 @@ Nombre.prototype.createCalcul = function(){
 	calcul.textContent = this.parent1.valeur + " " + this.operateur + " " + this.parent2.valeur + " = " + this.valeur;
 	if(this.valeur == jeuCible.value){
 		this.refCalcul.className = "compteBon";
+		endGame();
 	}else{
 		var that = this;
 		del.addEventListener("click",function(){that.supprime();},false);
@@ -365,4 +375,7 @@ window.addEventListener("load",function(){ //initialisation
 	while(i--){
 		liste[i].addEventListener("click",ajouteValeur,false);
 	}
+	
+	//shortcut pour démarrer le jeu tout de suite au lieu de laisser le choix à l'utilisateur des paramètres
+	initialisation();
 },false);
