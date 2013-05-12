@@ -3,23 +3,29 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 </head>
 <body>
-<aside style="display:none;">connaissances nécessaire: regexp</aside>
-thème: regexp<br>
-niveau: 1<br><br>
+<aside style="display:none;">connaissances nécessaire: opérateur, priorité</aside>
+thème: priorité,opérateur<br>
+niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var r = /^[a-z \-\^]+$/;
-var s ="ceci]est mon texte";
-alert(r.test(s));
+var i = 1;
 
+alert( i + i++ - i++ * i++ );
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li class="bonneReponse">false</li>
-	<li>true</li>
-	<li>undefined</li>
+	<li>-9</li>
+	<li>-5</li>
+	<li class="bonneReponse">-4</li>
+	<li>-1</li>
+	<li>0</li>
+	<li>1</li>
+	<li>4</li>
+	<li>5</li>
+	<li>9</li>
+	<li>NaN</li>
 	<li>Une erreur survient</li>
 </ul>
 <br>
@@ -32,8 +38,8 @@ alert(r.test(s));
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-Le motif de l'expression régulière cherche une chaine qui commence et finit par une suite de caractères correspondant à des lettres minuscules, des espaces, des moins (-) ou des accents circonflexes (^). Or dans la chaine à tester il y a un caractère qui ne fait pas partie de cette liste&nbsp;: le crochet fermant (]).<br>
-Donc le résultat de la rechereche est un échec.
+Une expression est interprétée de gauche à droite. L'interpréteur commence par remplacer les valeurs de toutes les variables ou de tous les appels de fonctions. Puis il effectue les opérations selon leur priorité.<br>
+Donc <minicode type="javascript">i + i++ - i++ * i++</minicode> est remplacé par <minicode type="javascript">1 + 1 - 2 * 3</minicode>. L'opération de multiplication (<minicode type="javascript">*</minicode>) étant prioritaire, le calcul suivant est donc <minicode type="javascript">1 + 1 - 6</minicode>. Ce qui amène au résultat de <minicode type="javascript">-4</minicode>.
 </details>
 
 <script>

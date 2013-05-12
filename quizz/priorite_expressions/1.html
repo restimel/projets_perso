@@ -4,8 +4,8 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: opérateur, getter/setter</aside>
-thème: opérateur<br>
-niveau: 2<br><br>
+thème: objet,opérateur<br>
+niveau: 3<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var val=0;
@@ -16,9 +16,7 @@ function inc(){
 var obj={};
 Object.defineProperty(obj,"s",{
 		get : inc,
-		set : inc,
-		enumerable : true,
-		configurable : true
+		set : inc
 	});
 
 obj.v = obj.s = obj.s = 100;
@@ -33,12 +31,13 @@ alert(obj.v+obj.s);
 	<li>4</li>
 	<li>6</li>
 	<li>7</li>
+	<li>8</li>
 	<li class="bonneReponse">102</li>
 	<li>104</li>
 	<li>200</li>
 	<li>201</li>
 	<li>NaN</li>
-	<li>Une erreur apparait</li>
+	<li>Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -50,6 +49,10 @@ alert(obj.v+obj.s);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+Ici, il faut bien faire attention à ce que retourne l'opérateur d'affectation (<minicode type="javascript">=</minicode>) dans le cadre d'une expression. Cet opérateur affecte à la variable du premier opérande le résultat du deuxième opérande. Mais le retour de cet opérateur est le deuxième opérande.<br>
+Ainsi dans <minicode type="javascript">obj.s = obj.s = 100</minicode>, le get de <minicode type="javascript">obj.s</minicode> n'est pas appelé. Et donc c'est la valeur <minicode type="javascript">100</minicode> qui est affecté à la variable <minicode type="javascript">obj.v</minicode>.<br>
+Dans l'opération <minicode type="javascript">obj.s = obj.s = 100</minicode>, on essaie d'affecter deux fois la valeur <minicode type="javascript">100</minicode> à <minicode type="javascript">obj.s</minicode>. Son setter est donc appelé deux fois, et la variable <minicode type="javascript">val</minicode> est incrémentée deux fois.<br>
+Lors de la lecture le getter renvoie la valeur de <minicode type="javascript">val</minicode> avant de l'incrémenter et retourne donc <minicode type="javascript">2</minicode>. Le calcul final correspond à <minicode type="javascript">100+2</minicode> qui vaut <minicode type="javascript">102</minicode>.
 </details>
 
 <script>

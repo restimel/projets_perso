@@ -4,14 +4,14 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: déclaration, portée</aside>
-thème: portée,déclaration<br>
-niveau: 1<br><br>
+thème: déclaration,strict mode<br>
+niveau: 4<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var test = 5;
 function essais(condition){
+	"use strict";
 	if(condition){
-		var test = 10;
+		var test = "OK";
 	}
 	alert(test);
 }
@@ -23,8 +23,7 @@ essais(false);
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
 	<li>rien</li>
-	<li>5</li>
-	<li>10</li>
+	<li>OK</li>
 	<li class="bonneReponse">undefined</li>
 	<li>Une erreur se produit</li>
 </ul>
@@ -37,7 +36,8 @@ essais(false);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-Dans une fonction les variables sont déclarées au tout début de l'exécution de la fonction quel que soit l'endroit où cette déclaration est écrite dans le code. C'est ce qu'on appelle le "hoisting". Ainsi la variable <minicode type="javascript">test</minicode> est bien déclarée dans la fonction et est locale à cette fonction. Cependant l'affectation de cette variable n'est réalisée que lorsque l'interpéteur rencontre la ligne en question. Donc <minicode type="javascript">test</minicode> vaut toujours <minicode type="javascript">undefined</minicode> au moment de l'affichage.
+En mode strict, il est interdit de lire une variable qui n'est pas déclarée.<br>
+Dans une fonction les variables sont déclarées au tout début de l'exécution de la fonction quel que soit l'endroit où cette déclaration est écrite dans le code. C'est ce qu'on appelle le "hoisting". Ainsi la variable <minicode type="javascript">test</minicode> est bien déclarée dans la fonction. Le mode strict ne générera donc pas d'erreur. Cependant l'affectation de cette variable n'est réalisée que lorsque l'interpéteur rencontre la ligne en question. Donc <minicode type="javascript">test</minicode> vaut toujours <minicode type="javascript">undefined</minicode> au moment de l'affichage.
 </details>
 
 <script>
@@ -55,7 +55,7 @@ function test(){
 		try{
 			f();
 		}catch(e){
-			alert("ERROR\n"+e.message);
+			alert("ERROR while executing\n"+e.message);
 		}
 	}
 }

@@ -4,8 +4,8 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: opérateur, priorité</aside>
-thème: opération<br>
-niveau: 1<br><br>
+thème: opérateur,priorité,nombre<br>
+niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var a = 1;
@@ -24,7 +24,7 @@ alert(a+" "+b+" "+c);
 	<li>2 2 4</li>
 	<li>1 2 NaN</li>
 	<li>1 2 undefined</li>
-	<li>Il y a une erreur de syntaxe</li>
+	<li>Une erreur survient</li>
 </ul>
 <hr>
 <br>
@@ -35,6 +35,9 @@ alert(a+" "+b+" "+c);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+La syntaxe <minicode type="javascript">a+++b</minicode> est assez confuse. Il s'agit en fait de deux opérateurs&nbsp;: l'opérateur <minicode type="javascript">++</minicode> et l'opérateur <minicode type="javascript">+</minicode>. La syntaxe est donc juste.<br>
+Cependant il faut savoir s'il s'agit de l'opération <minicode type="javascript">a++ + b</minicode> ou <minicode type="javascript">a + ++b</minicode>. En fait l'interpréteur donne la priorité à l'opérateur de post-incrémentation (<minicode type="javascript">++</minicode>) par rapport à celui d'addition/concaténation (<minicode type="javascript">+</minicode>). Il s'agit donc de l'opération <minicode type="javascript">a++ + b</minicode>.<br>
+<minicode type="javascript">c</minicode> vaut donc <minicode type="javascript">a + b</minicode>, et <minicode type="javascript">a</minicode> est incrémentée ensuite.
 </details>
 
 <script>

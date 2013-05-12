@@ -10,7 +10,7 @@ niveau: 5<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var toto = "abc";
-var f = function(){
+function f(){
 	alert("def");
 }
 with({ toto:"ghi" }) {
@@ -39,6 +39,8 @@ f();
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+La variable <minicode type="javascript">f</minicode> qui est dans le <minicode type="javascript">with</minicode> est déclarée dans l'espace de noms principal (principe du "hoisting") et écrase donc la déclaration de la fonction <minicode type="javascript">f</minicode>. Toutefois son affectation se fait dans le block <minicode type="javascript">with</minicode> et son espace de nom parent est donc celui de <minicode type="javascript">with</minicode>. Ainsi <minicode type="javascript">toto</minicode> correspond à celui de l'objet de <minicode type="javascript">with</minicode>.<br>
+Comme la variable <minicode type="javascript">f</minicode> a été enregistrée dans l'espace de nom principal, elle est tout à fait accessible après le bloc <minicode type="javascript">with</minicode>.
 </details>
 
 <script>

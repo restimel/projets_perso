@@ -4,13 +4,13 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: opérateur</aside>
-thème: opération<br>
+thème: nombre<br>
 niveau: 1<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var i = 0;
 var j = 0;
-alert(i/j);
+alert( i/j );
 </textarea>
 
 <hr>
@@ -22,7 +22,7 @@ alert(i/j);
 	<li>-Infinity</li>
 	<li class="bonneReponse">NaN</li>
 	<li>undefined</li>
-	<li>une erreur de syntaxe</li>
+	<li>Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -34,6 +34,7 @@ alert(i/j);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+Par définition, en JavaScript, <minicode type="javascript">0/0</minicode> vaut <minicode type="javascript">NaN</minicode>  (Not A Number) car il est impossible de définir le résultat de cette opération.
 </details>
 
 <script>

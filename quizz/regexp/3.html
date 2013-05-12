@@ -5,7 +5,7 @@
 <body>
 <aside style="display:none;">connaissances nécessaire: regexp,assertion avant</aside>
 thème: regexp<br>
-niveau: 2<br><br>
+niveau: 3<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var r = /(?=[a-z])/gi;
@@ -26,7 +26,7 @@ alert(s.replace(r,"@"));
 	<li class="bonneReponse">"@D@e@s @q@u@e@s@t@i@o@n@s"</li>
 	<li>"D@e@s@ q@u@e@s@t@i@o@n@s@"</li>
 	<li>"@D@e@s@ @q@u@e@s@t@i@o@n@s@"</li>
-	<li>Une erreur se produit</li>
+	<li>Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -38,6 +38,8 @@ alert(s.replace(r,"@"));
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+Le motif de l'expression régulière cherche une chaine qui correspond à une suite de caractère alphabétique. Mais cette recherche se fait dans une assertion avant donc les caractères trouvés ne font pas partis du motif. Comme il n'y a aucun autre caractère spécifié en dehors de l'assertion, le motif ne contiendra aucun caractère.<br>
+Ainsi lors du remplacement, avant chaque caractère alphabétique est inséré un caractère <minicode type="javascript">@</minicode>.
 </details>
 
 <script>

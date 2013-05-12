@@ -4,13 +4,15 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: addition</aside>
-thème: opération<br>
+thème: opérateur<br>
 niveau: 0<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var number1 = "2", number2 = "3", resultat;
-resultat = number1 + number2;
-alert(resultat);
+var number1 = "2";
+var number2 = "3";
+var resultat = number1 + number2;
+
+alert( resultat );
 </textarea>
 
 <hr>
@@ -21,7 +23,7 @@ alert(resultat);
 	<li class="bonneReponse">23</li>
 	<li>NaN</li>
 	<li>undefined</li>
-	<li>ERROR</li>
+	<li>Une erreur survient</li>
 </ul>
 <hr>
 <br>
@@ -31,6 +33,7 @@ alert(resultat);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+L'opérateur <minicode type="javascript">+</minicode> est à la fois l'opérateur d'addition et l'opérateur de concaténation. Lorsqu'au moins un de ses opérandes est une chaine de caractère, il agit en tant qu'opérateur de concaténation.<br>C'est le cas ici puisque, malgré leur nom, <minicode type="javascript">number1</minicode> et <minicode type="javascript">number2</minicode> sont des chaines de caractères. L'opération est donc une concaténation.
 </details>
 
 <script>

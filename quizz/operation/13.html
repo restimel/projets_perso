@@ -4,11 +4,11 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: priorités, conversion automatique</aside>
-thème: opération<br>
+thème: priorité<br>
 niveau: 1<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var calcul = "6" + "5" *2;
+var calcul = "6" + "5" * 2;
 alert(parseInt(calcul, 10));
 </textarea>
 
@@ -23,7 +23,7 @@ alert(parseInt(calcul, 10));
 	<li class="bonneReponse">610</li>
 	<li>652</li>
 	<li>NaN</li>
-	<li>Il y a une erreur de syntaxe</li>
+	<li>Une erreur survient</li>
 </ul>
 <hr>
 <br>
@@ -34,6 +34,9 @@ alert(parseInt(calcul, 10));
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+Le code <minicode type="javascript">"6" + "5" * 2</minicode> se découpe en deux opérations (<minicode type="javascript">+</minicode> et <minicode type="javascript">*</minicode>).<br>
+L'opérateur <minicode type="javascript">*</minicode> est prioritaire. C'est donc l'opération <minicode type="javascript">"5" * 2</minicode> qui est d'abord effectuée. Comme il s'agit d'un opérateur agissant sur des nombres <minicode type="javascript">"5"</minicode> est automatiquement convertit en <minicode type="javascript">5</minicode>. Le résultat vaut donc <minicode type="javascript">10</minicode>.<br>
+La deuxième opération est donc <minicode type="javascript">"6" + 10</minicode>. L'opérateur <minicode type="javascript">+</minicode> agit en tant qu'opérateur de concaténation lorsque l'un des opérandes est une chaine de caractères. <minicode type="javascript">10</minicode> est donc convertit en <minicode type="javascript">"10"</minicode> et le résultat final vaut donc <minicode type="javascript">"610"</minicode>.
 </details>
 
 <script>

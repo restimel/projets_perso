@@ -8,7 +8,7 @@ thème: objet,contexte,portée<br>
 niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-window.a=1;
+a=1;
 var obj = {a:2};
 
 function f(){
@@ -45,8 +45,6 @@ alert(g.call(obj));
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
 La fonction <minicode type="javascript">g</minicode> est appelée dans le contexte de <minicode type="javascript">obj</minicode>. Dans cette fonction, la fonction <minicode type="javascript">f</minicode> est appelée. Mais celle-ci est appelée de manière "classique" et donc dans le contexte de <minicode type="javascript">window</minicode> et <minicode type="javascript">this</minicode> fait donc référence à <minicode type="javascript">window</minicode>. Le résultat est donc <minicode type="javascript">1</minicode>.<br>
-<br>
-Remarque particulière&nbsp;: Dans le cas de ce test, si vous remplacez <minicode type="javascript">window.a</minicode> par <minicode type="javascript">var a</minicode>, vous obtiendrez <minicode type="javascript">undefined</minicode>. Car ce code est testé dans <minicode type="javascript">eval</minicode> qui est un espace de nom différent de <minicode type="javascript">window</minicode> et donc <minicode type="javascript">a</minicode> ne sera pas enregistré dans <minicode type="javascript">window</minicode>. Mais dans un cas normal, cela devrait aussi fonctionner.
 </details>
 
 <script>

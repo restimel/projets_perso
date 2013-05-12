@@ -37,7 +37,7 @@ alert(obj3 instanceof obj2.f);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-L'opérateur <minicode type="javascript">instanceof</minicode> permet de vérifier si l'objet possède parmis ses prototype celui de la deuxième opérande.<br>
+L'opérateur <minicode type="javascript">instanceof</minicode> permet de vérifier si l'objet possède parmis ses prototype celui du deuxième opérande.<br>
 <br>
 <minicode type="javascript">obj1</minicode> et <minicode type="javascript">obj2</minicode> sont deux constructions indépendantes. Leur propriété <minicode type="javascript">f</minicode> est une référence à une fonction crée à l'intérieure de la fonction <minicode type="javascript">Constructeur</minicode>. Il ne s'agit donc pas de la même référence.<br>
 <minicode type="javascript">obj3</minicode> est construit à partir de la fonction <minicode type="javascript">f</minicode> de <minicode type="javascript">obj1</minicode>. Il n'hérite donc pas du prototype de la fonction <minicode type="javascript">f</minicode> de <minicode type="javascript">obj2</minicode>.

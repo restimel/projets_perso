@@ -10,7 +10,7 @@ niveau: 1<br><br>
 <textarea rows="20" cols="100" id="question">
 var r = new RegExp("/test/","g");
 var s ="Test d'un test pour tester";
-alert(s.match(r)+"");
+alert( s.match(r)+"" );
 </textarea>
 
 <hr>
@@ -21,7 +21,7 @@ alert(s.match(r)+"");
 	<li>test,test</li>
 	<li>Test,test,test</li>
 	<li class="bonneReponse">null</li>
-	<li>Une erreur se produit</li>
+	<li>Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -33,7 +33,7 @@ alert(s.match(r)+"");
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-	Pour créer une ReGexp on peut soit utiliser la notation littéralle (/motif/) soit utiliser le constructeur. Pour ce dernier le premier argument est une chaine de caractères qui correpond au motif à rechercher. Or ici la chaine à rechercher est "/test/", c'est à dire avec les /. or le texte ne possède aucun / donc il n'y a aucun motif trouvé par l'expression régulière.
+Pour créer une ReGexp on peut soit utiliser la notation littéralle (<minicode type="javascript">/motif/</minicode>), soit utiliser le constructeur. Pour ce dernier le premier argument est une chaine de caractères qui correpond au motif à rechercher. Or ici la chaine à rechercher est <minicode type="javascript">"/test/"</minicode>, c'est-à-dire avec les /. or le texte ne possède aucun / donc il n'y a aucun motif trouvé par l'expression régulière.
 </details>
 
 <script>

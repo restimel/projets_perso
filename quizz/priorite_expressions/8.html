@@ -4,16 +4,17 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: opérateur, priorité</aside>
-thème: incrément<br>
-niveau: 1<br><br>
+thème: priorité<br>
+niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var i = 0;
-var tab =[];
+var tab = [];
 tab[i++] = i;
 tab[i++] = i;
 tab[i++] = i++;
-alert(tab);
+
+alert( tab.join(',') );
 </textarea>
 
 <hr>
@@ -21,12 +22,14 @@ alert(tab);
 <ul>
 	<li>0,1,2</li>
 	<li>0,1,,2</li>
-	<li>,0,1,,3</li>
+	<li>0,1,,3</li>
 	<li class="bonneReponse">1,2,3</li>
 	<li>1,2,,3</li>
 	<li>,1,2,3</li>
 	<li>0</li>
 	<li>,1</li>
+	<li>""</li>
+	<li>Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -38,6 +41,8 @@ alert(tab);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+Une expression est interprétée de gauche à droite. L'interpréteur commence par remplacer les valeurs de toutes les variables ou tous les appels de fonctions. Puis il effectue les opérations selon leur priorité.<br>
+<minicode type="javascript">tab[i++] = i;</minicode>, au départ <minicode type="javascript">i</minicode> vaut <minicode type="javascript">0</minicode>. on affecte don au premier élément (index 0) de <minicode type="javascript">tab</minicode> la valeur du deuxième opérande. Pour ce dernier <minicode type="javascript">i</minicode> a déjà été incrémentée lors de l'interprétation de l'expression du premier opérande et vaut donc <minicode type="javascript">1</minicode>.
 </details>
 
 <script>

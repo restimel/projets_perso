@@ -49,7 +49,7 @@ alert(compteur);
 	<summary>Explication</summary>
 Il faut bien comprendre les opérateurs de comparaison et ne pas oublier que <minicode type="javascript">alert(typeof new String("toto"))</minicode> vaut <minicode type="javascript">"object"</minicode> et non pas <minicode type="javascript">"string"</minicode>.<br>
 <br>
-Avec des objets, les opérateurs d'égalité (que ce soit <minicode type="javascript">==</minicode> ou <minicode type="javascript">===</minicode>) ne retournent <minicode type="javascript">true</minicode> que si les deux opérandes font référence au même objet.<br>
+Avec des objets, les opérateurs d'égalité (que ce soit <minicode type="javascript">==</minicode> ou <minicode type="javascript">===</minicode>) ne retournent <minicode type="javascript">true</minicode> que si les deux opérandes font références au même objet.<br>
 <br>
 Or <minicode type="javascript">new String</minicode> crée une nouvelle instance. Ces variables ne sont donc pas égales.<br>
 C'est la même chose avec les RegExp (même écrit en littéral) car chaque objet possède son propre statut (positionnement du curseur, etc.). Ainsi les variables ne font pas référence au même objet bien que ceux-ci ont été écrit de la même manière.<br>

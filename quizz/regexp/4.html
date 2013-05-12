@@ -5,7 +5,7 @@
 <body>
 <aside style="display:none;">connaissances nécessaire: regexp,assertion arrière</aside>
 thème: regexp<br>
-niveau: 2<br><br>
+niveau: 3<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var r = /(?<=[a-z])/gi;
@@ -26,7 +26,7 @@ alert(s.replace(r,"@"));
 	<li>"@D@e@s @q@u@e@s@t@i@o@n@s"</li>
 	<li>"D@e@s@ q@u@e@s@t@i@o@n@s@"</li>
 	<li>"@D@e@s@ @q@u@e@s@t@i@o@n@s@"</li>
-	<li class="bonneReponse">Une erreur se produit</li>
+	<li class="bonneReponse">Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -38,7 +38,7 @@ alert(s.replace(r,"@"));
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-	Les assertions arrières (?&lt;=) et (?&lt;!) ne sont pas supportées en JavaScript.
+Les assertions arrières (?&lt;=) et (?&lt;!) ne sont pas supportées en JavaScript. La syntaxe n'est donc pas valide.
 </details>
 
 <script>

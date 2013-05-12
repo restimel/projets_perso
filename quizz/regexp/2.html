@@ -5,7 +5,7 @@
 <body>
 <aside style="display:none;">connaissances nécessaire: regexp,(un)greedy</aside>
 thème: regexp<br>
-niveau: 1<br><br>
+niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var r = /[a-z]+?/g;
@@ -27,7 +27,7 @@ alert(s.replace(r,"@"));
 	<li>"D@ @"</li>
 	<li class="bonneReponse">"D@@ @@@@@@@@@"</li>
 	<li>"@@@ @@@@@@@@@"</li>
-	<li>Une erreur se produit</li>
+	<li>Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -39,6 +39,8 @@ alert(s.replace(r,"@"));
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+Le motif de l'expression régulière cherche une chaine qui correspond à une suite de caractère alphabétique minuscule. Les symboles <minicode type="javascript">+?</minicode> signifie que l'on en recherche au moins 1 mais le plus petit nombre possible (méthode non gourmande). Comme il n'y a aucune spécification derrière ces symboles, la recherche se contentera d'un seul caractère.<br>
+Ainsi lors du remplacement, tous les caractères alphabétiques minuscules sont remplacés par <minicode type="javascript">@</minicode>.
 </details>
 
 <script>

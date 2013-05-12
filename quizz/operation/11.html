@@ -4,13 +4,13 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: opérateur, conversion</aside>
-thème: opération<br>
+thème: opérateur,nombre<br>
 niveau: 1<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var i = true;
 var j = 0;
-alert(i/j);
+alert( i/j );
 </textarea>
 
 <hr>
@@ -22,7 +22,7 @@ alert(i/j);
 	<li>-Infinity</li>
 	<li>NaN</li>
 	<li>undefined</li>
-	<li>une erreur de syntaxe</li>
+	<li>Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -34,6 +34,8 @@ alert(i/j);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+<minicode type="javascript">/</minicode> est un opérateur agissant sur des nombres. Or le premier opérande est un boolean, une conversion automatique vers le type number est effectuée. Le résultat de la conversion vaut <minicode type="javascript">1</minicode>. Il s'agit donc d'estimer le résultat de l'opération <minicode type="javascript">1/0</minicode>.<br>
+Il s'agit d'une division par 0. En JavaScript, le résultat d'une division par 0 se résout par <minicode type="javascript">+Infinity</minicode> si le premier opérande est positif&nbsp;; <minicode type="javascript">-Infinity</minicode> si le premier opérande est négatif.
 </details>
 
 <script>

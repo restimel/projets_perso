@@ -44,7 +44,7 @@ affMessage(false);
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-Il ne faut pas oublier le principe du "hoisting" en JavaScript. C'est-à-dire que dans une fonction les variables sont déclarées au tout début de l'exécution de la fonction quelque soit l'endroit où cette déclaration est réalisée dans le code.<br>
+Il ne faut pas oublier le principe du "hoisting" en JavaScript. C'est-à-dire que dans une fonction les variables sont déclarées au tout début de l'exécution de la fonction quel que soit l'endroit où cette déclaration est réalisée dans le code.<br>
 Avec des "function declaration", l'affectation de la fonction à la variable est réalisée au moment de la déclaration. Donc au début de l'exécution de la fonction.<br>
 Ainsi dans la fonction <minicode type="javascript">affMessage</minicode>, la variable <minicode type="javascript">leMessage</minicode> est déclarée deux fois par des "function declaration". La deuxième déclaration écrasant la première, toutes références à cette variable utilisera donc la deuxième déclaration.
 </details>

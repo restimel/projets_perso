@@ -6,8 +6,8 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: number, précision</aside>
-thème: opération<br>
-niveau: 2<br><br>
+thème: nombre<br>
+niveau: 3<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var i = Math.pow(2,53);
@@ -24,7 +24,7 @@ alert( (i===j) +" "+ (i===k) );
 	<li>false true</li>
 	<li class="bonneReponse">true false</li>
 	<li>true true</li>
-	<li>une erreur de syntaxe</li>
+	<li>Une erreur survient</li>
 </ul>
 <br>
 <hr>
@@ -36,8 +36,8 @@ alert( (i===j) +" "+ (i===k) );
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-	Selon la norme IEEE 754, les nombres restent précis à l'unité près jusqu'à 2<sup>53</sup>. Au delà il faut prendre en compte la partie multiplicative (qui est codée sur 10 bits) et donc les nombres ne sont précis qu'à cette partie multiplicative près.<br>
-	Pour en savoir plus : Ecmascript-262 edition 5.1 chapitre 8.5
+Selon la norme IEEE 754, les nombres restent précis à l'unité près jusqu'à 2<sup>53</sup>. Au delà il faut prendre en compte la partie multiplicative (qui est codée sur 10 bits) et donc les nombres ne sont précis qu'à cette partie multiplicative près.<br>
+Pour en savoir plus : <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" target="_blank">Ecmascript-262 edition 5.1</a> chapitre 8.5
 </details>
 
 <script>

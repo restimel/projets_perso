@@ -4,7 +4,7 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: opérateur, priorité</aside>
-thème: opération<br>
+thème: opérateur,priorité,nombre<br>
 niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
@@ -20,7 +20,7 @@ niveau: 2<br><br>
 	<li>"undefined"</li>
 	<li>Infinity</li>
 	<li class="bonneReponse">NaN</li>
-	<li>Il y a une erreur de syntaxe</li>
+	<li>Une erreur survient</li>
 </ul>
 <hr>
 <br>
@@ -31,6 +31,8 @@ niveau: 2<br><br>
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
+Il y a ici un piège. Les espaces laisse supposer que la syntaxe correspond à <minicode type="javascript">typeof(1/0)</minicode>. Mais en réalité cette syntaxe comporte deux opérateurs&nbsp;: <minicode type="javascript">typeof</minicode> et <minicode type="javascript">/</minicode>. Entre ces deux opérateurs c'est <minicode type="javascript">typeof qui est prioritaire. Donc la syntaxe correspond en fait à <minicode type="javascript">(typeof 1)/0</minicode>.<br>
+La première opération donne donc <minicode type="javascript">"number"</minicode> et la deuxième opération correspond à <minicode type="javascript">"number"/0</minicode>. Or la chaine <minicode type="javascript">"number"</minicode> ne peut être convertit en nombre et sera donc convertit en <minicode type="javascript">NaN</minicode>. Or toute opération numérique su <minicode type="javascript">NaN</minicode> renvoie <minicode type="javascript">NaN</minicode>. Le résultat final est donc <minicode type="javascript">NaN</minicode>.
 </details>
 
 <script>
