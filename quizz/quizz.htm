@@ -10,19 +10,22 @@
 </head>
 <body>
 <!--TODO list
-	* Exploration de questions [search]
+	* Trie selon les colonnes des tableaux [search_result/quizz_result]
 	* Personnalisation de liste de questions (load/export) [analyze/preparationQuizz]
-	* Information du nombre de questions disponible [preparationQuizz/search]
+	* Information du nombre de questions disponible dynamiquement [preparationQuizz/search]
 
 For online debug : http://restimel.github.io/projets_perso/quizz/quizz.htm
 -->
 <nav>
 	<ul>
 		<li><button id="btn_quizzPreparation">Démarrer un Quizz</button></li>
-		<li><button id="btn_quizzQuestion">Quizz en cours(debug)</button></li>
-		<li><button id="btn_quizzAnalyze">Analyse (debug)</button></li>
-		<li><button id="btn_searchQuizz">Explore</button></li>
-		<li><button id="btn_quizzResult">Résultat (debug)</button></li>
+		<li><button id="btn_searchQuizz">Explorer</button></li>
+
+		<li class="hidden"><button id="btn_srchResult">Résultat de la recherche</button></li>
+		<li class="hidden"><button id="btn_quizzAnalyze">Analyse des questions</button></li>
+		<li class="hidden"><button id="btn_quizzResult">Résultat du dernier test</button></li>
+		<li class="hidden"><button id="btn_quizzQuestion">Quizz en cours</button></li>
+		
 	</ul>
 </nav>
 
@@ -41,9 +44,6 @@ For online debug : http://restimel.github.io/projets_perso/quizz/quizz.htm
 <section id="quizzPreparation">
 	<form>
 		<input type="hidden"><!--ne sert à rien mais grâce à ça Firefox affiche correctement la selection dans le multi-select-->
-		<label for="prepThemes" lang="fr">Thème :</label>
-		<select id="prepThemes" multiple><option></option></select>
-		<br><br>
 
 		<label for="prepNiveau" lang="fr">Difficulté :</label>
 		<select id="prepNiveau" multiple>
@@ -55,7 +55,10 @@ For online debug : http://restimel.github.io/projets_perso/quizz/quizz.htm
 			<option value="4">Difficile</option>
 			<option value="5">Très difficile</option>
 		</select>
+		<br><br>
 
+		<label for="prepThemes" lang="fr">Thème :</label>
+		<select id="prepThemes" multiple><option></option></select>
 		<br><br>
 
 		<label for="prepNbQ" lang="fr" title="0 siginifie toutes les questions">Nombre de questions : </label>
@@ -71,10 +74,8 @@ For online debug : http://restimel.github.io/projets_perso/quizz/quizz.htm
 <section id="searchQuizz">
 	<form>
 		<input type="hidden"><!--ne sert à rien mais grâce à ça Firefox affiche correctement la selection dans le multi-select-->
-		<label for="theme" lang="fr">Thème :</label>
-		<select id="srchTheme" multiple></select>
 
-		<label for="srchNiveau" lang="fr">Difficultée :</label>
+		<label for="srchNiveau" lang="fr">Difficulté :</label>
 		<select id="srchNiveau" multiple>
 			<option value="-1" selected>Tous</option>
 			<option value="0">Débutant</option>
@@ -84,12 +85,14 @@ For online debug : http://restimel.github.io/projets_perso/quizz/quizz.htm
 			<option value="4">Difficile</option>
 			<option value="5">Très difficile</option>
 		</select>
+		<br><br>
 
-		<br>
+		<label for="srchThemes" lang="fr">Thème :</label>
+		<select id="srchThemes" multiple><option></option></select>
+		<br><br>
 
-		<!--<label for="nbQ" lang="fr" title="0 siginifie toutes les questions">Nombre de questions : </label>
-		<input type="number" min="0" max="0" value="0" id="nbQ">-->
 	</form>
+	<button><span>Lancer la Recherche</span></button>
 </section>
 
 <section id="quizzQuestion">
@@ -131,31 +134,33 @@ For online debug : http://restimel.github.io/projets_perso/quizz/quizz.htm
 				<th id="rsltSelect" title="Tout cocher ☒">☑</th>
 				<th title="N° de question">Ordre</th>
 				<!--<th>id</th>-->
-				<th>Thème</th>
+				<th>Thèmes</th>
 				<th>Difficulté</th>
 				<th>Temps passé</th>
 				<th>Votre réponse</th>
 				<th>La bonne réponse</th>
 			</tr>
 		</thead>
-		<tbody id="rsltDetail">
-<!--debug-->
-<tr class="mauvaiseReponse"><td><input type="checkbox"></td>
-				<td>1</td>
-				<td>Opération</td>
-				<td>Difficulte</td>
-				<td>00:00:30</td>
-				<td>Toto</td>
-				<td>toto+toto=la tete à toto</td></tr>
-<tr class="bonneReponse"><td><input type="checkbox"></td>
-				<td>2</td>
-				<td>Opération</td>
-				<td>Facile</td>
-				<td>00:02:30</td>
-				<td>miaou</td>
-				<td>miaou</td></tr>
-<!-- fin debug-->
-</tbody>
+		<tbody id="rsltDetail"></tbody>
+	</table>
+</section>
+
+<section id="srchResult">
+	<button><span>Analyser les questions</span></button>
+	<aside>
+		<label id="srchRnb">2 questions on été trouvées.</label>
+	</aside>
+	<table>
+		<thead>
+			<tr>
+				<th id="srchRSelect" title="Tout cocher ☒">☑</th>
+				<th title="N° de question">Num</th>
+				<th>Thèmes</th>
+				<th>Difficulté</th>
+				<th title="Identifiant de la question">id</th>
+			</tr>
+		</thead>
+		<tbody id="srchRDetail"></tbody>
 	</table>
 </section>
 

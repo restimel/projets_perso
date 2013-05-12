@@ -33,7 +33,6 @@ function quizzTest(){
 	var elemThemes = document.getElementById("prepThemes"),
 		elemNiveau = document.getElementById("prepNiveau"),
 		filtre = {themes:[],niveau:[]},
-		items, //liste des questions à poser
 		i, li = elemThemes.options.length;
 	
 	//initialisation des propriétés
@@ -81,6 +80,9 @@ function quizzTest(){
 	this.elemTime = document.getElementById("questionTime");
 	this.elemTime.textContent = timeFormat(this.tempAlloue);
 	this.timer = setInterval(this.time.bind(this),400);
+	
+	//afficher l'onglet de quizz
+	document.getElementById("btn_quizzQuestion").parentNode.className = "";
 	
 	//lancer la session de questions
 	this.timerInit = this.timerLast = Date.now();
@@ -168,14 +170,20 @@ quizzTest.prototype.resultat = function(){
 		"Bravo ! Vous avez correctement répondu à toutes les questions ! Félicitation."
 	]
 	
+	//changement d'affichage des onglets
+	document.getElementById("btn_quizzQuestion").parentNode.className = "hidden";
+	document.getElementById("btn_quizzResult").parentNode.className = "";
+	
 	//changement de session
 	changeSession("quizzResult");
 	
 	//mise à jour de l'entête
 	var rating = Math.round(this.nbBonneReponse/this.length*100),
 		rsltScore = document.getElementById("rsltScore");
+	
 	rsltScore.textContent = this.nbBonneReponse+" / "+this.length;
-	rsltScore.style.color = "rgb("+(rating<50?255:(405-rating*3))+","+(rating>50?200:(100+rating*2))+",50)";
+	rsltScore.style.color = "rgb("+(rating<50?255:(405-rating*3))+","+(rating>50?200:(100+rating*2))+",50)"; //colorisation du score
+	
 	document.getElementById("rsltTemps").textContent = timeFormat(this.tempsPasse);
 	document.getElementById("rsltMessage").textContent = message[Math.floor(rating/100*(message.length-1))]
 	
@@ -208,7 +216,7 @@ quizzTest.prototype.resultat = function(){
 		
 		//colonne Thème
 		cell = row.insertCell(-1);
-		cell.textContent = question.theme.join(", ");
+		cell.textContent = question.theme.sort().join(", ");
 		
 		//colonne niveau
 		cell = row.insertCell(-1);
@@ -235,7 +243,7 @@ quizzTest.prototype.resultat = function(){
 quizzTest.prototype.stop = function(stopRedirect){
 	clearInterval(this.timer);
 	this.length = this.current;
-	if(!stopRedirect){
+	if(stopRedirect !== true){
 		this.resultat();
 	}
 };

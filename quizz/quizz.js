@@ -80,7 +80,7 @@ var changeSession = function(){
 			while(select.length){
 				select.remove(0);
 			}
-			select = document.getElementById("srchTheme");
+			select = document.getElementById("srchThemes");
 			while(select.length){
 				select.remove(0);
 			}
@@ -99,7 +99,7 @@ var changeSession = function(){
 			if(selected === true){
 				option.selected = true;
 			}
-			document.getElementById("srchTheme").add(option);
+			document.getElementById("srchThemes").add(option);
 		}
 	};
 	ajx.open("get","./quizz.json",true);
@@ -115,9 +115,100 @@ var changeSession = function(){
 **/
 function runQuizz(){
 	if(currentTest){
-		currentTest.stop(false); //arrête un éventuel précédent test (au cas où il ne serait pas fini
+		currentTest.stop(true); //arrête un éventuel précédent test (au cas où il ne serait pas fini
 	}
 	currentTest = new quizzTest();
+}
+
+/**
+ * Lancer la recherche de quizz
+ **/
+function runSearch(){
+	var elemThemes = document.getElementById("srchThemes"),
+		elemNiveau = document.getElementById("srchNiveau"),
+		filtre = {themes:[],niveau:[]},
+		items, //liste des questions posable
+		i, li = elemThemes.options.length;
+	
+	//création du filtre
+	for(i=0;i<li;i++){
+		if(elemThemes.options[i].selected){
+			filtre.themes.push(elemThemes.options[i].value);
+		}
+	}
+	if(filtre.themes.length === 0){
+		filtre.themes.push("Tous");
+	}
+	
+	li = elemNiveau.options.length;
+	for(i=0;i<li;i++){
+		if(elemNiveau.options[i].selected){
+			filtre.niveau.push(elemNiveau.options[i].value);
+		}
+	}
+	if(filtre.niveau.length === 0){
+		filtre.niveau.push("-1");
+	}
+	
+	//récupération de la liste de question
+	items = quizzItems.get(filtre);
+	li = items.length;
+	if(!li) return; //aucune question n'a été trouvée //TODO faire message
+	
+	
+	//mise à jour de l'entête
+	document.getElementById("srchRnb").textContent = li>1? li+" questions ont été trouvées": li+" question a été trouvée";
+	
+	//mise à jour de la table
+	var table = document.getElementById("srchRDetail");
+	table.innerHTML = "";
+	
+	//affichage de la liste
+	items.forEach(function(question){
+		var input,
+			cell,
+			row = table.insertRow(-1);
+			
+		//gestion de la ligne
+		row.className = "search";
+		row.addEventListener("click",prepareListForAnalyze,false);
+	
+		//Colonne pour selection
+		cell = row.insertCell(-1);
+		input = document.createElement("input");
+		input.type = "checkbox";
+		input.value = '{"id":"'+question.id+'"}';
+		input.checked = true;
+		input.addEventListener("click",majSelectionneur,false); //l'événement change n'a pas été utilisé pour éviter une boucle infinie (à voir du côté de oninput)
+		cell.appendChild(input);
+		
+		//colonne num de question
+		cell = row.insertCell(-1);
+		cell.textContent = row.rowIndex;
+		
+		//colonne Thème
+		cell = row.insertCell(-1);
+		cell.textContent = question.theme.sort().join(", ");
+		
+		//colonne niveau
+		cell = row.insertCell(-1);
+		cell.textContent = niveauToString(question.niveau);
+		
+		//colonne id
+		cell = row.insertCell(-1);
+		cell.textContent = question.id;
+		
+	});
+	
+	//mise à jour de l'entête du tableau
+	majSelectionneur.call(document.getElementById("srchRSelect"));
+	
+	
+	//afficher l'onglet de recherche
+	document.getElementById("btn_srchResult").parentNode.className = "";
+	
+	//affichage de la bonne section
+	changeSession("srchResult");
 }
 
 /**
@@ -146,7 +237,7 @@ function answerButtonQuizz(e){
 }
 
 /**
- * Selection des questions
+ * Selection des questions pour Analyse
 **/
 //permet de (dé)sélectionner tous les input du tableau
 function selectAll(){
@@ -174,7 +265,7 @@ function majSelectionneur(){
 
 //permet de préparer la liste qui sera envoyé à l'analyse
 function prepareListForAnalyze(e){
-	if(e.target.tagName === "INPUT") return;
+	if(e.target.tagName === "INPUT") return; //permet d'éviter de selectionner la ligne quand on clique sur le checkbox
 	
 	var section = searchParent.call(this,"section"),
 		liste = section.querySelectorAll("table input:checked"),
@@ -185,6 +276,7 @@ function prepareListForAnalyze(e){
 	});
 	
 	if(liste.length){
+		document.getElementById("btn_"+section.id).parentNode.className = "hidden";
 		displayAnalyze(analyze,section.id,num);
 	}
 }
@@ -224,6 +316,9 @@ var displayAnalyze = (function(){
 		
 		document.getElementById("analyzePrevious").disabled = false;
 		document.getElementById("analyzeNext").disabled = false;
+		
+		//affichage de l'onglet
+		document.getElementById("btn_quizzAnalyze").parentNode.className = "";
 		
 		maj(num);
 	}
@@ -310,6 +405,13 @@ var displayAnalyze = (function(){
 	
 	//permet de revenir à la section précédente
 	function back(){
+		//cache l'onglet
+		document.getElementById("btn_quizzAnalyze").parentNode.className = "hidden";
+		
+		//affiche l'onglet
+		document.getElementById("btn_"+sectionBack).parentNode.className = "";
+		
+		//change la section
 		changeSession(sectionBack);
 	}
 	
@@ -370,14 +472,21 @@ window.addEventListener("load",function(){
 	//Utilisation du bouton "Lancer le Quizz"
 	document.getElementById("prepRunQuizz").onclick = runQuizz;
 	
+	//Utilisation du bouton "Lancer la Recherche"
+	document.querySelector("#searchQuizz>button").onclick = runSearch;
+	
 	//utilisation du bouton "répondre"
 	document.getElementById("btnRepondre").onclick = answerButtonQuizz;
 	
 	//bouton (dé)sélectionner
 	document.getElementById("rsltSelect").onclick = selectAll;
+	document.getElementById("srchRSelect").onclick = selectAll;
 	
 	//bouton d'analyse
 	document.querySelector("#quizzResult>button").onclick = prepareListForAnalyze;
+	
+	//bouton d'analyse après recherche
+	document.querySelector("#srchResult>button").onclick = prepareListForAnalyze;
 },false);
 
 /**

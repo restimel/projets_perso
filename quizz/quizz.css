@@ -11,6 +11,14 @@ nav li{
 	height: 2em;
 }
 
+li.hidden{
+	display:none;
+}
+
+#btn_quizzQuestion{
+	font-weight: bold;
+}
+
 	/*corps*/
 section{
 	border: 1px solid black;
@@ -74,9 +82,14 @@ summary.detailsOpen:before{
 }
 
 /**
+ * 
  *	Mise en page par section
+ * 
  **/
-/*pour l'animation entre les différentes section*/
+
+/*
+ *	pour l'animation entre les différentes section
+ */
 #sectionCopy{
 	z-index: 1;
 	padding: 0;
@@ -102,7 +115,9 @@ summary.detailsOpen:before{
 	transition: right 0.3s ease-out;
 }
 
-/*Affichage de l'accueil*/
+/*
+ *	Affichage de l'accueil
+ */
 #accueil p{
 	text-align: justify;
 }
@@ -126,14 +141,16 @@ summary.detailsOpen:before{
 	text-shadow: 2px 2px black, -1px -1px #606060;
 }
 
-/*mise en page de "quizz preparation"*/
+/*
+ *	mise en page de "quizz preparation"
+ */
 #quizzPreparation form{
 	display: block;
 	position: absolute;
 	padding: 1em;
 	border: 1px solid black;
 	left: 0.5em;
-	right: 20em;
+	right: 25em;
 	top: 1em;
 }
 #quizzPreparation form input{
@@ -143,10 +160,10 @@ summary.detailsOpen:before{
 #quizzPreparation>button{
 	position: absolute;
 	display: block;
-	width: 15em;
 	right: 5em;
 	top: 4em;
-	height: 15em;
+	width: 16em;
+	height: 16em;
 	
 	background-color: green;
 	cursor: pointer;
@@ -158,7 +175,43 @@ summary.detailsOpen:before{
 	text-shadow: 2px 2px black, -1px -1px #406640;
 }
 
-/*mise en page de "quizz question"*/
+/*
+ *	mise en page de "search quizz"
+ */
+#searchQuizz form{
+	display: block;
+	position: absolute;
+	padding: 1em;
+	border: 1px solid black;
+	left: 0.5em;
+	right: 25em;
+	top: 1em;
+}
+#searchQuizz form input{
+	max-width:8em;
+}
+
+#searchQuizz>button{
+	position: absolute;
+	display: block;
+	right: 5em;
+	top: 4em;
+	width: 16em;
+	height: 16em;
+	
+	background-color: green;
+	cursor: pointer;
+}
+#searchQuizz>button *{
+	font-weight: bold;
+	font-size: xx-large;
+	color: white;
+	text-shadow: 2px 2px black, -1px -1px #406640;
+}
+
+/*
+ *	mise en page de "quizz question"
+ */
 	/*entetes*/
 #quizzQuestion>aside{
 	display: block;
@@ -301,7 +354,9 @@ button.ready{
 	transition: background-color 1s;
 }
 
-/*mise en page de "quizz result"*/
+/*
+ *	mise en page de "quizz result"
+ */
 	/*entete*/
 #quizzResult>aside{
 	padding: 1em;
@@ -376,9 +431,65 @@ button.ready{
 }
 
 
-/**
- * Section Analyze
- **/
+/*
+ *	mise en page de "search result"
+ */
+	/*entete*/
+#srchResult>aside{
+	padding: 1em;
+
+}
+
+#srchResult>aside>label{
+	display: inline-block;
+	/*margin-right: 15em;*/
+}
+
+
+	/*affichage du bouton pour analyser le détail*/
+#srchResult>button{
+	float: right;
+	display: block;
+	cursor: pointer;
+	
+	width: 17em;
+	height: 17em;
+	
+	margin-right: 5em;
+	margin-top: 4em;
+	
+	background-color: rgb(60,160,190);
+}
+#srchResult>button *{
+	font-weight: bold;
+	font-size: 3em;
+	color: white;
+	text-shadow: 2px 2px black, -1px -1px rgb(25,105,145);
+}
+
+	/*affichage du tableau de détails*/
+#srchRSelect{
+	cursor: pointer;
+}
+
+#srchResult tbody>tr:hover{
+	color: rgba(250,250,250,0.8);
+	cursor: pointer;
+}
+
+#srchResult tr.search{
+	background-color: rgba(40,200,240,0.5);
+	background-image: -ms-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,100,0.3), rgba(0,0,0,0));
+	background-image: -moz-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,100,0.1), rgba(0,0,0,0));
+	background-image: -o-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,100,0.3), rgba(0,0,0,0));
+	background-image: -webkit-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,100,0.3), rgba(0,0,0,0));
+	background-image: linear-gradient(top, rgba(0,0,0,0), rgba(0,0,100,0.3), rgba(0,0,0,0));
+}
+
+
+/*
+ *	Section Analyze
+ */
 	/*entete*/
 #quizzAnalyze>nav{
 	display: block;
