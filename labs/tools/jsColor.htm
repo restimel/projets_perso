@@ -248,7 +248,7 @@ function color(source,inline){
 		}
 		
 		switch(mode){
-			case '"': //dans une chaine de caractère (commençant par ")
+			case '"': //dans une chaine de caractères (commençant par ")
 				switch(car){
 					case "\\":
 						special = car;
@@ -264,7 +264,7 @@ function color(source,inline){
 					default:
 				}
 				break;
-			case "'": //dans une chaine de caractère (commençant par ')
+			case "'": //dans une chaine de caractères (commençant par ')
 				switch(car){
 					case "\\":
 						special = car;
@@ -300,7 +300,7 @@ function color(source,inline){
 					}else if(/\*\/$/.test(part)){
 						add("comment2");
 						mode="";
-					}//sinon c'est qu'il s'agit d'un / perdu au mileur d'un commentaire
+					}//sinon c'est qu'il s'agit d'un / perdu au milieu d'un commentaire
 				}
 				break;
 			case "regexp":
@@ -312,7 +312,6 @@ function color(source,inline){
 						mode="r[";
 						break;
 					case "/":
-						part = safeHTML(part);
 						add("regexp");
 						mode="rflag";
 						break;
@@ -391,7 +390,7 @@ function color(source,inline){
 						}
 						break;
 					case "/":
-						switch(source.charAt(i+1)){
+						switch(source.charAt(i+1)){ //vérification du caractère suivant
 							case "/":
 								verify(true);
 								mode="//";
@@ -406,7 +405,7 @@ function color(source,inline){
 								break;
 							default:
 								verify(true);
-								if(source.substring(0,i)){
+								if(/^.+\//.test(source.substring(i+1))){ //si sur la même ligne, il y a un autre / c'est une regexp (BUG, mauvaise interprétation: var g = 2/1, u = 2/g;)
 									mode="regexp";
 								}else{
 									add("operator");
