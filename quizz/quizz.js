@@ -67,8 +67,10 @@ var changeSession = function(){
 			quizzItems.themes.forEach(createOptionTheme);
 			
 			//maj du nombre max de questions
-			var nbQ = document.getElementById("prepNbQ")
-			nbQ.value = nbQ.max = quizzItems.length;
+			var nbQ = document.getElementById("prepNbQ");
+			nbQ.max = quizzItems.length;
+			nbQ.value = Math.min(10,quizzItems.length);
+			document.getElementById("prepNbQMax").textContent = "/"+quizzItems.length;
 			
 		}else{
 			//console.debug("ajax : "+ajx.readyState+" "+ajx.status);
@@ -266,15 +268,26 @@ function majSelectionneur(){
 //permet de préparer la liste qui sera envoyé à l'analyse
 function prepareListForAnalyze(e){
 	if(e.target.tagName === "INPUT") return; //permet d'éviter de selectionner la ligne quand on clique sur le checkbox
-	
+	var input = this.querySelector("input"),
+		num;
+
+	//vérification si on a cliqué sur une ligne
+	if(input){
+		input.checked = true;
+		num = parseInt(JSON.parse(input.value).id,10);
+	}
+
+	//récupération des éléments cochés
 	var section = searchParent.call(this,"section"),
 		liste = section.querySelectorAll("table input:checked"),
-		analyze = [],
-		num = this.indexRow-1 || 0; //TODO lorsqu'on clique sur ligne et que toutes les lignes ne sont pas selectionner
+		analyze = []; 
+	
+	//création de la liste
 	Array.prototype.forEach.call(liste,function(input){
 		analyze.push(JSON.parse(input.value));
 	});
 	
+	//envoit vers Analyse
 	if(liste.length){
 		document.getElementById("btn_"+section.id).parentNode.className = "hidden";
 		displayAnalyze(analyze,section.id,num);
@@ -308,7 +321,9 @@ var displayAnalyze = (function(){
 	return init;
 	
 	//permet d'initialiser la liste
-	function init(liste,elemBack,num){
+	function init(liste,elemBack,numId){
+		var numStart = 0; //numéro auquel l'analyse commence
+		
 		//sauvegarde des valeurs
 		listeItems = liste;
 		length = liste.length;
@@ -320,7 +335,13 @@ var displayAnalyze = (function(){
 		//affichage de l'onglet
 		document.getElementById("btn_quizzAnalyze").parentNode.className = "";
 		
-		maj(num);
+		//recherche du numéro de position correspondant à la question ayant cet ID
+		if(typeof numId === "number"){
+			numStart = length;
+			while(--numStart && parseInt(listeItems[numStart].id,10) !== numId){}
+			//maintenant numStart vaut soit 0 soit la position où se trouve l'ID
+		}
+		maj(numStart);
 	}
 	
 	//mise à jour de la page
@@ -333,7 +354,7 @@ var displayAnalyze = (function(){
 		//récupération de la question
 		var item = quizzItems.get(parseInt(listeItems[current].id,10));
 		
-		//enregistrement de la reponse de l'utilsiateur
+		//enregistrement de la reponse de l'utilisateur
 		var reponse = listeItems[current].reponse;
 		
 		//désactiver les boutons
@@ -349,6 +370,9 @@ var displayAnalyze = (function(){
 		if(current === length-2){
 			document.getElementById("analyzeNext").disabled = false;
 		}
+		
+		//affichage de l'id
+		document.querySelector("#quizzAnalyze>nav>div").innerHTML = "id&nbsp;: "+item.id+"<br>Niveau&nbsp;: "+niveauToString(item.niveau);
 		
 		//remplissage des éléments
 		document.getElementById("analyzeCodeRead").innerHTML = color(item.code);

@@ -28,6 +28,7 @@
 		stop(stopRedirect) : l'utilisateur arrête le test. stopRedirect (boolean) : si vaut true alors ne redirige pas vers la page de résultat
 		time() : gestion du temps
 */
+"use strict";
 
 function quizzTest(){
 	var elemThemes = document.getElementById("prepThemes"),
@@ -37,9 +38,9 @@ function quizzTest(){
 	
 	//initialisation des propriétés
 	this.nbBonneReponse = 0;
-	this.tempAlloue = document.getElementById("prepIsTime").checked ? document.getElementById("prepTime").value.replace(/^(?:(\d+):(\d+):)?(\d+)$/,function(mtf,h,mn,s){
-			return parseInt(h,10)*3600 + parseInt(mn,10)*60 + parseInt(s,10);
-			}) : 0;
+	this.tempAlloue = document.getElementById("prepIsTime").checked ? parseInt(document.getElementById("prepTime").value.replace(/^(?:(\d{1,2}):(\d{1,2})(?!\d))?(?::?(\d+))?(?:\s*[APap][Mm])?$/,function(mtf,h,mn,s){
+		return parseInt(h||0,10)*3600 + parseInt(mn||0,10)*60 + parseInt(s||0,10);
+		}))||600 : 0;
 	this.tempsPasse = 0;
 	this.score = [];
 	

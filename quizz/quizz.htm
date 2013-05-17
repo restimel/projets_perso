@@ -63,10 +63,11 @@ For online debug : http://restimel.github.io/projets_perso/quizz/quizz.htm
 
 		<label for="prepNbQ" lang="fr" title="0 siginifie toutes les questions">Nombre de questions : </label>
 		<input type="number" min="1" max="0" value="1" id="prepNbQ">
+		<label id="prepNbQMax">/10</label>
 		<br><br>
 
 		<label lang="fr"><input type="checkbox" id="prepIsTime"> Répondre en temps limité </label>
-		<input type="time" value="00:10:00" id="prepTime" step="1">
+		<input title="Temps alloué pour l'ensemble du test (format : Heure:Min:sec ou le nombre de secondes)" type="time" value="00:10:00" id="prepTime" step="1">
 	</form>
 	<button id="prepRunQuizz"><span>Lancer le QUIZZ</span></button>
 </section>
@@ -170,7 +171,7 @@ For online debug : http://restimel.github.io/projets_perso/quizz/quizz.htm
 		<button id="analyzePrevious" title="Question précédente">←</button>
 		<output>2 / 10</output>
 		<button id="analyzeNext" title="Question suivante">→</button>
-		</header>
+		<div>id:1<br>Niveau : test</div>
 	</nav>
 	<div>
 		<fieldset class="code">

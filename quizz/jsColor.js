@@ -241,7 +241,7 @@ function color(source,inline){
 					}else if(/\*\/$/.test(part)){
 						add("comment2");
 						mode="";
-					}//sinon c'est qu'il s'agit d'un / perdu au mileur d'un commentaire
+					}//sinon c'est qu'il s'agit d'un / perdu au milieu d'un commentaire
 				}
 				break;
 			case "regexp":
@@ -253,7 +253,6 @@ function color(source,inline){
 						mode="r[";
 						break;
 					case "/":
-						part = safeHTML(part);
 						add("regexp");
 						mode="rflag";
 						break;
@@ -332,7 +331,7 @@ function color(source,inline){
 						}
 						break;
 					case "/":
-						switch(source.charAt(i+1)){
+						switch(source.charAt(i+1)){ //vérification du caractère suivant
 							case "/":
 								verify(true);
 								mode="//";
@@ -347,7 +346,7 @@ function color(source,inline){
 								break;
 							default:
 								verify(true);
-								if(source.substring(0,i)){
+								if(/^.+\//.test(source.substring(i+1))){
 									mode="regexp";
 								}else{
 									add("operator");

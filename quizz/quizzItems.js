@@ -19,6 +19,7 @@
 				Pour correspondre un item doit satisfaire à tous les critères du filtre
 		init() : sert à configurer les informations de l'objet. Doit être appelé après toutes modifications de l'objet quizzItems (ajout/suppression d'items)
 */
+"use strict";
 
 var quizzItems = {
 	liste:[],

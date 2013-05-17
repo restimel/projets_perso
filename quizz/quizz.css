@@ -162,8 +162,8 @@ summary.detailsOpen:before{
 	display: block;
 	right: 5em;
 	top: 4em;
-	width: 16em;
-	height: 16em;
+	width: 17em;
+	height: 17em;
 	
 	background-color: green;
 	cursor: pointer;
@@ -196,8 +196,8 @@ summary.detailsOpen:before{
 	display: block;
 	right: 5em;
 	top: 4em;
-	width: 16em;
-	height: 16em;
+	width: 17em;
+	height: 17em;
 	
 	background-color: green;
 	cursor: pointer;
@@ -513,8 +513,8 @@ button.ready{
 
 #quizzAnalyze>nav>button{
 	display: inline-block;
-	margin-left: 3em;
-	margin-right: 3em;
+	margin-left: 2em;
+	margin-right: 2em;
 	margin-top: 0;
 	margin-bottom: 0;
 	width: 3em;
@@ -543,6 +543,17 @@ button.ready{
 	font-size: x-large;
 	color: rgb(85,145,230);
 	text-shadow: 2px 2px 3px black, -1px -1px #404066;
+}
+
+#quizzAnalyze>nav>div{
+	float: right;
+	display: inline-block;
+	margin-right: 5em;
+	margin-top: 0;
+	margin-bottom: 0;
+
+	font-size : x-small;
+	text-align: right;
 }
 
 
