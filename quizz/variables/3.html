@@ -4,28 +4,22 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: déclaration, portée</aside>
-thème: portée<br>
+thème: chaînes de caractères<br>
 niveau: 0<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var a = 1;
-function f1(){
-	a = 2;
-}
+var text = 'l\'eau \"bleue\"';
 
-function f2(){
-	alert(a);
-}
-
-f1();
-f2();
+alert(text);
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li>1</li>
-	<li class="bonneReponse">2</li>
+	<li class="bonneReponse">l'eau "bleue"</li>
+	<li>l\'eau "bleue"</li>
+	<li>l'eau \"bleue\"</li>
+	<li>l\'eau \"bleue\"</li>
 	<li>undefined</li>
 	<li>Une erreur se produit</li>
 </ul>
@@ -38,8 +32,8 @@ f2();
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-Dans la fonction <minicode type="javascript">f1</minicode>, la variable <minicode type="javascript">a</minicode> n'est pas déclarée. Ce sera donc la variable portant ce nom de l'espace parent qui sera utilisée. Ainsi la variable <minicode type="javascript">a</minicode> déclarée au tout début est modifiée par <minicode type="javascript">f1</minicode> et vaut maintenant <minicode type="javascript">2</minicode>.<br>
-Dans la fonction <minicode type="javascript">f2</minicode>, la variable <minicode type="javascript">a</minicode> n'est pas déclarée. Ce sera donc la variable portant ce nom de l'espace parent qui sera utilisée. C'est donc la variable <minicode type="javascript">a</minicode> déclarée au tout début qui est affichée (et qui vaut <minicode type="javascript">2</minicode> depuis la modification faite par <minicode type="javascript">f1</minicode>).
+En JavaScript, les chaînes de caractères peuvent être formés à partir d'apostrophes ('), ou de quillemets ("). Ces deux écritures sont absolument identiques et il est possible d'échapper les caractères à l'aide de \ dans les deux cas. Il ne faut pas confondre avec d'autres langages, où l'utilisation de l'une ou l'autre forme influe sur le comportement.<br>
+La seule différence entre ces deux écritures réside dans le fait qu'il n'est pas nécessaire d'échapper les apostrophes dans une chaine construite à partir de guillemets (et réciproquement). Bien qu'il ne soit pas obligatoire de les échapper, l'échappement et quand même pris en compte.
 </details>
 
 <script>

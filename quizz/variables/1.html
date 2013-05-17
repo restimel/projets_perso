@@ -4,26 +4,22 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: déclaration, portée</aside>
-thème: portée<br>
-niveau: 0<br><br>
+thème: déclaration<br>
+niveau: 1<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var a = 1;
-function f1(){
-	a = 2;
-}
+a = 2;
 
-function f2(){
-	alert(a);
-}
+var a;
 
-f1();
-f2();
+alert(a);
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
+	<li>0</li>
 	<li>1</li>
 	<li class="bonneReponse">2</li>
 	<li>undefined</li>
@@ -38,8 +34,7 @@ f2();
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-Dans la fonction <minicode type="javascript">f1</minicode>, la variable <minicode type="javascript">a</minicode> n'est pas déclarée. Ce sera donc la variable portant ce nom de l'espace parent qui sera utilisée. Ainsi la variable <minicode type="javascript">a</minicode> déclarée au tout début est modifiée par <minicode type="javascript">f1</minicode> et vaut maintenant <minicode type="javascript">2</minicode>.<br>
-Dans la fonction <minicode type="javascript">f2</minicode>, la variable <minicode type="javascript">a</minicode> n'est pas déclarée. Ce sera donc la variable portant ce nom de l'espace parent qui sera utilisée. C'est donc la variable <minicode type="javascript">a</minicode> déclarée au tout début qui est affichée (et qui vaut <minicode type="javascript">2</minicode> depuis la modification faite par <minicode type="javascript">f1</minicode>).
+En JavaScript, la déclaration des variables se fait avant toutes actions (principe du "hoisting"). Ainsi la déclaration d'une nouvelle variable <minicode type="javascript">a</minicode> après l'affectation de la ligne <minicode type="javascript">a = 2;</minicode> n'a aucun impact sur le résultat. La ligne <minicode type="javascript">var a;</minicode> est simplement ignorée.
 </details>
 
 <script>

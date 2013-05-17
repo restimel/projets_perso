@@ -9,16 +9,19 @@ niveau: 0<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
 var a = 1;
-function f1(){
-	a = 2;
-}
 
-function f2(){
+function f1(){
+	var a = 2;
+	
+	function f2(){
+		var a = 3;
+	}
+	
+	f2();
 	alert(a);
 }
 
 f1();
-f2();
 </textarea>
 
 <hr>
@@ -26,6 +29,7 @@ f2();
 <ul>
 	<li>1</li>
 	<li class="bonneReponse">2</li>
+	<li>3</li>
 	<li>undefined</li>
 	<li>Une erreur se produit</li>
 </ul>
@@ -38,8 +42,8 @@ f2();
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-Dans la fonction <minicode type="javascript">f1</minicode>, la variable <minicode type="javascript">a</minicode> n'est pas déclarée. Ce sera donc la variable portant ce nom de l'espace parent qui sera utilisée. Ainsi la variable <minicode type="javascript">a</minicode> déclarée au tout début est modifiée par <minicode type="javascript">f1</minicode> et vaut maintenant <minicode type="javascript">2</minicode>.<br>
-Dans la fonction <minicode type="javascript">f2</minicode>, la variable <minicode type="javascript">a</minicode> n'est pas déclarée. Ce sera donc la variable portant ce nom de l'espace parent qui sera utilisée. C'est donc la variable <minicode type="javascript">a</minicode> déclarée au tout début qui est affichée (et qui vaut <minicode type="javascript">2</minicode> depuis la modification faite par <minicode type="javascript">f1</minicode>).
+Dans la fonction <minicode type="javascript">f2</minicode>, la variable <minicode type="javascript">a</minicode> est déclarée localement. Sa modification n'impactera pas les autres variables portant le même nom qu'elle.<br>
+La demande d'affichage est réalisée dans la fonction <minicode type="javascript">f1</minicode>. La variable <minicode type="javascript">a</minicode> y est déclarée. Ce sera donc cette variable qui sera affichée. Le résultat est donc <minicode type="javascript">2</minicode>.
 </details>
 
 <script>

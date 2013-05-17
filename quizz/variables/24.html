@@ -1,0 +1,74 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+<aside style="display:none;">connaissances nécessaire: déclaration, portée</aside>
+thème: déclaration<br>
+niveau: 1<br><br>
+<b>code:</b><br>
+<textarea rows="20" cols="100" id="question">
+function f(){
+	
+	return g;
+	
+	function g(){
+		return "A";
+	}
+
+};
+
+var h = f();
+
+alert( typeof h );
+</textarea>
+
+<hr>
+<b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
+<ul>
+	<li>boolean</li>
+	<li class="bonneReponse">function</li>
+	<li>number</li>
+	<li>object</li>
+	<li>string</li>
+	<li>undefined</li>
+	<li>Une erreur se produit</li>
+</ul>
+<hr>
+<br>
+<b>Résultat</b> <i>essayez vous-même</i>:
+<br>
+<input type="button" id="input" value="tester" onclick="test()">
+
+
+<details style="margin-top:3em;border:1px solid black;display:block;">
+	<summary>Explication</summary>
+En JavaScript, les variables sont créées avant le début de l'exécution de la fonction, quel que soit l'endroit où elles sont déclarées dans le code (c'est ce qu'on appelle le "hoisting").<br>
+Cela signifie qu'il est possible d'appeler une fonction qui est déclarée plus loin dans le code. Et même si celle-ci est déclarée après un <minicode type="javascript">return</minicode> qui met fin à l'exécution du code dans une fonction.<br>
+<br>
+Quand la fonction <minicode type="javascript">f</minicode> est appelée, elle retourne une référence à la fonction <minicode type="javascript">g</minicode>. Donc <minicode type="javascript">h</minicode> possède une référence à la fonction <minicode type="javascript">g</minicode>. Cette fonction n'a pas été appelée donc <minicode type="javascript">typeof h</minicode> vaut <minicode type="javascript">"function"</minicode>.
+</details>
+
+<script>
+function test(){
+	var code = document.getElementById("question").value;
+	if(!/alert\(/.test(code)){
+		code = code.replace(/(?:^|[\r\n])(?:[\r\n]|$)/g,"").replace(/(^|[\n\r;])([^;\r\n]+);?$/,"$1alert($2);");
+	}
+	try{
+		var f=new Function(code);
+	}catch(e){
+		alert("ERROR while creating test\n"+e.message);
+	}
+	if(f){
+		try{
+			f();
+		}catch(e){
+			alert("ERROR while executing\n"+e.message);
+		}
+	}
+}
+</script>
+
+</body>
+</html>

@@ -4,28 +4,21 @@
 </head>
 <body>
 <aside style="display:none;">connaissances nécessaire: déclaration, portée</aside>
-thème: portée<br>
-niveau: 0<br><br>
+thème: regexp<br>
+niveau: 2<br><br>
 <b>code:</b><br>
 <textarea rows="20" cols="100" id="question">
-var a = 1;
-function f1(){
-	a = 2;
-}
+var str = "Bonjour\nVoici un petit texte\nBonsoir";
+var r = /(B.{5}).*(B.{5})/;
 
-function f2(){
-	alert(a);
-}
-
-f1();
-f2();
+alert( r.test(str) );
 </textarea>
 
 <hr>
 <b>Question:</b> Qu'est-ce qui s'affiche si on exécute ce code?
 <ul>
-	<li>1</li>
-	<li class="bonneReponse">2</li>
+	<li class="bonneReponse">false</li>
+	<li>true</li>
 	<li>undefined</li>
 	<li>Une erreur se produit</li>
 </ul>
@@ -38,8 +31,10 @@ f2();
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-Dans la fonction <minicode type="javascript">f1</minicode>, la variable <minicode type="javascript">a</minicode> n'est pas déclarée. Ce sera donc la variable portant ce nom de l'espace parent qui sera utilisée. Ainsi la variable <minicode type="javascript">a</minicode> déclarée au tout début est modifiée par <minicode type="javascript">f1</minicode> et vaut maintenant <minicode type="javascript">2</minicode>.<br>
-Dans la fonction <minicode type="javascript">f2</minicode>, la variable <minicode type="javascript">a</minicode> n'est pas déclarée. Ce sera donc la variable portant ce nom de l'espace parent qui sera utilisée. C'est donc la variable <minicode type="javascript">a</minicode> déclarée au tout début qui est affichée (et qui vaut <minicode type="javascript">2</minicode> depuis la modification faite par <minicode type="javascript">f1</minicode>).
+Dans une expression régulière, en JavaScript, le <minicode type="javascript">.</minicode> indique n'importe quel caractère sauf les sauts de ligne (\r ou \n).<br>
+Bonjour et Bonsoir correspondent bien aux motifs recherchés. Mais entre les deux, il y a des sauts de lignes. Donc le <minicode type="javascript">.</minicode> ne valide pas la chaine.<br>
+Pour trouver n'importe quel caractère, y compris les sauts de ligne, il est possible d'utiliser <minicode type="javascript">[\s\S]</minicode> qui permet de chercher un caractère qui est soit un caractère "blanc" soit un caractère qui n'est pas "blanc". Donc tous les caractères correspondent à cette définition.<br>
+Pour que l'expression puisse correspondre à cette chaîne, il faudrait écrire&nbsp;: <minicode type="javascript">var r = /(B.{5})[\s\S]*(B.{5})/;</minicode>.
 </details>
 
 <script>

@@ -13,12 +13,17 @@ var toto = "abc";
 function f(){
 	alert("def");
 }
-with({ toto:"ghi" }) {
+
+try{
+	throw "une erreur"; //génère une erreur qui est capturée par le catch
+}catch(toto){
+	toto = "ghi";
 	var f = function() {
 	   alert(toto);
-	};
+	}
 	f();
 }
+
 </textarea>
 
 <hr>
@@ -38,8 +43,8 @@ with({ toto:"ghi" }) {
 
 <details style="margin-top:3em;border:1px solid black;display:block;">
 	<summary>Explication</summary>
-Ceci est une question plutôt facile mais qui peut piéger ceux qui réfléchissent aux environnements temporaires.<br>
-La variable <minicode type="javascript">f</minicode> qui est dans le <minicode type="javascript">with</minicode> est déclarée dans l'espace de noms principal et écrase donc la déclaration de la fonction <minicode type="javascript">f</minicode>. Toutefois son affectation se fait dans le block <minicode type="javascript">with</minicode> et son espace de nom parent est donc celui de <minicode type="javascript">with</minicode>. Ainsi <minicode type="javascript">toto</minicode> correspond à celui de l'objet de <minicode type="javascript">with</minicode>.
+Ceci est une question plutôt facile mais qui peut piéger ceux qui réfléchissent en pensant aux environnements temporaires.<br>
+La variable <minicode type="javascript">f</minicode> qui est dans le <minicode type="javascript">try … catch</minicode> est déclarée dans l'espace de noms principal (principe du "hoisting") et fait référence au même nom que la fonction <minicode type="javascript">f</minicode>. Mais sa nouvelle affectation se fait dans le bloc <minicode type="javascript">catch</minicode> et son espace de noms parent est donc celui de <minicode type="javascript">catch</minicode>. Ainsi <minicode type="javascript">toto</minicode> correspond à celui qui est modifié dans le bloc <minicode type="javascript">catch</minicode>.
 </details>
 
 <script>
