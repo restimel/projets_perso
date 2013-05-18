@@ -3,6 +3,11 @@
 	src: url('./ressources/bold_dot_digital-7.ttf');
 }
 
+@font-face{
+	font-family: fleche;
+	src: url('./ressources/Arrows_restimel.ttf');
+}
+
 body{
 	padding:0;
 }
@@ -175,9 +180,17 @@ nav button[disabled]{
 	opacity: 0;
 }
 
+/*affichage de la flèche dans le bouton*/
+nav button span:first-child{
+	text-align: center;
+	font-family: fleche;
+	font-size:1.2em;
+}
+
 /*affichage du titre de la page dans le bouton*/
-nav button span{
-	font-size:0.8em;
+nav button div{
 	display:block;
 	margin-top:-0.2em;
+	font-size:0.8em;
 }
+

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <!--
-Labs.html
+index.html
 
 Author: Benoit Mariat (b.mariat@gmail.com)
 Date: March 2013
@@ -13,8 +13,8 @@ License: You are free to use, share, redistribute and modify it if you keep all 
 Vous êtes autorisés à utiliser, partager, redistribuer et modifier ce code tant que vous gardez les noms des auteurs et contributeurs. (http://creativecommons.org/licenses/by/3.0/deed.fr)
 
 
-Content: Information about me and some program that I have made
-Original file: http://b.mariat.free.fr/
+Content: Information about me and some programs that I have made
+Original file: http://b.mariat.free.fr/index.html
 
 -->
 <title>Beno&icirc;t Mariat</title>
@@ -29,7 +29,7 @@ Original file: http://b.mariat.free.fr/
 	<a href="./demo.html" target="contenu">Démonstration & Jeux</a>
 	<a href="./tuto.html" target="contenu">Tutoriels</a>
 <!--applications-->
-	<button id="previousPage" title="Revenir à la page précédente" disabled>⤺<span></span></button>
+	<button id="previousPage" title="Revenir à la page précédente" disabled><span>⤺</span><div></div></button>
 </nav>
 <div id="forIframe"><iframe id="contenu" name="contenu" src="indexLabs.html"></iframe></div>
 
@@ -37,7 +37,7 @@ Original file: http://b.mariat.free.fr/
 (function(){
 		var currentPage=null,
 		historiqueIframe=[],
-		historiqueTitle=document.querySelector("nav>button>span"),
+		historiqueTitle=document.querySelector("nav>button>div"),
 		iframe=document.querySelector("iframe");
 
 	//ajout d'événements
