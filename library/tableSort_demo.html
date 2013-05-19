@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>demo: Table Sort</title>
+	<!--
+License: You are free to use, share, redistribute and modify it if you keep all authors and contributors names. ( http://creativecommons.org/licenses/by/3.0/)
+
+License : Vous êtes autorisés à utiliser, partager, redistribuer et modifier ce code tant que vous gardez les noms des auteurs et contributeurs. (http://creativecommons.org/licenses/by/3.0/deed.fr)
+
+
+	Il s'agit d'un petit script permettant de trier un tableau selon un de ses colones en cliquant sur l'entête.
+	Les colonnes peuvent êtres triées selon différentes méthodes
+		string	: selon les caractères (M10 est avant M2)
+		number	: selon les nombres (10 est après 2, M10 est après M2)
+		random	: au hasard
+		none	: ne trie pas
+	
+	fichier original : disponible http://b.mariat.free.fr/
+	
+	Author : Benoit Mariat
+	Date : 2013 - 05 - 19 (création)
+	-->
+</head>
+<body>
+<style>
+table{
+	border-collapse:collapse;
+}
+td{
+	border: 1px solid black;
+}
+
+th{
+	cursor: pointer;
+	background-color: rgb(150,160,220);
+}
+
+th.sortAsc:after{
+	content: " ▾";
+}
+th.sortDesc:after{
+	content: " ▴";
+}
+
+div{
+	float: left;
+	width : 40em;
+	margin-right : 2em;
+	text-justify: justify;
+}
+</style>
+
+<div>
+This is a little script to sort HTML table by clicking on their th element.
+To use this script, you just need to load tableSort.js file and then call the tableSort constructor.<br>
+<br>
+Example :<br>
+var s = new tableSort(table,["number","string","random","none"],tbody);<br>
+<br>
+ - table is a reference to an HTML table. It is the tbale which will be sorted<br>
+ - Second argument is an array describing how to sort each column. Values are "number", "string", "random", or "none". It is also possible to put a custom function to indicate how to sort this column. This function takes 2 arguments (values of the first cell and the second cell) and must return a number (1 means that first cell should be before second cell; 0 that cells are equal; -1 that first cell should be after second cell)<br>
+ - tbody is optional. It is a reference to the tbody (thead or tfoot) on which rows will be sorted<br>
+<br>
+It is possible to run a sort by  using sort method:<br>
+s.sort(1,-1);<br>
+<br>
+ - first argument is the column to sort<br>
+ - second argument is the order to apply (1 means Ascendant order, -1 means descendant order)<br>
+
+</div>
+
+<table>
+<thead>
+	<tr><th>Nombre</th><th>Nombre</th><th>String</th><th>random</th><th>None</th><th>Custom</th></tr>
+</thead>
+<tbody>
+	<tr><td>1</td><td>Chaine1</td><td>Chaine1</td><td>Chaine1</td><td>Chaine1</td><td>Chaine1</td></tr>
+	<tr><td>10</td><td>Chaine10</td><td>Chaine10</td><td>Chaine10</td><td>Chaine10</td><td>Chaine10</td></tr>
+	<tr><td>2</td><td>Chaine2</td><td>Chaine2</td><td>Chaine2</td><td>Chaine2</td><td>Chaine2</td></tr>
+	<tr><td>21</td><td>Chaine21</td><td>Chaine21</td><td>Chaine21</td><td>Chaine21</td><td>Chaine21</td></tr>
+	<tr><td>22</td><td>Chaine22</td><td>Chaine22</td><td>Chaine22</td><td>Chaine22</td><td>Chaine22</td></tr>
+	<tr><td>3</td><td>Chaine3</td><td>Chaine3</td><td>Chaine3</td><td>Chaine3</td><td>Chaine3</td></tr>
+	<tr><td>31</td><td>Chaine31</td><td>Chaine31</td><td>Chaine31</td><td>Chaine31</td><td>Chaine31</td></tr>
+	<tr><td>111</td><td>Chaine111</td><td>Chaine111</td><td>Chaine111</td><td>Chaine111</td><td>Chaine111</td></tr>
+	<tr><td>1</td><td>String4</td><td>String4</td><td>String4</td><td>String4</td><td>String4</td></tr>
+	<tr><td>2</td><td>String5</td><td>String5</td><td>String5</td><td>String5</td><td>String5</td></tr>
+	<tr><td>3</td><td>String6</td><td>String6</td><td>String6</td><td>String6</td><td>String6</td></tr>
+	<tr><td>4</td><td>Chaine10</td><td>Chaine10</td><td>Chaine10</td><td>Chaine10</td><td>Chaine10</td></tr>
+</tbody>
+</table>
+<br>
+<table id="secondTable">
+<thead>
+	<tr><th>string</th><th>Nombre</th></tr>
+</thead>
+<tbody>
+	<tr><td>alpha</td><td>text1 with number</td></tr>
+	<tr><td>beta</td><td>text2 : second</td></tr>
+	<tr><td>gamma</td><td>text10 : many informations</td></tr>
+	<tr><td>delta</td><td>text11 : some information</td></tr>
+	<tr><td>epsilon</td><td>text10.5 : following information</td></tr>
+	<tr><td>zeta</td><td>text : without number</td></tr>
+	
+</tbody>
+</table>
+
+
+<script src="tableSort.js"></script>
+<script>
+
+var ts = new tableSort(document.querySelector("table"),["number","number","string","random","none",function(s1,s2){return s1.length > s2.length ? 1 : -1;}],document.querySelector("tbody"));
+ts.sort(3); //trie selon la 3e colonne (donc ici random)
+
+
+tableSort(document.getElementById("secondTable"),["string","number"]);
+
+</script>
+</body>
+</html>
