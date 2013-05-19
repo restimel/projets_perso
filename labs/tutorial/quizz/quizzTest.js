@@ -174,6 +174,8 @@ quizzTest.prototype.resultat = function(){
 	//changement d'affichage des onglets
 	document.getElementById("btn_quizzQuestion").parentNode.className = "hidden";
 	document.getElementById("btn_quizzResult").parentNode.className = "";
+	document.querySelector("#quizzResult table").sort(1,1,null);
+	
 	
 	//changement de session
 	changeSession("quizzResult");

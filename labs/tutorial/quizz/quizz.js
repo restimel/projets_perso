@@ -209,6 +209,9 @@ function runSearch(){
 	//afficher l'onglet de recherche
 	document.getElementById("btn_srchResult").parentNode.className = "";
 	
+	//refaire le trie
+	document.querySelector("#srchResult table").sort(1,1,null);
+	
 	//affichage de la bonne section
 	changeSession("srchResult");
 }
@@ -292,6 +295,16 @@ function prepareListForAnalyze(e){
 		document.getElementById("btn_"+section.id).parentNode.className = "hidden";
 		displayAnalyze(analyze,section.id,num);
 	}
+}
+
+//fonction permettant de trier selon les bonnes/mauvaise réponses
+function sortReponses(s1,s2,r1,r2){
+	return r1.className > r2.className ? 1 : -1;
+}
+
+//fonction permettant de trier selon le niveau
+function sortNiveau(s1,s2,r1,r2){
+	return niveauToInt(s1) > niveauToInt(s2) ? 1 : -1;
 }
 
 /**
@@ -511,6 +524,11 @@ window.addEventListener("load",function(){
 	
 	//bouton d'analyse après recherche
 	document.querySelector("#srchResult>button").onclick = prepareListForAnalyze;
+	
+	//ajout des possibilité de trie sur les tableaux de recherche
+	new tableSort(document.querySelector("#quizzResult table"),["none","number","string",sortNiveau,"number",sortReponses,sortReponses]);
+	new tableSort(document.querySelector("#srchResult table"),["none","number","string",sortNiveau,"number"]);
+	
 },false);
 
 /**
@@ -577,6 +595,13 @@ function niveauToString(niveau){
 	}
 	return niveauStr;
 }
+
+//retourne une chaine correpondant au nom de la difficultée
+function niveauToInt(niveau){
+	var niveauStr = ["Débutant","Facile","Moyen","Assez difficile","Difficile","Très difficile"];
+	return niveauStr.indexOf(niveau);
+}
+
 
 //retourne une chaine correpondant au format de temps adapté (00:12:25)
 function timeFormat(tmps){
