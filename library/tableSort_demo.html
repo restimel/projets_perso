@@ -64,6 +64,8 @@ var s = new tableSort(table,["number","string","random","none"],tbody);<br>
 <br>
 It is possible to run a sort by  using sort method:<br>
 s.sort(1,-1);<br>
+ &nbsp;&nbsp;&nbsp;or<br>
+table.sort(1,-1);<br>
 <br>
  - first argument is the column to sort<br>
  - second argument is the order to apply (1 means Ascendant order, -1 means descendant order)<br>
@@ -114,6 +116,8 @@ ts.sort(3); //trie selon la 3e colonne (donc ici random)
 
 
 tableSort(document.getElementById("secondTable"),["string","number"]);
+
+document.getElementById("secondTable").sort(1,-1);
 
 </script>
 </body>

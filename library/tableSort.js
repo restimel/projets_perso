@@ -36,8 +36,7 @@ var tableSort = (function(){
 			return;
 		}
 		
-		var that = this,
-			i = 0,
+		var i = 0,
 			li = sortType.length,
 			f;
 	
@@ -56,13 +55,16 @@ var tableSort = (function(){
 
 		//sauvegarde de l'élément à trier
 		this.tableElement = tableElement;
-		this.tableElement.addEventListener("click", evntClick.bind(that),false);
+		this.tableElement.addEventListener("click", evntClick.bind(this),false);
 		
 		//récupération de l'élément où doit se faire le tri
 		this.sortedElement = sortedElement || this.tableElement.querySelector("tbody");
 		
 		//dernier élément de tri
 		this.elemSorted = null; //référence au dernier élément ayant servi pour le tri
+		
+		//attache à l'élément
+		this.tableElement.sort  = this.sort.bind(this);
 		
 	}
 	
@@ -96,7 +98,7 @@ var tableSort = (function(){
 			
 		//effectue le tri
 		elemTri = elemTri.sort(function(o1,o2){
-			return fSort(o1[0],o2[0])*order;
+			return fSort(o1[0],o2[0],o1[1],o2[1])*order;
 		});
 		
 		//applique les modifications à l'élément
