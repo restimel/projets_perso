@@ -18,7 +18,7 @@ function displayFooter(elem){
 	position.type="number";
 	position.title="Position de l'étape";
 	position.min = 0;
-	poistion.value = 0;
+	position.value = 0;
 	label.appendChild(position);
 	
 	elem.appendChild(label);
@@ -51,25 +51,26 @@ function displayFooter(elem){
 	var addAction = document.createElement("button");
 	addAction.textContent = "Ajouter";
 	addAction.onclick =function(){
-		if(heavyLoad.value){
-			//détection du tye de données
+		var path = heavyLoad.value;
+		if(path){
+			//détection du type de données
 			var result = "unknown";
 			//JSON
 			if(/^\s*[[{]/.exec(path)){
 				if(randoListe.fromJSON(path)===true){
 					result = "JSON";
 				}
-			}
+			}else
 			//KML
-			
+			//TODO KML
+			//NMEA
 			if(/^@[a-zA-Z]+\/ver\d+\.\d+\/wgs-84\//.exec(path)){ //@Sonygps/ver3.0/wgs-84/
-				//NMEA
 				//TODO ajouter vérification
 				randoListe.add(new Parcours(0,{chemin:path}));
 				result = "NMEA";
 			}
 			//liste images
-			
+			//TODO images
 			
 			console.log("chargement data : "+result);
 		}

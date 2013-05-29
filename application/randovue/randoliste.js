@@ -115,9 +115,11 @@ console.warn('code to review (display)');
 			return value;
 		});
 	},
-	fromJSON:function(data){
+	fromJSON:function(data){ //permet de charger des données à partir d'un code JSON
 		//TODO
-		var chemin,dta;
+		var that = this, //pour utiliser la référence de l'objet dans les fonctions internes
+			chemin,dta,
+			position = this.liste.length; //permet d'indiquer la position des éléments à placer
 		
 		function parser(key,value){
 			if(!key){
@@ -145,12 +147,12 @@ console.warn('code to review (display)');
 		function addActions(act){
 			//var obj=new rAction(position,[act.px,act.py,act.pa],act.date,act.metaType,zoom,act.photo,chemin,act.titre,act.comment,true);
 			act.chemin = chemin;
-			this.add(new Lieu(position,act),position++);
+			that.add(new Lieu(position,act),position++);
 		}
 		function addSections(sct){
 			//var obj=new rSection(position,sct.parcours,sct.date,sct.titre,sct.color);
 			//randoListe.add(obj,position++);
-			this.add(new Parcours(position,sct),position++);
+			that.add(new Parcours(position,sct),position++);
 			chemin=sct.parcours;
 			var liste=sct.actions||sct.ssections,i=0,li=liste.length;
 			while(i<li){
@@ -160,8 +162,8 @@ console.warn('code to review (display)');
 			}
 		}
 		try{
-			dta=JSON.parse(data.value,parser);
-			var liste=sct.actions||sct.ssections,i=0,li=liste.length;
+			dta=JSON.parse(data,parser);
+			var liste=dta.actions||dta.ssections,i=0,li=liste.length;
 			while(i<li){
 				if(liste[i].type==="action") addActions(liste[i]);
 				else if(liste[i].type==="section") addSections(liste[i]);
@@ -169,6 +171,7 @@ console.warn('code to review (display)');
 			}
 		}catch(e){
 			dta=null;
+			console.debug(e);
 			return false;
 		}
 		return true;
