@@ -1,5 +1,6 @@
 /*
 	API de gestion de carte pour Google Map
+	Surcharge de l'objet DefaultMap
 */
 
 
@@ -471,7 +472,7 @@ GoogleMap.callBackPosition = function(f,ctx){
 		this.points=option.points || option.chemin || [map.center,map.center]; //liste des points du chemin
 		this.color=option.color||"#FF0000"; //couleur du tracé
 		this.opacity=option.opacity||0.8; //opacité du tracé
-		this.baseWidth=option.width||2; //épaisseur du tracé
+		this.baseWidth=option.width||option.baseWidth||2; //épaisseur du tracé
 		option.editable = option.editable || false; //définit le mode d'affichage
 		
 		//propriétées interne

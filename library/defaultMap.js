@@ -1,14 +1,71 @@
+/**
+	DefaultMap : Objet permettant de définir le cadre d'utilisation d'un objet Map. Peut être étendu pour correspondre à une utilisation d'API de carte particulière
+	
+	Membres:
+		position [lat,long,alt] : (usage interne) centre de la carte (d'affichage)
+		markers [{MARKER}] : (usage interne) liste des marqueurs à afficher
+		listPath [{PATH}] : (usage interne) liste des chemins
+		sourceElement (HTML element) : référence à l'élément HTML où la carte doit être dessinée
+		size [width,height] : taille de l'élément HTML permettant de dessiner la carte
+		center [lat,long,alt] : permet de récupérer/changer le centre de la carte
+		zoom (number) : permet de définir la taille du zoom de la carte
+		type (string) : permet de définir le type de carte à afficher
+		
+	Méthodes:
+		refresh() : permet de forcer le réaffichage de la carte
+		resize() : doit être appelée lorsque l'élément HTML d'affichage change de taille
+		addMarker({MARKER}) : permet d'ajouter un marqueur sur la carte
+		removeMarker(index) : permet de supprimer le marqueur situé à la position index
+		moveMarker(index,position,centerMap) : change les coordonées du marqueurs. Si centerMap vaut true alors le centre de la carte devient celui de ce marqueur
+		changeMarkerType(index,newType) : Change le type du marqueur. newType est un nombre correspondant au type de marqueur
+		addPath({PATH}) : ajoute un chemin sur la carte
+		fit(p1,p2) : permet de recadrer la carte pour afficher uniquement (au mieux) la zone comprise entre p1 et p2 ([lat,long])
+		getAltitude(lat,long,f) : cherche l'altitude du point concerné. La fonction f est appelée avec le résultat en premier paramètre.
+		getPlaceName(lat,long,f) : cherche le nom du lieu du point concerné. La fonction f est appelée avec le résultat en premier paramètre.
+		getIcon(type) : retourne l'url de l'icone à utiliser en fonction du type.
+	
+	objets intermédiaires:
+		MARKER:
+			position [lat,long,alt] : coordonées du marqueur
+			type (string): type de marqueur (image à afficher)
+		
+		PATH = DefaultMap.Path
+			Membres:
+				map ({MAP}) : référence à l'objet Map possédant ce chemin
+				points [ [lat,long,alt] ] : liste des points du chemin
+				color (string) : couleur du tracé
+				opacity (number) : opacité du tracé (1 = opaque; 0 = transparent)
+				baseWidth (number) =option.width||2; //épaisseur du tracé
+				chemins [{}] : (usage interne) liste des tracés utilisés. Propre à l'affichage
+				marqueurs [{}] : (usage interne) liste des marqueurs utilisés. Propre à l'édition et à l'affichage.
+				editable (boolean) : status du mode d'édition (true = l'utilisateur peut éditer le chemin)
+				
+			Méthodes:
+				changePath(listePoints) : permet de changer tous les points du chemins par ceux de listePoints
+				draw() : affiche le chemin sur la carte
+				clear(pointer) : permet d'effacer le tracé (uniquement de l'affichage)
+					@pointer: paramètre indiquant ce qu'il y a à redessiner
+						false (ou undefined): tout redessiner
+						true : seulement les marqueurs d'édition
+						/[0-9]+/ : seulement le point en question
+				resetAltitude() : recalcule toutes les altitudes des points du chemin
+				changeColor(color) : change la couleur du tracé
+				distance() : calcule la distance du chemin (en km)
+				getRect() : retourne le rectangle minimal contenant tout le chemin. Retourne [latMin,lngMin,latMax,lngMax]
+			
+*/
+
 
 function DefaultMap(sourceElement,option){
 	option = option || {};
-	this.position = [0,0,0];
+	this.position = [0,0,0]; //interne
 	this.markers = [];//interne
 	this.listPath = [];//interne
 	
-	this.center = option.center;
-	this.sourceElement = sourceElement;
-	this.zoom = option.zoom || 10;
-	this.type = option.type || "Map";
+	this.center = option.center; //permet de centrer la carte
+	this.sourceElement = sourceElement; //element HTML où doit être dessinée la carte
+	this.zoom = option.zoom || 10; //Niveau de zoom
+	this.type = option.type || "Map"; //définit le type de carte à afficher
 	if(this.sourceElement){
 		this.resize();
 	}
@@ -84,7 +141,8 @@ function DefaultMap(sourceElement,option){
 			writable : false,
 			enumerable : true,
 			configurable : false
-		},resize : {//permet de rafraichir la carte quand la taille de l'élément source a changé
+		},
+		resize : {//permet de rafraichir la carte quand la taille de l'élément source a changé
 			value : function(){
 				this.refresh();
 			},
@@ -280,13 +338,14 @@ function DefaultMap(sourceElement,option){
 	
 	Object.defineProperties(DefaultMap.prototype,properties);
 	
+	//définition de l'objet Path
 	DefaultMap.Path = function(map,option){
 		this.map=map||{};
 		option || (option = {});
 		this.points=option.points || [this.map.center,this.map.center]; //liste des points du chemin
 		this.color=option.color||"#FF0000"; //couleur du tracé
 		this.opacity=option.opacity||0.8; //opacité du tracé
-		this.baseWidth=option.width||2; //épaisseur du tracé
+		this.baseWidth=option.width||option.baseWidth||2; //épaisseur du tracé
 		
 		//propriétées interne
 		this.chemins=[];//liste des tracés utilisés
@@ -333,7 +392,7 @@ function DefaultMap(sourceElement,option){
 		},
 		clear : {
 			/*
-			fonction permettant d'effacer le tracé
+			fonction permettant d'effacer le tracé (uniquement de l'affichage)
 			paramètre:
 				@pointer: paramètre indiquant ce qu'il y a à redessiner
 					false (ou undefined): tout redessiner
@@ -347,7 +406,7 @@ function DefaultMap(sourceElement,option){
 			enumerable : true,
 			configurable : false
 		},
-		resetAltitude : {
+		resetAltitude : { //recalcule toutes les altitudes des points
 			value : function(){
 				function setAltitude(position){
 					return function(altitude){
@@ -365,7 +424,7 @@ function DefaultMap(sourceElement,option){
 			configurable : false
 		},
 		changeColor : {
-			value : function(){
+			value : function(color){
 				this.color = color;
 				this.draw();
 			},
@@ -419,7 +478,7 @@ function DefaultMap(sourceElement,option){
 var Map = DefaultMap;
 
 var mapTools = {
-	distance : function(p1,p2){
+	distance : function(p1,p2){ //permet de calculer la distance entre deux points
 		/*
 		 * p[0]=lattitude
 		 * p[1]=longitude
@@ -429,7 +488,7 @@ var mapTools = {
 		var Rt=6370,conv=Math.PI/180,
 			lat1=p1[0]*conv,lat2=p2[0]*conv,lng=(p2[1]-p1[1])*conv,
 			d=Rt*Math.acos(Math.cos(lat1)*Math.cos(lat2)*Math.cos(lng)+Math.sin(lat1)*Math.sin(lat2));
-		if(typeof p1[2] === "number" && typeof p2[2] === "number"){
+		if(typeof p1[2] === "number" && typeof p2[2] === "number"){ // calcule la différence d'altitude
 			d=Math.sqrt(d*d+(p1[2]-p2[2])*(p1[2]-p2[2])/1000000);
 		}
 		return d;//en km
