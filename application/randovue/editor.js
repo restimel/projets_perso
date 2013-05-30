@@ -1,3 +1,5 @@
+(function (){
+
 /**
  * affiche le bloc permettant d'ajouter de nouvelles actions
  */
@@ -46,33 +48,35 @@ function displayFooter(elem){
 	var heavyLoad = document.createElement("textarea");
 	heavyLoad.title=heavyLoad.placeholder = "Type de données chargeable dans cette zone:\n\t→ JSON provenant d'une sauvegarde randovue\n\t→ données KML permettant de décrire un parcours\n\t→ données NMEA (informations GPS) permettant de décrire un parcours\n\t→ liste d'url d'images (séparées par des sauts de lignes)";
 	zone.appendChild(heavyLoad);
-	elem.appendChild(zone);
+	
+	var fileLoad = document.createElement("input");
+	fileLoad.type = "file";
+	fileLoad.title = "Type de fichier utilisable :\n\t→ JSON provenant d'une sauvegarde randovue\n\t→ données KML permettant de décrire un parcours\n\t→ données NMEA (informations GPS) permettant de décrire un parcours\n\t→ liste d'url d'images (séparées par des sauts de lignes)";
+	fileLoad.multiple = true;
+	fileLoad.onchange = function(e){
+		var text = new FileReader(),i=0,li=this.files.length;
+
+		text.onload = function() {
+		    loadBulk(text.result);
+		    if(++i < li){
+		    	text.readAsText(e.target.files[i]);
+		    }
+		};
+		
+		text.readAsText(this.files[0]);
+	 	
+	};
+	zone.appendChild(fileLoad);
+	
+	elem.appendChild(zone); //fieldset
+	
 	
 	var addAction = document.createElement("button");
 	addAction.textContent = "Ajouter";
 	addAction.onclick =function(){
 		var path = heavyLoad.value;
 		if(path){
-			//détection du type de données
-			var result = "unknown";
-			//JSON
-			if(/^\s*[[{]/.exec(path)){
-				if(randoListe.fromJSON(path)===true){
-					result = "JSON";
-				}
-			}else
-			//KML
-			//TODO KML
-			//NMEA
-			if(/^@[a-zA-Z]+\/ver\d+\.\d+\/wgs-84\//.exec(path)){ //@Sonygps/ver3.0/wgs-84/
-				//TODO ajouter vérification
-				randoListe.add(new Parcours(0,{chemin:path}));
-				result = "NMEA";
-			}
-			//liste images
-			//TODO images
-			
-			console.log("chargement data : "+result);
+			loadbulk(path);
 		}
 		if(inputImg.value){
 			console.warn("TODO à vérifier que l'ajout d'un lieu fonctionne bien");
@@ -83,6 +87,30 @@ function displayFooter(elem){
 		}
 	};
 	elem.appendChild(addAction);
+}
+
+//chargement massif de données
+function loadBulk(path){
+	//détection du type de données
+	var result = "unknown";
+	//JSON
+	if(/^\s*[[{]/.exec(path)){
+		if(randoListe.fromJSON(path)===true){
+			result = "JSON";
+		}
+	}else
+	//KML
+	//TODO KML
+	//NMEA
+	if(/^@[a-zA-Z]+\/ver\d+\.\d+\/wgs-84\//.exec(path)){ //@Sonygps/ver3.0/wgs-84/
+		//TODO ajouter vérification
+		randoListe.add(new Parcours(0,{chemin:path}));
+		result = "NMEA";
+	}
+	//liste images
+	//TODO images
+	
+	console.log("chargement data : "+result);
 }
 
 function editorInit(){
@@ -129,3 +157,5 @@ function test(){
 
 window.addEventListener("load",editorInit,false);
 //window.addEventListener("load",test,false)
+
+})();
