@@ -32,10 +32,14 @@ function Parcours(pst,option){
 			//seul un point a été donné
 			option.chemin=[option.chemin,option.chemin];
 		}
+
+		option.chemin = copyArray(option.chemin);
 	}else{
-		option.chemin=[defaultValue.location,defaultValue.location];
+		if(typeof option.chemin !== "string"){
+			option.chemin=[defaultValue.location,defaultValue.location]; //valeur par défaut
+		}
 	}
-	option.chemin = copyArray(option.chemin);
+	
 	
 	if(typeof option.date !== "string"){
 		if(option.date instanceof Date){
@@ -89,9 +93,10 @@ function Parcours(pst,option){
 			},
 			set: function(path){
 				if(typeof path === "string"){
-					//identifier le type de texte (KML, sony, array)
+					//identifier le type de texte (KML, sony, Array)
+					//TODO KML
 					if(/^[\s\r\n[]+(?:[-0-9.]+[,:/\s][-0-9.]+(?:[,:/\s][-0-9.]*)?(?:[\r\n\s;|[\]]+(?:,[\r\n\s[]+)?|$))+$/.exec(path)){
-						//array
+						//Array
 						path = path.split(/\s*[\r\n;|[\]]+(?:\s*,[\r\n\s[]+)?\s*/);
 						var i=0,li=path.length;
 						while(i<li){
@@ -107,7 +112,7 @@ function Parcours(pst,option){
 						option.chemin = path; //sauvegarde des données
 					}else if(/^@Sonygps\/ver3.0\/wgs-84\//.exec(path)){
 						//format NMEA
-						//TODO http://www.gpsinformation.org/dale/nmea.htm
+						//TODO http://www.gpsinformation.org/dale/nmea.htm (gérer d'autres format)
 						path = path.split(/\s*[\r\n]+\s*/);
 						var i=0,li=path.length,ligne,j=0,points=[];
 						//traitement pour chaque ligne
@@ -127,16 +132,17 @@ function Parcours(pst,option){
 							}
 							i++;
 						}
+						points = pathSmoothing(points,0.025); //lissage des points
 						option.chemin = points; //sauvegarde des données
 					}else{
-						console.warn("format non reconnu !");//en faire un vrai message
+						console.warn("format non reconnu !");//TODO en faire un vrai message
 					}
-				}else if(path instanceof Array){
+				}else if(path instanceof Array){ //le format est déjà une liste de points (Array)
 					if(path[0] instanceof Array){
 						if(path.length<2){
 							//un seul point a été donné
 							option.chemin = copyArray(path);
-							option.chemin[1]=option.chemin[0];
+							option.chemin[1] = option.chemin[0];
 						}else{
 							//sinon c'est que ça doit être correct
 							option.chemin = copyArray(path);
@@ -186,6 +192,49 @@ function Parcours(pst,option){
 	Object.defineProperties(this,membres);
 	
 	this.chemin = option.chemin;
+	
+	/*
+		permet de lisser un chemin en enlevant les points trop près
+	*/
+	function pathSmoothing(points,range){
+		range = range || 0.015;
+		console.warn("debug: original = "+points.length);
+		var i = points.length,
+			p1 = points[--i],
+			p2,
+			lst = [p1];
+			
+			while(i--){
+				p2 = points[i];
+				if(mapTools.distance(p1,p2) > range){
+					if(lst.length>1) points.splice(i+1,lst.length,meanPoints(lst)); //remplacement des points par leur barycentre
+					p1 = p2; //changement de référence
+					lst = [p1];
+				}else{
+					lst.push(p2); //ajout du point à la liste de points proches
+				}
+			}
+			if(lst.length>1) points.splice(0,lst.length,meanPoints(lst));
+			
+			console.debug("debug: final = "+points.length);
+			
+			return points;
+	}
+	
+	//calcule le barycentre des points
+	function meanPoints(points){
+		var i,
+			li = points.length,
+			x = 0,
+			y = 0,
+			z = 0;
+		for(i=0;i<li;i++){
+			x += points[i][0];
+			y += points[i][1];
+			z += points[i][2]||0;
+		}
+		return [x/li,y/li,z/li]
+	}
 }
 
 (function(){
@@ -207,7 +256,7 @@ function Parcours(pst,option){
 					py:this.chemin[0][1],
 					pa:this.chemin[0][2],
 					parcours:this.chemin,
-					distance:this.map.listPath[0].distance(),//TODO distance locale
+					distance:this.map.listPath[0].distance(),
 					comment:this.comment,
 					color:this.color
 				};
@@ -484,7 +533,7 @@ function Parcours(pst,option){
 						section.appendChild(date);
 						
 						var distance = document.createElement("output");
-						distance.value = this.distance+" km";
+						distance.value = Math.round(this.getInfo().distance*10)/10+" km";
 						section.appendChild(distance);
 						
 						var commentaires = document.createElement("details");

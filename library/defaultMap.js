@@ -1,5 +1,5 @@
 /**
-	DefaultMap : Objet permettant de définir le cadre d'utilisation d'un objet Map. Peut être étendu pour correspondre à une utilisation d'API de carte particulière
+	DefaultMap : API permettant de définir le cadre d'utilisation d'un objet Map. Peut être étendu pour correspondre à une utilisation d'API de carte particulière
 	
 	Membres:
 		position [lat,long,alt] : (usage interne) centre de la carte (d'affichage)

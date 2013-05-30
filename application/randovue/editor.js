@@ -75,7 +75,8 @@ function displayFooter(elem){
 			console.log("chargement data : "+result);
 		}
 		if(inputImg.value){
-			console.warn("TODO créer un nouveau lieu");
+			console.warn("TODO à vérifier que l'ajout d'un lieu fonctionne bien");
+			randoListe.add(new Lieu(0,{photo:inputImg.value}));
 		}
 		if(!heavyLoad.value && !inputImg.value){
 			console.warn("TODO demander quelle type d'action ajouter");

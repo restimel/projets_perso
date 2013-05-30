@@ -116,7 +116,6 @@ console.warn('code to review (display)');
 		});
 	},
 	fromJSON:function(data){ //permet de charger des données à partir d'un code JSON
-		//TODO
 		var that = this, //pour utiliser la référence de l'objet dans les fonctions internes
 			chemin,dta,
 			position = this.liste.length; //permet d'indiquer la position des éléments à placer
