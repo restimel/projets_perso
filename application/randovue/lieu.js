@@ -18,7 +18,9 @@
  * 		zoom (number): zoom de l'affichage de la carte
  * 		dontReadEXIF (boolean): lit ou non les données EXIF de l'image pour écraser les informations
  * 		chemin ([[localisation]]): tracé du chemin sur lequel se trouve cet arrêt
- */ 
+ */
+"use strict";
+
 function Lieu(pst,option){
 	var that = this;
 	

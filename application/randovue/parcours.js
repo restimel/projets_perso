@@ -11,13 +11,15 @@
  *		titre (string): titre du parcours
  *		color (string): couleur du tracé
  * 		comment (string): commentaire à propos de ce parcours
- */ 
+ */
+"use strict";
+
 function Parcours(pst,option){
 	//vérification et préparation des paramètres
 	if(typeof pst !== "number"){
 		pst = 0;
 	}
-	
+
 	if(typeof option.chemin === "undefined" && option.parcours){
 		option.chemin = option.parcours;
 	}
@@ -132,7 +134,7 @@ function Parcours(pst,option){
 							}
 							i++;
 						}
-						points = pathSmoothing(points,0.025); //lissage des points
+						points = pathSmoothing(points,0.035); //lissage des points
 						option.chemin = points; //sauvegarde des données
 					}else{
 						console.warn("format non reconnu !");//TODO en faire un vrai message
@@ -197,8 +199,8 @@ function Parcours(pst,option){
 		permet de lisser un chemin en enlevant les points trop près
 	*/
 	function pathSmoothing(points,range){
-		range = range || 0.015;
-		console.warn("debug: original = "+points.length);
+		range = range || 0.025;
+		
 		var i = points.length,
 			p1 = points[--i],
 			p2,
@@ -215,9 +217,7 @@ function Parcours(pst,option){
 				}
 			}
 			if(lst.length>1) points.splice(0,lst.length,meanPoints(lst));
-			
-			console.debug("debug: final = "+points.length);
-			
+
 			return points;
 	}
 	

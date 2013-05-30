@@ -1,5 +1,6 @@
 (function (){
-
+	"use strict";
+	
 /**
  * affiche le bloc permettant d'ajouter de nouvelles actions
  */
@@ -115,7 +116,7 @@ function loadBulk(path){
 
 function editorInit(){
 	var liste = document.createElement("div");
-	liste.style.height = "400px";
+	liste.style.height = (document.querySelector("#back").offsetHeight - 120)+"px";
 	liste.style.overflow = "auto";
 	liste.style.backgroundColor = "#CCCCFF";
 	

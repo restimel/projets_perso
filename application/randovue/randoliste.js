@@ -1,3 +1,5 @@
+"use strict";
+
 //objet principal permettant de gérer la liste des actions
 var randoListe={
 	zone:document.getElementById("affichage"),//zone d'affichage
