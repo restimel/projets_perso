@@ -83,6 +83,11 @@ var tableSort = (function(){
 			return;
 		}
 		
+		//fonction permettant de réaliser le trie avec les bons paramètres
+		function doSort(o1,o2){
+			return fSort(o1[0],o2[0],o1[1],o2[1])*order;
+		}
+		
 		//default value
 		order = typeof order === "number" ? order : 1;
 		
@@ -90,21 +95,23 @@ var tableSort = (function(){
 		var rows = this.sortedElement.rows,
 			i = 0,
 			li = rows.length,
-			elemTri = [];
+			//elemTri = [];
+			elemTri = new Array(li);
 		
 		while(i<li){
-			i = elemTri.push([rows[i].cells[col].textContent, rows[i]]);
+			//i = elemTri.push([rows[i].cells[col].textContent, rows[i]]);
+			elemTri[i] = [rows[i].cells[col].textContent, rows[i++]];
 		}
 			
 		//effectue le tri
-		elemTri = elemTri.sort(function(o1,o2){
-			return fSort(o1[0],o2[0],o1[1],o2[1])*order;
-		});
+		elemTri = elemTri.sort(doSort);
 		
 		//applique les modifications à l'élément
+		var df = document.createDocumentFragment();
 		for(i=0;i<li;i++){
-			this.sortedElement.insertBefore(elemTri[i][1],this.sortedElement.rows[i]);
+			df.appendChild(elemTri[i][1]);
 		}
+		this.sortedElement.appendChild(df);
 		
 		//applique les modifications à l'élément ayant servi à réaliser le tri
 		if(this.elemSorted){
@@ -158,6 +165,8 @@ var tableSort = (function(){
 	
 	//permet de trier une chaine en triant selon les nombres décimaux s'il y a des chiffres
 	function sortWithNumber(s1, s2){
+		if(!s1 && s1 !== 0) s1="";
+		if(!s2 && s2 !== 0) s2="";
 		s1 = s1.toString();
 		s2 = s2.toString();
 		if(s1 === s2){
@@ -168,7 +177,7 @@ var tableSort = (function(){
 		var rgx = /^([^\d]*)([\d]*)([^\d].*?)?$/,
 			t1 = s1.match(rgx),
 			t2 = s2.match(rgx);
-		if(!t1){console.log(t1+" → not t1");return -1;}
+		if(!t1){return -1;}
 		if(!t2){return 1;}
 		if(t1[1] === t2[1]){
 			if(t1[2] === t2[2]){

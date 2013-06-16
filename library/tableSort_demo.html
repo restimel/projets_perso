@@ -43,7 +43,7 @@ th.sortDesc:after{
 	content: " ▴";
 }
 
-div{
+p{
 	float: left;
 	width : 40em;
 	margin-right : 2em;
@@ -51,7 +51,7 @@ div{
 }
 </style>
 
-<div>
+<p>
 This is a little script to sort HTML table by clicking on their th element.
 To use this script, you just need to load tableSort.js file and then call the tableSort constructor.<br>
 <br>
@@ -70,7 +70,7 @@ table.sort(1,-1);<br>
  - first argument is the column to sort<br>
  - second argument is the order to apply (1 means Ascendant order, -1 means descendant order)<br>
 
-</div>
+</p>
 
 <table>
 <thead>
@@ -119,6 +119,94 @@ tableSort(document.getElementById("secondTable"),["string","number"]);
 
 document.getElementById("secondTable").sort(1,-1);
 
+</script>
+<br>
+<hr>
+<details>
+	<summary>Performance test</summary>
+	<form>
+	<label>Columns type<input id="tstColumns" type="text" value="string;number" placeholder="each column must be separated by ; use column type for name"></label>
+	<label># of rows<input id="tstRows" type="number" min="1" step="1" value="100"></label>
+	</form><br>
+	<button>Create Table</button>
+
+	<label> Time spent to sort : <output id="tstPerf">xxx </output>ms</label>
+
+	<div id="tstTable" style="height:200px;overflow:auto;"></div>
+</details>
+
+<script>
+(function(){
+	var tstColumns = document.getElementById("tstColumns"),
+		tstRows = document.getElementById("tstRows"),
+		tstPerf = document.getElementById("tstPerf"),
+		tstTable = document.getElementById("tstTable");
+	
+	//gestion de la création de table
+	function createTable(){
+		var table = document.createElement("table"),
+			thead = document.createElement("thead"),
+			tbody = document.createElement("tbody"),
+			hlist = tstColumns.value.split(";"),
+			tr,td,i,
+			li = parseInt(tstRows.value,10);
+			
+		if(!hlist.length) hlist[0]="string";
+		
+		//création de l'entête
+		tr = thead.insertRow();
+		hlist.forEach(function(v){
+			var th = document.createElement("th");
+			th.textContent = v;
+			tr.appendChild(th);
+		});
+		
+		//Création du contenu
+		for(i=0;i<li;i++){
+			tr = tbody.insertRow();
+			hlist.forEach(function(v){
+				var td = tr.insertCell();
+				td.textContent = generateValue(v,li);
+				tr.appendChild(td);
+			});
+		}
+		
+		//ajout au DOM
+		tstTable.innerHTML = ""; //suppression de la précédente table
+		table.appendChild(thead);
+		table.appendChild(tbody);
+		tstTable.appendChild(table);
+		
+		//ajout de tableSort à la table
+		var ts = new tableSort(table,hlist),
+			origSort = ts.sort;
+		
+		ts.sort = function(){
+			var d0 = Date.now();
+			origSort.apply(this,arguments);
+			tstPerf.textContent = Date.now()-d0;
+			d0 = Date.now();
+			setTimeout(function(){
+				var d = Date.now()-d0;
+				if(d>15){
+					tstPerf.textContent += "ms ~~ rendering: "+ d;
+				}
+			},10);
+		};
+		
+	}
+	
+	//génération d'une valeur aléatoire
+	function generateValue(type,lng){
+		switch(type){
+			case "number": return Math.round(Math.random()*lng*10)/10;
+			default : return (Math.random()*lng).toString(36);
+		}
+	}
+	
+	//ajout de l'événement au bouton de création
+	document.querySelector("details>button").onclick = createTable;
+})();
 </script>
 </body>
 </html>
