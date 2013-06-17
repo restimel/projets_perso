@@ -50,7 +50,7 @@
 		<ul>
 			<li id="arrCreate">Array creation</li>
 			<li id="arrAddElement">Array element creation</li>
-			<li id="arrRmvElement">Array element destuction</li>
+			<li id="arrRmvElement">Array element destruction</li>
 			<li id="arrReading">Array full scan</li>
 		</ul>
 	</li>
@@ -77,9 +77,9 @@ var tests = {
 	arrAddElement:{
 		name:"Add element into an Array",
 		preparation:null,
-		fList:[addArr_inc,addArr_dec,addArr_incLength,addArr_push,addArr_unshift],
-		fName:['arr[i++]=1;','arr[i--]=1;','arr[arr.length]=1;','arr.push(1);','arr.unshift(1);'],
-		fPond:[1,0.2,1,1,0.01],
+		fList:[addArr_inc,addArr_dec,addArr_incLength,addArr_incInit,addArr_decInit,addArr_push,addArr_unshift],
+		fName:['arr[i++]=1;','arr[i--]=1;','arr[arr.length]=1;','new Array(length);arr[i++]=1;','new Array(length);arr[i--]=1;','arr.push(1);','arr.unshift(1);'],
+		fPond:[1,0.2,1,1,1,1,0.01],
 		loop:1000000
 	},
 	arrRmvElement:{
@@ -345,8 +345,24 @@ function addArr_incLength(nbl){
 	return arr;
 }
 
+function addArr_incInit(nbl){
+	var arr=new Array(nbl),i=0;
+	while(nbl--){
+		arr[i++]=1;
+	}
+	return arr;
+}
+
 function addArr_dec(nbl){
 	var arr=[];
+	while(nbl--){
+		arr[nbl]=1;
+	}
+	return arr;
+}
+
+function addArr_decInit(nbl){
+	var arr=new Array(nbl);
 	while(nbl--){
 		arr[nbl]=1;
 	}
@@ -462,6 +478,7 @@ document.getElementById("autoLoop").onchange=function(){
 <script src="./modulePerf/dom.js"></script>
 <script src="./modulePerf/regexp.js"></script>
 <script src="./modulePerf/number.js"></script>
+<script src="./modulePerf/string.js"></script>
 <script src="./modulePerf/date.js"></script>
 </body>
 </html>

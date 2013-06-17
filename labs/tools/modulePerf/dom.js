@@ -5,6 +5,7 @@ module.add(domCreate_appendChild2_simple,'el.appendChild(document.createElement(
 module.add(domCreate_innerHTML1_simple,'el.innerHTML+="&lt;span>&lt;/span>";',0.02);
 module.add(domCreate_innerHTML2_simple,'txt+="&lt;span>&lt;/span>";el.innerHTML=txt;',1);
 module.add(domCreate_appendChild_complexe,'createElement(); el.id; el.className; el.name; el.textContent; appendChild()',0.5);
+module.add(domCreate_appendChild_complexeFragment,'createElement(); el.id; el.className; el.name; el.textContent; Fragment.appendChild()',0.5);
 module.add(domCreate_innerHTML2_complexe,'txt+="&lt;span id="test" class="testElement" name="nameTest" >content&lt;/span>"; innerHTML=txt;',0.5);
 
 module = new Action("DOM","domAddStart","Element creation at the begining","Add a new HTML element at the beginning",initZoneTest,10000);
@@ -82,6 +83,20 @@ function domCreate_appendChild_complexe(nbl,zone){
 		elem.textContent='un peu de contenu';
 		zone.appendChild(elem);
 	}
+	return zone;
+}
+
+function domCreate_appendChild_complexeFragment(nbl,zone){
+	var elem, fr = document.createDocumentFragment();
+	while(nbl--){
+		elem = document.createElement("button");
+		elem.id='test'+nbl;
+		elem.className='testElement';
+		elem.name='nameTest'+nbl;
+		elem.textContent='un peu de contenu';
+		fr.appendChild(elem);
+	}
+	zone.appendChild(fr);
 	return zone;
 }
 
