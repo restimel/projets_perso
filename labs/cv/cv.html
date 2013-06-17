@@ -92,7 +92,7 @@ em{
 </head>
 <body itemscope itemtype="http://data-vocabulary.org/Person">
 <h1 itemprop="name">Benoît Mariat</h1>
-<h2 itemprop="title">Ingénieur en informatique</h2>
+<h2 itemprop="title">Web-performance expert</h2>
 <details><summary>Informations personnelles</summary>
 <figure><img src="./bmariat.jpg" alt="Benoît Mariat" itemprop="photo"><figcaption>Benoît Mariat - 32&nbsp;ans</figcaption></figure>
 <div>PACSé</div>
@@ -109,8 +109,21 @@ em{
 	<a href="mailto:b.mariat@gmail.com" itemprop="email">b.mariat@gmail.com</a>
 </div>
 </details>
+
+<details><summary>Compétences informatiques</summary>
+<ul>
+	<li><em>Langages de programmation</em> : C, C++, C#, JAVA</li>
+	<li><em>Développement Web</em> : <span title="EcmaScript 5.1, EcmaScript Harmony">JavaScript</span>, HTML5, CSS3, SVG</li>
+	<li><em>SGBD</em> : <span title="8i, 9i, 10g, 11g">Oracle</span>, <span title="2000, 2005, 2008">SQLServer</span>, <span>SAP Hana</span></li>
+	<li><em>Système d'exploitation</em> : <span title="Serveur: 2000,2003,2008	Desktop: 3.1→7">Windows</span>, <span title="Ubuntu, Suze 11">Linux</span></li>
+	<li><em>Analyse réseau</em> : Fiddler, Wireshark</li>
+	<li><em>Source Control</em> : Git, SourceSafe, Perforce</li>
+	<li><em>Logiciel de Charge</em> : LoadRunner, QALoad</li>
+</ul>
+</details>
+
 <details><summary>Expériences Professionnelles</summary>
-<h3>SAP - Ingénieur Qualité Logiciel</h3>
+<h3>SAP - Ingénieur en performance logicielle</h3>
 <span><time datetime="2006-02-08">Février 2006</time> → à ce jour</span><br>
 <h4>Tests de benchmark :</h4>
 <p>Mise en place d'un environnement de test permettant de stresser les logiciels SAP avec de nombreux utilisateurs virtuels (avec QALoad et LoadRunner).<br>
@@ -129,17 +142,7 @@ Développement d'outils de récolte d'informations système tournant sous Linux,
 <p>Analyse du code JAVA existant et proposition de tests.<br>
 Écriture des tests unitaires et d'intégration au sein d'une équipe de développement.</p>
 </details>
-<details><summary>Compétences informatiques</summary>
-<ul>
-<li><em>Langages de programmation</em> : C, C++, C#, JAVA</li>
-<li><em>Développement Web</em> : <span title="EcmaScript 5.1, EcmaScript Harmony">JavaScript</span>, HTML5, CSS3, SVG</li>
-<li><em>SGBD</em> : <span title="8i, 9i, 10g, 11g">Oracle</span>, <span title="2000, 2005, 2008">SQLServer</span>, <span>SAP Hana</span></li>
-<li><em>Système d'exploitation</em> : <span title="Serveur: 2000,2003,2008	Desktop: 3.1→7">Windows</span>, <span title="Ubuntu, Suze 11">Linux</span></li>
-<li><em>Analyse réseau</em> : Fiddler, Wireshark</li>
-<li><em>Source Control</em> : Git, SourceSafe, Perforce</li>
-<li><em>Logiciel de Charge</em> : LoadRunner, QALoad</li>
-</ul>
-</details>
+
 <details><summary>Formation</summary>
 <h3>ENSEA (École Nationale Supérieure de l'Électronique et de ses Applications)</h3>
 <span><time datetime="2001-09">Septembre 2001</time> → <time datetime="2005-09">Septembre 2005</time></span><br>
@@ -149,23 +152,25 @@ Développement d'outils de récolte d'informations système tournant sous Linux,
 <p>Obtention du Baccalauréat S avec la mention assez bien.
 Baccalauréat scientifique spécialité Mathématiques et option Technologie Industrielle</p>
 </details>
+
 <details><summary>Langues</summary>
 <ul>
-<li>Anglais : professionnel</li>
-<li>Allemand : scolaire</li>
-<li>Français : langue maternelle</li>
+	<li>Anglais : professionnel</li>
+	<li>Allemand : scolaire</li>
+	<li>Français : langue maternelle</li>
 </ul>
 </details>
+
 <details><summary>Loisirs</summary>
 <ul>
-<li>Jeux de Stratégie<ul>
-	<li>Échecs (1650 élo français)</li>
-	<li>Go (4 kyu français, Formateur diplômé)</li>
-	<li>Jeux de rôles</li>
-</ul></li>
-<li>Histoire de France du XVII<sup>e</sup> siècle</li>
-<li>Chasseur de nuages</li>
-<li>Randonnée pédestre</li>
+	<li>Jeux de Stratégie<ul>
+		<li>Échecs (1650 élo français)</li>
+		<li>Go (4 kyu français, Formateur diplômé)</li>
+		<li>Jeux de rôles</li>
+	</ul></li>
+	<li>Histoire de France du XVII<sup>e</sup> siècle</li>
+	<li>Chasseur de nuages</li>
+	<li>Randonnée pédestre</li>
 </ul>
 </details>
 <br>
@@ -173,27 +178,29 @@ Baccalauréat scientifique spécialité Mathématiques et option Technologie Ind
 
 <script>
 (function(){
+	//Gestion du bouton pour tout déployer/replier
 	var elem=document.createElement("button");
 	var open=false;
 	elem.textContent = "Tout déployer";
 	if(typeof document.querySelector("details").open !== "undefined"){
+		//la balise HTML5 <details> est connue par le navigateur
 		elem.onclick = function(){
-			var liste = document.querySelectorAll("details"),i=0,li=liste.length;
-			open=!open;
+			var liste = document.querySelectorAll("details"),i = 0,li = liste.length;
+			open = !open;
 			elem.textContent = open?"Tout replier":"Tout déployer";
 			while(i<li){
-				liste[i++].open=open;
+				liste[i++].open = open;
 			}
 		};
 	}else{
-		//la balise HTML5 details n'est pas connue
-		HTML5majDetails();
+		//la balise HTML5 <details> n'est pas connue par le navigateur
+		HTML5majDetails(); //fallback par CSS sur toutes les balises
 		elem.onclick = function(){
-			var liste = document.querySelectorAll("summary"),i=0,li=liste.length;
-			open=!open;
+			var liste = document.querySelectorAll("summary"),i = 0,li = liste.length;
+			open = !open;
 			elem.textContent = open?"Tout replier":"Tout déployer";
 			while(i<li){
-				liste[i++].className=open?"detailsOpen":"detailsClosed";
+				liste[i++].className = open?"detailsOpen":"detailsClosed";
 			}
 		};
 	}
@@ -201,16 +208,16 @@ Baccalauréat scientifique spécialité Mathématiques et option Technologie Ind
 	
 	function HTML5majDetails(){
 	//pour mettre à jour les navigateur ne supportant pas la balise details
-		var liste = document.querySelectorAll("summary"),i=0,li=liste.length;
+		var liste = document.querySelectorAll("summary"),i = 0,li = liste.length;
 		while(i<li){
-			liste[i].onclick=openSwitch;
-			liste[i++].className="detailsClosed";
+			liste[i].onclick = openSwitch;
+			liste[i++].className = "detailsClosed";
 		}
 		function openSwitch(){
-			if(this.className==="detailsClosed"){
-				this.className="detailsOpen";
+			if(this.className === "detailsClosed"){
+				this.className = "detailsOpen";
 			}else{
-				this.className="detailsClosed";
+				this.className = "detailsClosed";
 			}
 		}
 	}
