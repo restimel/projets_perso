@@ -209,7 +209,7 @@ Piece.prototype.mouseMove=function(x,y,element,action,listeTans){
 						element.style.cursor="move";
 						break;
 					case 2:
-						element.style.cursor="help";
+						element.style.cursor="pointer";
 						break;
 					case 3:
 						element.style.cursor="ns-resize";
@@ -491,11 +491,13 @@ function Canvas(){
 			new Shadow("512,210;653,352;370,352|226,210;84,352;367,352|227,210;368,210;368,69|370,210;441,281;512,210;441,139|227,211;298,281;439,281;368,211|440,139;370,210;370,69|368,352;298,282;439,282","triangle figure convexe basique",0.944),
 			new Shadow("202,403;2,403;202,603|3,200;3,0;203,200|2,202;102,302;202,202|103,302;203,302;203,402;103,402|2,202;2,302;102,402;102,302|2,403;2,303;102,403|204,301;104,301;204,201","trapeze figure convexe basique",0.944),
 			new Shadow("620,403;820,403;620,203|417,402;417,202;217,402|418,202;518,302;418,402|519,303;619,303;619,403;519,403|418,202;518,202;618,302;518,302|518,403;518,303;418,403|619,202;519,202;619,302,0","figure convexe",0.944),
+			new Shadow("306,324;165,465;165,182|22,325;164,183;164,466|22,324;22,183;164,183|236,111;307,182;236,253;165,182|23,182;94,112;235,112;164,182|236,253;307,183;307,324|165,40;236,111;95,111","figure convexe basique",0.944),
 			new Shadow("222,313;22,313;222,113|242.85,311.55;223.25,112.50;441.90,291.94|333,202;223,112;313,3|137,314;237,314;237,414;137,414|238,414;338,414;438,314;338,314|136.66,314;136.66,414;36.66,314|238,314;338,314;238,414","bateau voilier",0.932),
 			new Shadow("259.5,205.25;132.6,360;104.9,78.5|259.4,206.8;414,333.7;132.5,361.4|259.5,205.25;150,115.5;240,6.2|11,261;111,261;111,361;11,361|135,432.35;205.25,361.6;347,361.6;276.35,432.35|135,432.35;63.6,361;205.25,361|111.66,260.66;11.66,260.66;111.66,160.66","bateau voilier",0.931),
 			new Shadow("80,200;60,1;279,180|304,200;284,1;503,180|303,200;203,300;103,200|304,200;404,200;404,300;304,300|3,200;103,200;203,300;103,300|405,200;505,200;405,300|304,300;304,200;204,300","bateau voilier",0.92),
 			new Shadow("631,445;773,303;773,586|772,588;631,729;631,446|601,758;701,658;801,758|701,231;772,302;701,373;630,302|701,231;748,143;707,7;660,95|702,658;773,588;773,729|701,373;631,444;631,303","objet bougie",0.92),
-			new Shadow("1019,267;942,451;834,190|649,267;833,190;725,451|757,375;888,321;834,190|564,193;656,155;694,247;602,285|1019,267;1057,174;1003,43;965,136|655,154;562,193;617,62|657,154;749,116;695,247","animal chat",0.92)
+			new Shadow("1019,267;942,451;834,190|649,267;833,190;725,451|757,375;888,321;834,190|564,193;656,155;694,247;602,285|1019,267;1057,174;1003,43;965,136|655,154;562,193;617,62|657,154;749,116;695,247","animal chat",0.92),
+			new Shadow("553,443;553,243;753,443|553,444;753,444;553,644|512,283;512,142;654,142|624,172;695,243;624,314;553,243|591,706;591,606;691,506;691,606|662,636;733,707;592,707|482,638;553,709;553,568","homme chinois",0.925)
 		]
 		//var target=new Shadow("50,50;250,50;250,250;50,250");
 		var target=null;//liste_target[Math.floor(Math.random()*liste_target.length)];
@@ -560,7 +562,7 @@ function Canvas(){
 			},
 			mouseMove:function(x,y,element,action){//permet de gérer les actions à réaliser lorsque le curseur survole la zone
 				if(this.isInside(x,y)){
-					element.style.cursor="help";
+					element.style.cursor="pointer";
 					return true;
 				}else{
 					return false;
@@ -665,7 +667,7 @@ function Canvas(){
 			element.style.background="rgba(125,250,125,0.6)";
 			target.done=true;
 		}
-		if(debug) console.log(Date.now()-d1+" :"+(vide/compteur) );
+		if(debug) console.log(Date.now()-d1+"ms :"+(vide/compteur) );
 //		console.log("remplissage: "+((1-vide/compteur)*100)+"%");
 
 	}
@@ -727,11 +729,11 @@ function Canvas(){
 		if(event.keyCode===68){ //d
 			debug=!debug;
 		}
-		if(event.keyCode===71){ //g
+		if(debug && event.keyCode===71){ //g
 			console.log(Tans.join("|")); //permet de récupérer les coordonées d'une nouvelle figure
 		}
 		if(event.keyCode===83){ //s
-			if(confirm("Êtes-vous certains de voir la solution?")) zone_target.draw(ctx,true);
+			if(confirm("Are you sure you want to see the solution?")) zone_target.draw(ctx,true);
 		}
 	}
 }
