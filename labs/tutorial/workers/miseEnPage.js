@@ -7,7 +7,14 @@ function codeColorisation(){
 	
 	for(i=0;i<li;i++){
 		elem = liste[i];
-		elem.innerHTML = color(elem.innerHTML.replace(/^\s+|\s+$/g,""),false);
+		elem.innerHTML = color(elem.innerHTML.replace(/^\s+|\s+$/g,"").replace(/&(?:[gl]t|amp);/g,function(m){
+			//sert à afficher correctement les <, > et & (pbl lié au innerHTML)
+			switch(m){
+				case "&amp;": return "&";
+				case "&gt;": return ">";
+				case "&lt;": return "<";
+			}
+		}),false);
 		elem.className = "codeJS";
 	}
 	
@@ -219,7 +226,7 @@ function color(source,inline){
 					}else if(/\*\/$/.test(part)){
 						add("comment2");
 						mode="";
-					}//sinon c'est qu'il s'agit d'un / perdu au mileur d'un commentaire
+					}//sinon c'est qu'il s'agit d'un / perdu au milieu d'un commentaire
 				}
 				break;
 			case "regexp":
@@ -231,7 +238,6 @@ function color(source,inline){
 						mode="r[";
 						break;
 					case "/":
-						part = safeHTML(part);
 						add("regexp");
 						mode="rflag";
 						break;
@@ -310,7 +316,7 @@ function color(source,inline){
 						}
 						break;
 					case "/":
-						switch(source.charAt(i+1)){
+						switch(source.charAt(i+1)){ //vérification du caractère suivant
 							case "/":
 								verify(true);
 								mode="//";
@@ -325,7 +331,7 @@ function color(source,inline){
 								break;
 							default:
 								verify(true);
-								if(source.substring(0,i)){
+								if(/^.+\//.test(source.substring(i+1))){
 									mode="regexp";
 								}else{
 									add("operator");
