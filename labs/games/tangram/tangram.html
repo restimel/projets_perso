@@ -20,12 +20,13 @@ Original file: http://b.mariat.free.fr/
 -->
 <style type="text/css">
 	.fond{
-		background:#CCCCCC url('marb014.jpg');
+		background:#D5DDF0 url('marbreBleu.jpg');
 		position:absolute;
 		top:0;
 		left:0;
 	}
 
+/*bouton d'aide pour afficher les instructions*/
 #help{
 	display : block;
 	position : absolute;
@@ -42,6 +43,7 @@ Original file: http://b.mariat.free.fr/
 	cursor : help;
 }
 
+/*afficher/cacher la zone d'instructions*/
 #win_instr{
 	display : none;
 }
@@ -49,26 +51,8 @@ Original file: http://b.mariat.free.fr/
 	display : block;
 }
 
-#instructions{
-	display : block;
-	width : 35em;
-	max-width : 60%;
-	max-height : 60%;
 
-	position : absolute;
-	top : 25%;
-	left : 25%;
-	
-	
-	border : 1px solid black;
-	background-color : rgb(250,250,255);
-	box-shadow : 5px 5px 15px 0px #000000;
-
-	padding : 1em;
-	text-align : center;
-	overflow : auto;
-}
-
+/*bouton de fermeture des instructions*/
 #close{
 	display : block;
 	position : absolute;
@@ -89,6 +73,27 @@ Original file: http://b.mariat.free.fr/
 	padding-left : 0.5em;
 	padding-right : 0.5em;
 	cursor : pointer;
+}
+
+/*affichage des instructions*/
+#instructions{
+	display : block;
+	width : 35em;
+	max-width : 60%;
+	max-height : 60%;
+
+	position : absolute;
+	top : 25%;
+	left : 25%;
+	
+	
+	border : 1px solid black;
+	background-color : rgb(250,250,255);
+	box-shadow : 5px 5px 15px 0px #000000;
+
+	padding : 1em;
+	text-align : center;
+	overflow : auto;
 }
 
 #instructions footer{
