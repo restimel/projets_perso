@@ -3,6 +3,31 @@
 <head>
 <meta charset="utf-8">
 <title>Date Analyzer</title>
+</head>
+<body>
+<fieldset style="float:right;">
+	<legend>text log to analyze</legend>
+	<textarea onchange="logAnalyzer(this.value)" placeholder="Compare the first date with the last date in this log" style="min-width:27em;"></textarea>
+</fieldset>
+
+<h2>Time 1</h2><br>
+<label for="d1">Date text to parse</label><input type="text" id="d1" onchange="parse_date(1)"><span id="temp1"></span><br>
+<input type="text" id="j1" size="2" title="Day" placeholder="dd" onchange="compare_date()">/<input type="text" id="M1" size="2" title="Month" placeholder="MM" onchange="compare_date()">/<input type="text" id="A1" size="3" title="Year (4 digits)" placeholder="yyyy" onchange="compare_date()"> - <input type="text" id="h1" size="2" title="hours" placeholder="hh" onchange="compare_date()">:<input type="text" id="min1" size="2" title="minutes" placeholder="mm" onchange="compare_date()">:<input type="text" id="sec1" size="2" title="seconds" placeholder="ss" onchange="compare_date()">
+<hr>
+
+<h2>Time 2</h2><br>
+<label for="d2">Date text to parse</label><input type="text" id="d2" onchange="parse_date(2)"><span id="temp2"></span><br>
+<input type="text" id="j2" size="2" title="Day" placeholder="dd" onchange="compare_date()">/<input type="text" id="M2" size="2" title="Month" placeholder="MM" onchange="compare_date()">/<input type="text" id="A2" size="3" title="Year (4 digits)" placeholder="yyyy" onchange="compare_date()"> - <input type="text" id="h2" size="2" title="hours" placeholder="hh" onchange="compare_date()">:<input type="text" id="min2" size="2" title="minutes" placeholder="mm" onchange="compare_date()">:<input type="text" id="sec2" size="2" title="seconds" placeholder="ss" onchange="compare_date()">
+<hr>
+
+<input type="button" onclick="compare_date()" value="Calcul"><br>
+<div id="result" style="background:#DDDDFF;"></div>
+<br>
+
+<hr style="color:#00FFFF;">
+personal notes:<br><textarea rows="20" style="width:99%;" placeholder="You can write anything you want there. It does not affect the tool."></textarea>
+
+
 <script type="text/javascript">
 function convert_month(d){
 	switch(d.toLowerCase()){
@@ -312,28 +337,5 @@ function arrToInt(arr){
 }
 
 </script>
-</head>
-<body>
-<fieldset style="float:right;">
-	<legend>text log to analyze</legend>
-	<textarea onchange="logAnalyzer(this.value)" placeholder="Compare the first date with the last date in this log" style="min-width:27em;"></textarea>
-</fieldset>
-
-<h2>Time 1</h2><br>
-<label for="d1">Date text to parse</label><input type="text" id="d1" onchange="parse_date(1)"><input type="date" onchange="var d1=document.getElementById('d1');d1.value=this.value;d1.onchange();" style="width:12px; background:red;" value="X"><span id="temp1"></span><br>
-<input type="text" id="j1" size="2" title="Day" placeholder="dd" onchange="compare_date()">/<input type="text" id="M1" size="2" title="Month" placeholder="MM" onchange="compare_date()">/<input type="text" id="A1" size="3" title="Year (4 digits)" placeholder="yyyy" onchange="compare_date()"> - <input type="text" id="h1" size="2" title="hours" placeholder="hh" onchange="compare_date()">:<input type="text" id="min1" size="2" title="minutes" placeholder="mm" onchange="compare_date()">:<input type="text" id="sec1" size="2" title="seconds" placeholder="ss" onchange="compare_date()">
-<hr>
-
-<h2>Time 2</h2><br>
-<label for="d2">Date text to parse</label><input type="text" id="d2" onchange="parse_date(2)"><input type="date" onchange="var d2=document.getElementById('d2');d2.value=this.value;d2.onchange();" style="width:12px; background:red;" value="X"><span id="temp2"></span><br>
-<input type="text" id="j2" size="2" title="Day" placeholder="dd" onchange="compare_date()">/<input type="text" id="M2" size="2" title="Month" placeholder="MM" onchange="compare_date()">/<input type="text" id="A2" size="3" title="Year (4 digits)" placeholder="yyyy" onchange="compare_date()"> - <input type="text" id="h2" size="2" title="hours" placeholder="hh" onchange="compare_date()">:<input type="text" id="min2" size="2" title="minutes" placeholder="mm" onchange="compare_date()">:<input type="text" id="sec2" size="2" title="seconds" placeholder="ss" onchange="compare_date()">
-<hr>
-
-<input type="button" onclick="compare_date()" value="Calcul"><br>
-<div id="result" style="background:#DDDDFF;"></div>
-<br>
-
-<hr style="color:#00FFFF;">
-personal notes:<br><textarea rows="20" style="width:99%;" placeholder="You can write anything you want there. It does not affect the tool."></textarea>
 </body>
 </html>
