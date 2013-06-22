@@ -189,8 +189,30 @@ nav button span:first-child{
 
 /*affichage du titre de la page dans le bouton*/
 nav button div{
-	display:block;
-	margin-top:-0.2em;
-	font-size:0.8em;
+	display: block;
+	margin-top: -0.2em;
+	font-size: 0.8em;
+}
+
+/*affichage du lien vers le plan du site*/
+nav>aside{
+	display: block;
+	position: absolute;
+	bottom: 0;
+}
+nav>aside>a{
+	display: block;
+	margin-top: 2em;
+	margin-bottom: -0.5em;
+	margin-left: 0.5em;
+	width: 8em;
+	padding: 0.5em;
+	text-decoration: none;
+	text-align: center;
+	color: gray;
+	font-size: 0.8em;
+	
+	box-shadow: none;
+	background: none;
 }
 
