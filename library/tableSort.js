@@ -143,7 +143,6 @@ var tableSort = (function(){
 		
 		//exécute le tri
 		this.sort(col, order, e.target);
-	
 	}
 	
 	
@@ -162,7 +161,8 @@ var tableSort = (function(){
 			return 1;
 		}
 	}
-	
+
+
 	//permet de trier une chaine en triant selon les nombres décimaux s'il y a des chiffres
 	function sortWithNumber(s1, s2){
 		if(!s1 && s1 !== 0) s1="";
@@ -174,25 +174,28 @@ var tableSort = (function(){
 		}
 
 		//on extrait la partie nombre du texte
-		var rgx = /^([^\d]*)([\d]*)([^\d].*?)?$/,
-			t1 = s1.match(rgx),
-			t2 = s2.match(rgx);
+		var	t1 = s1.match(rgxSortWithNumber),
+			t2 = s2.match(rgxSortWithNumber),
+			rslt;
 		if(!t1){return -1;}
 		if(!t2){return 1;}
 		if(t1[1] === t2[1]){
 			if(t1[2] === t2[2]){
 				return sortWithNumber(t1[3],t2[3]); //on cherche le nombre suivant
 			}else if(parseInt(t1[2]||0,10)<parseInt(t2[2]||0,10)){ //comparaison entre nombre
-				return -1;
+				rslt = -1;
 			}else{
-				return 1;
+				rslt = 1;
 			}
 		}else if(t1[1]<t2[1]){
-			return -1;
+			rslt = -1;
 		}else{
-			return 1;
+			rslt = 1;
 		}
+		
+		return rslt;
 	}
+	var rgxSortWithNumber = /^([^\d]*)([\d]*)([^\d].*?)?$/;	//est mis global à sortWithNumber afin d'éviter de le recréer à chaque fois
 	
 	//permet de trier au hasard
 	function sortRandom(){

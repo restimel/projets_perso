@@ -50,8 +50,11 @@ p{
 	text-justify: justify;
 }
 </style>
-
+<h1>Table Sort API</h1>
+<section>
 <p>
+<a href="./tableSort.js" target="_blank">Download the Table Sort API JavaScript file</a><br>
+<br>
 This is a little script to sort HTML table by clicking on their th element.
 To use this script, you just need to load tableSort.js file and then call the tableSort constructor.<br>
 <br>
@@ -120,6 +123,9 @@ tableSort(document.getElementById("secondTable"),["string","number"]);
 document.getElementById("secondTable").sort(1,-1);
 
 </script>
+
+<!--performance test -->
+<br>
 <br>
 <hr>
 <details>
@@ -154,7 +160,7 @@ document.getElementById("secondTable").sort(1,-1);
 		if(!hlist.length) hlist[0]="string";
 		
 		//création de l'entête
-		tr = thead.insertRow();
+		tr = thead.insertRow(-1);
 		hlist.forEach(function(v){
 			var th = document.createElement("th");
 			th.textContent = v;
@@ -163,9 +169,9 @@ document.getElementById("secondTable").sort(1,-1);
 		
 		//Création du contenu
 		for(i=0;i<li;i++){
-			tr = tbody.insertRow();
+			tr = tbody.insertRow(-1);
 			hlist.forEach(function(v){
-				var td = tr.insertCell();
+				var td = tr.insertCell(-1);
 				td.textContent = generateValue(v,li);
 				tr.appendChild(td);
 			});
