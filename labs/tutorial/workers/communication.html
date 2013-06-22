@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 	<meta charset="utf-8">
-	<title>HTML5 web-worker : Le monde parallèle du JavaScript</title>
+	<title>Web-worker : La communication</title>
 	<link rel="stylesheet" type="text/css" href="./tutoriel.css">
 	<script type="text/JavaScript" src="./miseEnPage.js"></script>
 </head>
@@ -21,7 +21,27 @@
 	</li>
 	<li>Pour en savoir plus
 		<ol>
-			<li><a href="./communication.html">Communiquer avec des workers</a></li>
+			<li><a href="./communication.html">Communiquer avec des workers</a>
+				<ol>
+					<li><a href="#canalCommunication">Le canal de communication</a>
+						<ol>
+							<li><a href="#MessageChannel"><samp class="JavaScript">MessageChannel</samp></a></li>
+							<li><a href="#transfert">Transférer des objets</a></li>
+						</ol>
+					</li>
+					<li><a href="#communication">Mieux communiquer</a>
+						<ol>
+							<li><a href="#information">Connaitre l'interlocuteur</a></li>
+							<li><a href="#communicationObjet">Échanger des objets</a></li>
+						</ol>
+					</li>
+					<li><a href="#terminerCommunication">Terminer une communication</a>
+						<ol>
+							<li><a href="#close"><samp class="JavaScript">close()</samp>&nbsp;: arrêter a communication</a></li>
+						</ol>
+					</li>
+				</ol>
+			</li>
 			<li><a href="./manipulation.html">Manipulation des workers</a></li>
 			<li><a href="./utilisation.html">Utilisation des workers</a></li>
 			<li><a href="./compatibilite.html">Support des Workers dans les navigateurs</a></li>

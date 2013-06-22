@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 	<meta charset="utf-8">
-	<title>HTML5 web-worker : Le monde parallèle du JavaScript</title>
+	<title>Web-worker : Dedicated-Workers</title>
 	<link rel="stylesheet" type="text/css" href="./tutoriel.css">
 	<script type="text/JavaScript" src="./miseEnPage.js"></script>
 </head>
@@ -112,7 +112,7 @@ setTimeout(function(){
 				jardin[parcelle] = 0;
 				plantePrete++;
 
-				postMessage("Le jardinier a pu récolter plantePrete +" plantes");
+				postMessage("Le jardinier a pu récolter "+ plantePrete +" plantes");
 			}
 
 		}//boucle de fin de la parcelle
