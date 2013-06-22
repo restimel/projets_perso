@@ -4,6 +4,10 @@
  * This work is licensed under a Creative Commons Attribution 3.0 Unported License
  * http://creativecommons.org/licenses/by/3.0/
  *
+ * Author : Benoit Mariat
+ * Date : 2012 - 07 - 22 (création)
+ *
+ *
  * This object creates a list of elements inside another element.
  * These elements can be accessed by scrolling.
  * 

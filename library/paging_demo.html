@@ -15,36 +15,177 @@
 	height:500px; /*important pour que le script fonctionne correctement,cette valeur doit être une valeur fixe (pas un %)*/
 }
 
-img{
-	height:20px;
-	margin-bottom:0.5em;
+
+
+
+section{
+	float: right;
+	width: 40%;
+	padding: 2em;
 }
 </style>
+<h1>Paging library</h1>
+<section>
+<a href="./pagingElement.js" target="_blank">Download the Paging JavaScript file</a><br>
+<br>
+<p>This library improves performance when a DOM object has a lot of children. It happens very frequently when you want to display a lot of items in a page.<br>
+It also improves performance when some child are quite huge (like pictures).<br>
+It displays only DOM element that a user see in the screen. All other elements are removed from the DOM. They are added and removed when the user (or a script) scroll the parent element. By doing that rendering and searching DOM element are greatly improved. The drawback is that you can not use document search to find items in this list (they are not in DOM).</p>
+<br>
+<h2>How to use this library?</h2>
+<p>Create your container element like any other DOM element. This container element should have a specified height value (in any unit but not in %). The style overflow will be set by the object to overflow.<br>
+<br>
+You create your paging list with the constructor PagingElement.<br>
+var list = new PagingElement(containerElement,"vertical",estimatedHeight,extraItems);<br>
+<ul>
+<li><strong>containerElement</strong>: it is a reference to the container DOM element object. All items will be display in this container.</li>
+<li><strong>"vertical"</strong>: it is the orientation of your scroll. Currently only "vertical" is supported.</li>
+<li><strong>estimatedHeight</strong>: it is an estimation of the height of an item. This value is to give the scrollbar a real appearence. When the item is displayed its real height is then used. This value is a number.</li>
+<li><strong>extraItems</strong>: it is the number of items displayed up and down which is not visible but still in the DOM. This is usefull to avoid items to late. This value is a number.</li>
+</ul>
+<br>
+Methods you can use are:
+<ul>
+	<li><strong>add(fCreation, fHide, position)</strong>: add a new item to the list<ul>
+		<li><strong>fCreation</strong>: it is a function which is called when the item should be displayed. This function should generate the contents of the item. This function is called in the item element context (the keyword this reffered to the element displayed). The first argument is the position in the list of the displayed item.</li>
+		<li><strong>fHide</strong>: it is a function which is called just before the item would be hidden (and removed from DOM). This function is called in the item element context (the keyword this reffered to the element displayed). The first argument is the position in the list of this item.</li>
+		<li><strong>position</strong>: it is the position where this new item should placed in the list. By default it is put at the end of the list.</li>
+	</ul></li>
+	<li><strong>remove(pst)</strong>: remove an item from the list. The item removed is in return.<ul>
+		<li><strong>pst</strong>: it is the position of the item to be removed.</li>
+	</ul></li>
+	<li><strong>refresh()</strong>: refresh the displayed list</li>
+	<li><strong>move(old_position, new_position)</strong>: move an item from old_position to new_position</li>
+	<li><strong>scrollTo(pst)</strong>: scroll to the item at position pst</li>
+</ul>
+</p>
+</section>
 
-<button id="goto">goto 1000</button><br>
-<div id="liste"></div>
+<fieldset><legend>Demonstration</legend>
+	<span title="Navigate to the item at specified position"><button id="goto">goto position:</button><input type="number" min="0" value="1000" id="gotoNb"></span><br>
 
+	<div id="liste"></div><!--this is the container-->
+
+	<fieldset>
+		<legend>List Generator</legend>
+			<label>Number of items in the list: <input id="genNb" type="number" min="1" value="100000"></label><br>
+			Fill item with:<br>
+			<label><input type="checkbox" id="genText">Text</label><br>
+			<label><input type="checkbox" id="genButton" checked>Button</label><br>
+			<label><input type="checkbox" id="genInput">Input</label><br>
+			<label><input type="checkbox" id="genProgress" checked>Progress</label><br>
+			<label title="Disabled due to find path of pictures for demonstration" disabled><input type="checkbox" id="genImage" disabled>image</label><br>
+			<br>
+			<label>Display these contents in the same item <input type="checkbox" id="genSameItem" checked></label><br>
+	</fieldset>
+	<fieldset>
+		<legend>Library option</legend>
+			<label>Use the paging library: <input id="genLibrary" type="checkbox" checked></label><br>
+			<label>Number of extra items displayed: <input id="genExtra" type="number" min="0" value="2"></label><br>
+	</fieldset>
+	<button id="generate">Generate list and run library</button>
+</fieldset>
 
 <script src="pagingElement.js"></script>
 <script>
-	function remplir(nb){
-		this.textContent = "TOTO "+nb;
-		var img = document.createElement("img");
-		img.style.height="20px";
-		img.alt="mon image n°"+nb;
-		img.style.display = "block";
-		this.appendChild(img);
+var liste;// variable permettant d'avoir une référence à la liste
+
+var filled = ["button"],
+	sameItem = true,
+	nbElement = 100000;
+
+	function generate(){
+		document.getElementById("liste").innerHTML="";
+		
+		filled=[];
+		if(document.getElementById("genText").checked) filled.push("text");
+		if(document.getElementById("genButton").checked) filled.push("button");
+		if(document.getElementById("genInput").checked) filled.push("input");
+		if(document.getElementById("genProgress").checked) filled.push("progress");
+		if(document.getElementById("genImage").checked) filled.push("image");
+		if(!filled.length) filled.push("text");
+		
+		sameItem = document.getElementById("genSameItem").checked;
+		
+		nbElement = parseInt(document.getElementById("genNb").value,10);
+		
+		liste = null;
+		if(document.getElementById("genLibrary").checked){
+			generateList();
+		}else{
+			generateDOM();
+		}
 	}
 	
-	var liste = new PagingElement(document.getElementById("liste"),"vertical",20,2);
-	var i = 100000;
-
-	while(i--)
-		liste.add(remplir);
+	function generateList(){
+		liste = new PagingElement(document.getElementById("liste"),"vertical",sameItem?filled.length*20:20,parseInt(document.getElementById("genExtra").value,10));
+		
+		var i = nbElement;
+		while(i--)
+			liste.add(remplir);
+		
+		liste.refresh();
+	}
 	
-	liste.refresh();
+	function generateDOM(){
+		var df = document.createDocumentFragment(),
+			div,
+			i = 0;
+		if(nbElement>10000){
+			if(!confirm("Be careful writing a lot of DOM element could consume too much memory and kill your browser.\nYou will add around "+(nbElement*(sameItem?filled.length*2:2))+" elements directly to the DOM.\n\nAre you sure to continue?")) return;
+		}
+		while(i<nbElement){
+			div = document.createElement("div");
+			remplir.call(div,i++);
+			df.appendChild(div);
+		}
+		document.getElementById("liste").appendChild(df);
+	}
+	
 
-document.getElementById("goto").onclick=function(){liste.scrollTo(1000);};
+	function remplir(nb){
+		var elem,
+			added = false,
+			df = document.createDocumentFragment(),
+			lst = sameItem?filled:[filled[nb%filled.length]];
+		
+		if(~lst.indexOf("text")){
+			this.textContent = "Some text for item at position "+nb+".";
+			added = true;
+		}
+			
+			
+		if(~lst.indexOf("button")){
+			if(added) df.appendChild(document.createElement("br"));
+			added = true;
+			elem = document.createElement("button");
+			elem.textContent = "Button #"+nb;
+			df.appendChild(elem);
+		}
+		
+		if(~lst.indexOf("input")){
+			if(added) df.appendChild(document.createElement("br"));
+			added = true;
+			elem = document.createElement("input");
+			elem.placeholder = "Input #"+nb;
+			df.appendChild(elem);
+		}
+		
+		if(~lst.indexOf("progress")){
+			if(added) df.appendChild(document.createElement("br"));
+			added = true;
+			elem = document.createElement("progress");
+			elem.value = nb;
+			elem.max = nbElement;
+			df.appendChild(elem);
+		}
+		
+		this.appendChild(df);
+	}
+	
+document.getElementById("generate").onclick = generate;
+document.getElementById("goto").onclick = function(){liste.scrollTo(parseInt(document.getElementById("gotoNb").value,10));};
+generate();
 </script>
 </body>
 </html>
