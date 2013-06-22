@@ -607,8 +607,8 @@ function Canvas(){
 			default:
 				cible=Math.floor(Math.random()*liste_target.length); //si cible n'a pas été défini ou est d'un type bizarre alors on choisi au hasard
 		}
-		element.style.backgroundColor="rgba(185,185,200,0.9)";
-		element.style.backgroundImage="url('./marb014.jpg')";
+		element.style.backgroundColor="#D5DDF0";
+		element.style.backgroundImage="url('./marbreBleu.jpg')";
 		target=liste_target[cible];
 	}
 
