@@ -140,6 +140,9 @@ section ol{
 section ol>li:before{
 	content : "☞\a0";
 }
+ol.bug>li{
+	margin-top : 1em;
+}
 
 
 /*affichage de la table des matières*/
@@ -167,7 +170,17 @@ nav>ol ol ol ol{
 	list-style-type: lower-alpha;
 }
 
-
+table{
+	border-collapse:collapse;
+}
+td{
+	border: 1px solid black;
+	padding: 0.5em;
+}
+th{
+	background-color: rgb(150,160,220);
+	padding: 0.15em;
+}
 
 
 /*Mise en forme pour les codes JS*/
@@ -256,3 +269,11 @@ nav>ol ol ol ol{
 	font-style:italic;
 }
 
+/*mise en forme pour les code shell*/
+samp.shell{
+	display:inline;
+	font-family:courier,monospace;
+	font-size:0.8em;
+	background-color : rgba(10,15,10,0.9);
+	color : rgb(250,250,251);
+}

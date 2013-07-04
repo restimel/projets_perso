@@ -37,7 +37,8 @@
 					</li>
 					<li><a href="#terminerCommunication">Terminer une communication</a>
 						<ol>
-							<li><a href="#close"><samp class="JavaScript">close()</samp>&nbsp;: arrêter a communication</a></li>
+							<li><a href="#close"><samp class="JavaScript">close()</samp>&nbsp;: arrêter la communication</a></li>
+							<li><a href="#onclose"><samp class="JavaScript">onclose</samp>&nbsp;: quand la communication s'arrête</a></li>
 						</ol>
 					</li>
 				</ol>
@@ -47,6 +48,7 @@
 			<li><a href="./compatibilite.html">Support des Workers dans les navigateurs</a></li>
 		</ol>
 	</li>
+	<li><a href="./documentation.html">Sources et Documentations</a></li>
 </ol>
 </nav>
 <hr>
@@ -54,9 +56,265 @@
 <article>
 	<h2>Communiquer avec des workers</h2>
 
-<p>Désolé cette page n'a pas encore été retranscrite sur mon site. J'y travaille aussi vite que possible.<br>
-Merci de votre patience.<br>
-<br>En attendant vous pouvez consulter le <a href="http://www.siteduzero.com/informatique/tutoriels/html5-web-workers-le-monde-parallele-du-javascript">tutoriel sur le site du zéro</a>.</p>
+<p>Maintenant que vous savez manipuler les workers, nous allons regarder tous les détails qui tournent autour. Vous allez bientôt tout savoir. Absolument tout&nbsp;! ou presque…</p>
+
+<p>Comme les workers n'ont qu'un accès restreint au monde extérieur, et afin qu'ils puissent fournir le résultat de leur dur labeur, il faut bien qu'ils transmettent leurs informations correctement aux autres threads. La communication avec les autres threads est donc un élément essentiel du fonctionnement des workers.</p>
+
+<p>Nous allons étudier ici comment créer des canaux de communications et comment les manipuler. Nous verrons ensuite des détails qui ont été passés sous silence pendant la prise en main. Et enfin on verra une méthode pour arrêter une communication sans arrêter le worker.</p>
+
+<section id="canalCommunication">
+	<h3>Le canal de communication</h3>
+	<p>Un canal de communication est ce qui permet de gérer la communication entre les éléments qui communiquent. Il permet l'acheminement du message entre la source et le destinataire. Autant dire que, dans notre cas, c'est très important.</p>
+	
+	<section id="MessageChannel">
+		<h4><samp class="JavaScript">MessageChannel</samp></h4>
+		<p>Depuis le début je vous parle des web-workers, mais je vous ai fait manipuler, sans vous le dire, un deuxième objet issu des API HTML5&nbsp;: les <strong>message-channels</strong> (ou, en français, les canaux de communications).</p>
+		
+		<p>Avec les <a href="./SharedWorker.html">shared-workers</a>, je vous ai parlé des ports. Un port est toujours attaché à un autre port. Ces deux objets sont liés. Si on envoie un message à un de ces objets, l'autre le reçoit. Ainsi lorsque ces deux ports appartiennent à deux threads distincts, il suffit qu'un thread envoie un message à travers son port pour que l'autre thread puisse le récupérer. Il s'agit de la base de la communication entre les threads.<br>
+		Et <strong>le canal de communication correspond au lien entre ces deux ports</strong>.</p>
+		
+		<p>Lorsque vous créez un worker, l'interpréteur se charge de créer en même temps deux ports liés et les place chacun dans un thread différent. Ce qui nous permet de communiquer facilement entre ces threads. Mais grâce à l'objet <samp class="JavaScript">MessageChannel</samp>, vous pouvez créer explicitement deux ports liés entre eux, et vous pourrez en faire ce que vous voulez.</p>
+		
+		<p>L'objet <samp class="JavaScript">MessageChannel</samp> créé possède deux objets&nbsp;: <samp class="JavaScript">port1</samp> et <samp class="JavaScript">port2</samp>. Comme leurs noms l'indiquent, il s'agit de ports. Et, vous l'aurez deviné, ces deux ports sont liés.</p>
+		
+		<section>
+			<code class="JavaScript">var channel = new MessageChannel(); //on a créé un canal de communication entre channel.port1 et channel.port2
+ 
+channel.port1.onmessage=function(e){ //on écoute sur le port1
+    alert(e.data);
+};
+ 
+channel.port2.postMessage("Bonjour"); //on envoie un message dans le port2
+			</code>
+			<a href="http://restimel.github.com/Tutoriels/webWorkers/channel1/index.html" target="_blank">Essayer !</a>
+		</section>
+		
+		<p>Vous pouvez remarquer que le message du <samp class="JavaScript">port2</samp> a bien été reçu par le <samp class="JavaScript">port1</samp>.</p>
+		
+		<p class="question">C'est bien tout ça, mais c'est un peu parler à soi-même. C'est rarement très utile…<br>
+ Ne pourrait-on pas, au moins, envoyer ce port à un autre thread&nbsp;?</p>
+	</section>
+	
+	<section id="transfert">
+		<h4>Transférer des objets</h4>
+		<p>Eh bien oui on va transférer un port à un autre thread. Pour cela on va utiliser le deuxième argument de <samp class="JavaScript">postMessage</samp>. Cet argument permet d'envoyer une liste d'objets transférables. Pour tout vous dire, actuellement, il n'existe qu'un seul type d'objet transférable&nbsp;: les ports (ou plus exactement les <samp class="JavaScript">MessagePort</samp>).</p>
+		
+		<section>
+			L'envoi du port se fait en utilisant le 2e argument de <samp class="JavaScript">postMessage</samp>&nbsp;:
+			<code class="JavaScript">//création du canal de communication
+var channel = new MessageChannel();
+channel.port1.onmessage = function(e){
+    alert(e.data);
+};
+ 
+//création du worker
+var w = new Worker("worker.js");
+w.onmessage = function(e){
+	alert("Je ne veux pas recevoir de message par ce canal");
+};
+  
+//transfert du port2 vers le thread
+w.postMessage("Voici le port2",[channel.port2]);
+			</code>
+		</section>
+		
+		<p>Il faut bien retenir que le transfert est une liste, il ne faut donc pas oublier les <samp class="JavaScript">[]</samp>. Cela signifie qu'il est possible de transférer plusieurs ports en même temps&nbsp;!</p>
+		
+		<p>C'est bien, on a pu envoyer un port. Ça serait bien de le récupérer maintenant&nbsp;! Pour cela on va lire l'attribut <samp class="JavaScript">ports</samp> de l'événement <samp class="JavaScript">onmessage</samp>. Et comme on a envoyé une liste d'objets, nous allons récupérer son premier élément avec <samp class="JavaScript">[0]</samp>. Cela ne vous rappelle rien&nbsp;?<br>
+ C'est exactement de cette manière qu'on a récupéré le port dans le shared-worker lors de sa connexion&nbsp;!
+ 
+ 		<section>
+ 			Voici donc le code de notre worker&nbsp;:
+ 				<code class="JavaScript">self.onmessage = function(e){
+    var port = e.ports[0];
+    port.postMessage("Hello canal");
+}</code>
+		<a href="http://restimel.github.com/Tutoriels/webWorkers/channel2/index.html" target="_blank">Essayer&nbsp;!</a>
+ 		</section>
+ 		
+ 		<p>Maintenant si vous testez ces deux codes, vous devriez obtenir le message <samp class="JavaScript">"Hello canal"</samp> qui a été envoyé par le canal que vous avez créé et non pas par celui du worker&nbsp;>!</p>
+ 		
+ 		<details>
+ 			<summary class="question">Avez-vous essayé de faire <samp class="JavaScript">channel.port2.postMessage("test");</samp> après le <samp class="JavaScript">postMessage</samp> dans le premier code&nbsp;?</summary>
+ 			<p>Vous obtenez un message d'erreur&nbsp;!<br>
+ 			Alors qu'il fonctionne très bien si vous le placer avant le <samp class="JavaScript">postMessage</samp>&nbsp;! Que s'est passé&nbsp;?</p>
+ 			
+ 			<p>C'est parce que votre port a été <strong>transféré</strong>, il n'est donc plus disponible dans votre premier thread. Il ne s'agit pas de l'envoi d'une référence mais bien de l'objet lui-même. C'est pourquoi depuis le début de cette section, je vous parle de transfert et d'objet transférable.</p>
+ 			<p>En réalité, pour éviter le <em>cross-site scripting</em> (exécution de script provenant d'un autre site) et pour rester dans le modèle de séparation des données, le port a été copié, le lien a été transféré à la copie, puis l'objet original a été supprimé. Ainsi si vous ajoutez des attributs ou définissez des listeners, ils ne seront pas transmis.</p>
+ 		</details>
+ 		
+ 		<p class="information">N'oubliez pas qu'on écoute sur des ports. Donc si vous utilisez <samp class="JavaScript">addEventListener</samp>, vous devez d'abord utiliser <samp class="JavaScript">start()</samp> pour recevoir la communication.</p>
+ 		
+ 		<details><summary>Utilité de créer un canal de communication</summary>
+ 			<p>Communiquer avec le worker, on pouvait déjà le faire&nbsp;!<br>
+ Oui mais parfois il est pratique d'avoir plusieurs points d'entrée. Mais sinon, avec les shared-workers, nous avons plusieurs interlocuteurs en même temps. Grâce au <samp class="JavaScript">MessageChannel</samp>, nous pouvons désormais faire communiquer deux pages ensemble sans interlocuteur intermédiaire&nbsp;!
+ 			</p>
+ 			
+ 			<section><header class="filename">main.js</header>
+			<code class="JavaScript">//création d'une zone d'échange
+var input = document.createElement("input");
+input.disabled = true;
+input.onchange = function(){
+	port.postMessage(this.value);
+	this.value = "";
+};
+document.body.appendChild(input);
+ 
+//création d'une zone d'affichage
+var output = document.createElement("output");
+output.value = "En attente d'un interlocuteur";
+document.body.appendChild(output);
+ 
+ 
+var port;
+ 
+//création du worker
+var w = new SharedWorker("worker.js");
+w.port.onmessage = function(e){
+	if(e.ports && e.ports.length){
+		input.disabled = false;
+		output.value = "";
+
+		port = e.ports[0];
+
+		port.onmessage = function(e){
+			output.value = e.data;
+		};
+
+		w.terminate();
+	}
+};
+			</code>
+		</section>
+		<section><header class="filename">worker.js</header>
+			<code class="JavaScript">var port = null;
+ 
+//gestion des connections
+onconnect = function(e){
+	var port2 = e.ports[0];
+
+	if(!port){
+	//première connexion
+
+		port = port2;
+
+	}else{
+	//un autre thread est déjà connecté
+
+		var ch = new MessageChannel();
+
+		port.postMessage("", [ch.port1]); //transfert du port1 au premier thread
+		port2.postMessage("", [ch.port2]);//transfert du port2 au deuxième thread
+
+		port = null;
+	}
+};
+			</code>
+		</section>
+		<a href="http://restimel.github.com/Tutoriels/webWorkers/channel3/index.html" target="_blank">Essayer&nbsp;!</a>
+		
+		<p>Avec ces codes nous pouvons créer un mini-chat entre deux pages. Vous pouvez remarquer qu'à la fin du code on arrête la communication avec le worker. Donc une fois le port reçu, le worker est complétement ignoré. Et pourtant la communication fonctionne toujours. Car le canal de communication vit désormais entre les deux pages et non plus via le worker.</p>
+		<p>Malheureusement comme le JavaScript fonctionne côté client (le navigateur), il n'est pas possible de réaliser un chat entre différents utilisateurs de cette manière. ☹</p>
+ 		</details>
+ 		
+ 		<details><summary class="question">Tous les ports sont-ils transférables&nbsp;?</summary>
+ 		<p>Non&nbsp;! Vous ne pouvez pas transférer le port source ou le port de destination dans son propre canal. Et dans une liste de ports vous ne devez pas mettre un port en double. Sinon la diffusion ne se fera pas.</p>
+ 		</details>
+ 		
+	</section>
+
+</section><!--fin de la section canal de communication-->
+<section id="communication">
+	<h3>Mieux communiquer</h3>
+	<section id="information">
+		<h4>En savoir plus sur celui qui nous parle</h4>
+		<p>Quelques détails qui peuvent parfois s'avérer utiles. Lorsqu'un listener de type <samp class="JavaScript">onmessage</samp> se déclenche, un événement est créé. À partir de cet événement, on obtient de nombreuses informations&nbsp;:<ul>
+			<li><samp class="JavaScript">event.data</samp>&nbsp;: On l'a vu plusieurs fois, il permet de récupérer les données.</li>
+			<li><samp class="JavaScript">event.ports</samp>&nbsp;: On vient juste de le voir, il permet d'obtenir la liste des objets transférés.</li>
+			<li><samp class="JavaScript">event.target</samp>&nbsp;: Il s'agit du port ayant reçu le message. Donc si vous voulez répondre, il suffit d'utiliser cet attribut pour répondre au bon interlocuteur. Dans le cadre des dedicated-workers, il est équivalent à <samp class="JavaScript">self</samp>.<br>
+			Vous pouvez aussi trouver les attributs <samp class="JavaScript">currentTarget</samp>, <samp class="JavaScript">srcElement</samp> et parfois <samp class="JavaScript">source</samp> qui sont équivalents à celui-ci (mais ils sont plus imprévisibles en fonction des navigateurs).</li>
+			<li><samp class="JavaScript">event.origin</samp>&nbsp;: Ce champ nous renseigne sur l'identité de celui qui a envoyé le message. Il s'agit de l'URL de la page appelante. Il n'est pas forcément très utile dans le cadre des web-workers, mais peut s'avérer utile pour vérifier l'origine de l'interlocuteur (et éviter de parler avec des inconnus).</li>
+			<li><samp class="JavaScript">event.type</samp>&nbsp;: Il vaut "message" c'est le type de l'événement.</li>
+		</ul>
+		</p>
+	</section>
+	
+	<section id="communicationObjet">
+		<h4>Échanger des objets</h4>
+		<p>Vous avez peut-être remarqué que tous les messages qui ont été envoyés jusqu'à présent n'étaient que du texte. À un moment vous voudrez forcément transmettre un objet.</p>
+		
+		<h5>Le JSON</h5>
+		<p>La première idée qu'on peut avoir est d'utiliser le JSON.<br>
+ JSON permet de convertir un objet en une chaîne de caractères. Il suffit de transformer l'objet en chaîne de caractères avant de l'envoyer, puis de le retransformer en objet à l'arrivée.</p>
+ 		<code class="JavaScript">var message=JSON.stringify(obj); //on sérialise l'objet
+var nvlObj=JSON.parse(message); //on décode le message pour reconstruire l'objet
+		</code>
+		
+		<p>Le JSON n'est pas l'objectif de ce tutoriel, je ne vais donc pas détailler son fonctionnement davantage.</p>
+		
+		<p>Toutefois le JSON a ses limites.<br>
+ Premièrement tous les types des objets sont perdus. Ils deviennent de simples objets, même pour les objets "fondamentaux" tels que les objets <samp class="JavaScript">Date</samp>.<br>
+ Ensuite le JSON n'aime pas du tout les références circulaires.</p>
+ 		<code class="JavaScript">var obj1 = {};
+var obj2 = {};
+ 
+obj1.frere = obj2;
+obj2.frere = obj1;
+ 
+var pere = {enfant:[obj1,obj2]};
+ 		</code>
+ 		<p>Dans ce code, il n'est pas possible de "stringifier" l'objet <samp class="JavaScript">pere</samp> avec JSON, à cause de la référence circulaire entre <samp class="JavaScript">obj1</samp> et <samp class="JavaScript">obj2</samp>.</p>
+ 
+ 		<h5>Envoyer des objets JavaScript</h5>
+ 		
+ 		<p>Heureusement il est tout à fait possible d'envoyer des objets JavaScript à travers nos canaux de communication.<br>
+ Cependant il faut faire attention, car tous les objets ne sont pas acceptés. Seuls ceux qui sont clonables peuvent être envoyés (les structured clone). Les objets clonables correspondent aux variables primitives (nombres, chaînes de caractères, booléens…), les Arrays et les objets contenant des attributs clonable.<br>
+ Ainsi l'objet <samp class="JavaScript">{msg:"message",nb:10, liste:[{txt:"texte"},false]}</samp> sera accepté mais l'objet <samp class="JavaScript">{a:10,fct:function(){return this.a;}}</samp> sera refusé car les fonctions ne sont pas clonables.</p>
+ 
+ 	<p class="information">Contrairement aux objets transférés, un objet cloné reste disponible dans le thread d'origine.</p>
+ 	
+ 	<p>Le premier avantage de cloner des objets est que le type des objets "fondamentaux" est conservé.<br>
+ Par exemple si une des références est un objet de type <samp class="JavaScript">Array</samp>, <samp class="JavaScript">Date</samp>, <samp class="JavaScript">RegExp</samp>, <samp class="JavaScript">ImageData</samp>, <samp class="JavaScript">File</samp>, <samp class="JavaScript">FileList</samp>, ou <samp class="JavaScript">Blob</samp>, leurs références et leur type seront conservés.<br>
+ Par contre si vous clonez un objet que vous avez créé à partir d'un constructeur "maison", il perd son type et ses prototypes.</p>
+ 
+ 	<p>Le deuxième gros avantage est qu'il est tout à fait possible de cloner des objets ayant des références circulaires. Ainsi dans l'exemple précédent, il est tout à fait possible de cloner l'objet <samp class="JavaScript">pere</samp>.</p>
+ 	
+ 	<p class="warning">Si l'objet que l'on souhaite envoyer contient des objets de type <samp class="JavaScript">Error</samp> ou <samp class="JavaScript">Function</samp> alors une erreur de type <samp class="JavaScript">DataCloneError</samp> se produira et aucune donnée ne sera transmise.<br>
+ De même, s'il y a une référence à un nœud DOM (attaché ou non au document).</p>
+ 	
+ 	<p>Certaines propriétés ne sont pas clonées comme la propriété <samp class="JavaScript">lastIndex</samp> d'un objet de type <samp class="JavaScript">RegExp</samp>.<br>
+ Les getters et les setters (ainsi que toutes les propriétés associées aux metadata) ne sont pas clonés.<br>
+ Le prototype (et toutes ses références) n'est pas cloné non plus.</p>
+	</section>
+</section><!-- fin de la section Mieux communiquer-->
+
+<section id="terminerCommunication">
+	<h3>Terminer une communication</h3>
+	<section id="close">
+		<h4><samp class="JavaScript">close()</samp>&nbsp;: arrêter la communication</h4>
+		<p>Nous avions vu l'utilisation de <samp class="JavaScript">terminate()</samp> pour arrêter un worker. Cependant, parfois, on désirerait simplement couper la connexion sans arrêter le worker. Par exemple dans les cas d'utilisation des shared-workers ou de message-Channel.</p>
+		
+		<p>Je vous présente maintenant une autre méthode, plus douce, pour arrêter une communication : <samp class="JavaScript">close()</samp>. <samp class="JavaScript">close</samp> permet de fermer la communication sur laquelle elle est appliquée. Le worker n'est pas arrêté, seul le canal de communication désigné est interrompu.</p>
+		
+		<p>Il faut l'appliquer directement sur le port visé : <samp class="JavaScript">port.close();</samp></p>
+		
+		<p>Quand <samp class="JavaScript">close()</samp> est invoqué, il n'est plus possible de redémarrer cette connexion. Le canal de communication est détruit. Si vous voulez redémarrer une communication, il faudra recréer un canal de communication avec <samp class="JavaScript">MessageChannel</samp>.</p>
+	</section>
+	
+	<section id="onclose">
+		<h4><samp class="JavaScript">onclose</samp>&nbsp;: quand la communication s'arrête</a></h4>
+		<p>Il peut être particulièrement utile de savoir quand la communication est interrompue. Pour cela vous pouvez utiliser le listener <samp class="JavaScript">onclose</samp>.</p>
+		
+		<p class="attention">Cependant cette méthode n'appartient pas aux spécifications ! Les navigateurs ne sont donc pas tenus de l'implémenter.</p>
+		
+		<p>Actuellement, seul Firefox semble l'avoir implémenté.</p>
+		
+		<p>Il va donc falloir patienter avant de pouvoir vraiment l'utiliser. ☹</p>
+	</section>
+</section><!-- fin de la section terminer une communication-->
+
+<hr>
+<p>Maintenant que la communication n'a plus de secret pour vous, nous allons pouvoir continuer dans le prochain chapitre la découverte des workers et voir toutes <a href="./manipulation.html">les possibilités qu'ils nous offrent</a>.</p>
 </article>
 <footer></footer>
 </body>

@@ -2,12 +2,12 @@
 <html lang="fr">
 <head>
 	<meta charset="utf-8">
-	<title>HTML5 web-worker : Le monde parallèle du JavaScript</title>
+	<title>Web-worker : Shared-Worker</title>
 	<link rel="stylesheet" type="text/css" href="./tutoriel.css">
 	<script type="text/JavaScript" src="./miseEnPage.js"></script>
 </head>
 <body>
-<h1>Web-worker : Shared-Worker</h1>
+<h1>HTML5 web-worker : Le monde parallèle du JavaScript</h1>
 <nav>
 <header>Table des matières</header>
 <ol>
@@ -40,6 +40,7 @@
 			<li><a href="./compatibilite.html">Support des Workers dans les navigateurs</a></li>
 		</ol>
 	</li>
+	<li><a href="./documentation.html">Sources et Documentations</a></li>
 </ol>
 </nav>
 <hr>
@@ -267,15 +268,15 @@ onconnect = function(e){
 <section id="arreter">
 	<h3>Ne plus utiliser un shared-worker</h3>
 	
-	<p style="color=red;">Il est bien sûr toujours possible d'utiliser <samp class="JavaScript">worker.terminate()</samp> pour l'achever. Cela signifie que le worker se terminera pour toutes les pages qui utilisent ce worker.</p>
+	<p>Selon les spécifications <samp class="JavaScript">worker.terminate()</samp> ne s'applique pas aux shared-workers. Toutefois quelques navigateurs l'ont quand même implémenté&nbsp;; dans ce cas le worker se termine pour toutes les pages qui utilisent celui-ci. Dans ce cas, faites attention à ne pas terminer un shared-worker prématurément s'il est toujours utilisé par une autre page.</p>
 	
-	<p>Avec un dedicated-worker, lorsque vous fermiez la page, vous étiez assuré que le worker disparaissait. Avec les shared-workers, ce n'est plus aussi évident car il se peut qu'une autre page fasse toujours appel à celui-ci. Assurez-vous de bien fermer les shared-workers lorsque vous ne les utilisez plus. Cela vous évitera une consommation de mémoire inutile.</p>
+	<p>Avec un dedicated-worker, lorsque vous fermiez la page, vous étiez assuré que le worker disparaissait. Avec les shared-workers, ce n'est plus aussi évident car il se peut qu'une autre page fasse toujours appel à celui-ci. Les ressources consommées ne sont donc pas nécessairement libérées à la fermeture d'une page.</p>
 	
-	<p>Mais à l'inverse, faites aussi attention à ne pas terminer un shared-worker prématurément s'il est toujours utilisé par une autre page.</p>
 	
-	<p>Si vous désirez juste interrompre la connexion entre deux threads mais laisser le worker intact pour les autres threads, alors je vous propose d'utiliser la fermeture de port que nous verrons dans le chapitre pour en savoir plus sur <a href="./communication.html">la communication avec les workers</a>.
+	<p>Si vous désirez juste interrompre la connexion entre deux threads mais laisser le worker intact pour les autres threads, alors je vous propose d'utiliser la fermeture de port que nous verrons dans le chapitre <em>pour en savoir plus</em> sur <a href="./communication.html">la communication avec les workers</a>.
 </section>
 
+<hr>
 <p>À présent vous savez manipuler tous les types de workers disponibles en JavaScript. Vous pouvez dès à présent vous entraîner pour mieux comprendre leur fonctionnement.</p>
 
 <p>Dans la suite de ce tutoriel, nous allons donc mettre en pratique ensemble ces connaissances nouvellement acquises en travaillant sur un <!--<a href="./TP1.html">-->TP<!--</a>-->.<br>

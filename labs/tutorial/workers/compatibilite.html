@@ -24,9 +24,17 @@
 			<li><a href="./communication.html">Communiquer avec des workers</a></li>
 			<li><a href="./manipulation.html">Manipulation des workers</a></li>
 			<li><a href="./utilisation.html">Utilisation des workers</a></li>
-			<li><a href="./compatibilite.html">Support des Workers dans les navigateurs</a></li>
+			<li><a href="./compatibilite.html">Support des Workers dans les navigateurs</a>
+			<ol>
+				<li><a href="#tour">Tour d'horizon</a></li>
+				<li><a href="#chrome">Chrome/Safari</a></li>
+				<li><a href="#firefox">Firefox</a></li>
+				<li><a href="#ie">Internet Explorer</a></li>
+				<li><a href="#opera">Opera</a></li>
+			</ol></li>
 		</ol>
 	</li>
+	<li><a href="./documentation.html">Sources et Documentations</a></li>
 </ol>
 </nav>
 <hr>
@@ -34,11 +42,87 @@
 <article>
 	<h2>Support des Workers dans les navigateurs</h2>
 
-<p>Désolé cette page n'a pas encore été retranscrite sur mon site. J'y travaille aussi vite que possible.<br>
-Merci de votre patience.<br>
-<br>En attendant vous pouvez consulter le <a href="http://www.siteduzero.com/informatique/tutoriels/html5-web-workers-le-monde-parallele-du-javascript">tutoriel sur le site du zéro</a>.</p>
-<p>Vous pouvez aussi tester le niveau de compatibilité grâce à cet outil : <a href="http://restimel.github.io/Tutoriels/webWorkers/evaluation/index.html">Test de supports des web-workers</a>.
-Par ailleur, afin de remettre à jour cette page, je suis intéressé du résultat sur votre navigateur. Vous pouvez m'envoyer le log record de cet outil.</p>
+	<p>Le support des navigateurs a toujours été un problème en javascript. Cela reste d'autant plus vrai avec l'HTML5, où les fonctionnalités sont ajoutées au fur et à mesure et chaque navigateur a un rythme de développement différent (et des priorités différentes).</p>
+	<p>Nous allons voir ici ce qu'il en ait à propos des web-workers et de ce qui tourne autour.</p>
+	
+	<section id="tour">
+		<h3>Tour d'horizon</h3>
+		<p>Voici un récapitulatif du support des web-workers par les principaux navigateurs :</p>
+		<table>
+			<caption>Résumé des fonctions supportées par les navigateurs.</caption>
+			<theader><th></th><th>Chrome</th><th>Firefox</th><th>Internet Explorer</th><th>Opera</th><th>Safari</th></theader>
+			<tbody>
+				<tr><td>Worker</td><td>3+</td><td>3.5+</td><td>10+</td><td>10.60+</td><td>4+</td></tr>
+				<tr><td>SharedWorker</td><td>5+</td><td>☹</td><td>☹</td><td>10.60+</td><td>5+</td></tr>
+				<tr><td>MessageChannel</td><td>5+</td><td>☹</td><td>10+</td><td>10.60+</td><td>5+</td></tr>
+				<tr><td>Inline</td><td>8+</td><td>6+</td><td>10?</td><td>15.0?</td><td>5.1+</td></tr>
+			</tbody>
+		</table>
+		
+		<p>Les <strong>dedicated-workers</strong> peuvent être utilisés sans soucis sur tous les navigateurs récents et même des plus anciens (mis à part Internet Explorer). La seule inquiétude reste donc si vous ciblez un usage professionnel où les utilisateurs restent souvent avec de vieilles versions d'Internet Explorer.</p>
+		
+		<p>Le support des <strong>shared-workers</strong> est plus délicat, puisque les deux principaux navigateurs (en terme de parts de marché) ne les supportent pas. Cela signifie qu'il n'est actuellement pas possible de construire un site ou une application recherchant une large diffusion où les shared-workers sont absolument nécessaires. Ils doivent donc rester optionnels et n'apporter qu'un confort ou une aide de plus.</p>
+		
+		<p class="information">En plus de ces supports majeurs, il y a également quelques difficultés de compatibilité pour certaines fonctionnalités. Dans ce tutoriel, je vous ai présenté les fonctionnalités telles qu'elles devraient fonctionner d'après les spécifications.</p>
+		<p>Nous allons voir maintenant en détail les problèmes des principaux navigateurs.<br>
+		Dans un but d'impartialité, les navigateurs sont présentés par ordre alphabétique. Ces informations ont été testées sur la dernière version stable disponible du navigateur au moment de l'écriture de ce tutoriel. Elles sont donc sujettes à modification.</p>
+		<p>Vous pouvez aussi tester vous-même le niveau de compatibilité de votre navigateur grâce à ce petit outil&nbsp;: <a href="http://restimel.github.io/Tutoriels/webWorkers/evaluation/index.html">Test de supports des web-workers</a>.</p>
+	</section>
+	
+	<section id="chrome">
+		<h3>Chrome / Safari</h3>
+		<p>Je présente Chrome et Safari en même temps. Ils utilisent le même moteur de rendu (WebKit), ce qui peut expliquer leur comportement très proche vis à vis des Workers.</p>
+		<ol class="bug">
+			<li>En local&nbsp;: Pour des raisons de sécurité, les workers ne sont pas appelés dans les pages situées en local sur votre ordinateur.<br>
+ Il est nécessaire de mettre les pages en ligne pour faire fonctionner les workers. Ou alors il faut démarrer le navigateur avec une option permettant de lire les fichiers locaux&nbsp;:<br>
+ <samp class="shell">Chrome --disable-web-security</samp> ou <samp class="shell">Chrome --allow-file-access-from-files</samp> (en fonction de la plateforme ou des versions utilisées).<br>
+ Le mot clef <samp class="shell">Chrome</samp> doit être remplacé par le nom de votre navigateur (<samp class="shell">chromium-browser</samp> pour Chromium, <samp class="shell">Safari</samp> pour Safari)</li>
+ 			<li>Enchaîner des workers&nbsp;: Il n'est pas possible d'insérer un nouveau Worker à l'intérieur d'un autre Worker.<br>
+ Il s'agit d'un choix technique de la part de ses développeurs pour des soucis de performance. Espérons qu'un jour cette fonctionnalité soit également disponible pour ces navigateurs.</li>
+ 			<li>Nombre de workers&nbsp;: Pour des raisons de performance, il n'est possible de créer qu'un maximum de 50 workers environ par page, puis la page plante. Raison de plus pour bien terminer vos workers.</li>
+ 			<li>Propriété de l'événement <samp class="JavaScript">onmessage</samp>&nbsp;: Lorsqu'un listener de type <samp class="JavaScript">"message"</samp> se déclenche, l'attribut <samp class="JavaScript">origin</samp> vaut <samp class="JavaScript">""</samp> (chaîne vide). Ce qui est assez dommage pour identifier celui qui nous envoie le message.</li>
+ 			<li>Fermeture de port&nbsp;: Un port ne se ferme pas avec <samp class="JavaScript">close()</samp>.</li>
+ 			<li>Terminer un shared-worker&nbsp;: Il n'est pas possible de terminer un shared-worker avec <samp class="JavaScript">terminate()</samp>. Toutefois cela ne fait pas parti des spécifications, mais c'est dommage.</li>
+ 			<li>Écoute sur les erreurs&nbsp;: Lorsqu'une erreur survient dans un shared-worker, les threads parents ne sont pas prévenus (<samp class="JavaScript">worker.onerror</samp> ne se déclenche pas).</li>
+ 			<li>Consommation mémoire&nbsp;: Lors d'une consommation excessive de mémoire, le worker fait planter la page. Mis à part l'interruption de tout le code de la page, et de l'inaccessibilité de celle-ci, ce problème n'est pas si grave. Car cela permet de protéger l'utilisateur contre un usage abusif du worker.</li>
+		</ol>
+	</section>
+	
+	<section id="firefox">
+		<h3>Firefox</h3>
+		<ol class="bug">
+			<li>Les shared-workers&nbsp;: Les shared-workers ne sont absolument pas supportés.</li>
+			<li><samp class="JavaScript">MessageChannel</samp>&nbsp;: Il n'est pas possible de créer soi-même un canal de communication.</li>
+			<li>Propriété de l'événement <samp class="JavaScript">onmessage</samp>&nbsp;: Lorsqu'un listener de type <samp class="JavaScript">"message"</samp> se déclenche, l'attribut <samp class="JavaScript">origin</samp> vaut <samp class="JavaScript">""</samp> (chaine vide). Ce qui est assez dommage pour identifier celui qui nous envoie le message.</li>
+			<li>Lors d'une consommation excessive de mémoire, le worker ne continue plus sa tâche et ne répond plus au thread principal (même au <samp class="JavaScript">terminate()</samp>). C'est un comportement extrêmement gênant dans des situations critiques.</li>
+		</ol>
+	</section>
+	
+	<section id="ie">
+		<h3>Internet Explorer</h3>
+		<ol class="bug">
+			<li>Les shared-workers&nbsp;: Les shared-workers ne sont absolument pas supportés.</li>
+			<li>IE10&nbsp;: Le support des workers n'est pris en charge qu'à partir de IE10 (sorti en fin 2012) et celui-ci ne peut s'installer que sur Windows (à partir de la version Windows 7). De ce fait, peu d'utilisateurs IE ont la possibilité d'utiliser les workers. Mais on peut espérer que les utilsiateurs IE qui en ont la possibilité migreront rapidement vers une version d'IE qui supporte les workers.</li>
+		</ol>
+		<p>Je n'ai pu réaliser que peu de test avec IE10. Je n'ai donc pas pu bien observer son comportement dans des cas extrême (consommation mémoire, nombre de workers, etc.). Mais il a réussi tous les tests de compatibilité que je lui ai soumis (à l'exception des shared-workers).</p>
+	</section>
+	
+	<section id="opera">
+		<h3>Opera</h3>
+		<ol class="bug">
+			<li><samp class="JavaScript">importScripts</samp>&nbsp;: Après un <samp class="JavaScript">importScripts</samp>, un deuxième <samp class="JavaScript">importScripts</samp> avec le ou les mêmes fichiers ne fonctionne pas.</li>
+			<li>Écoute d'erreurs&nbsp;: Dans un worker, <samp class="JavaScript">addEventListener("error",f,false);</samp> ne fonctionne pas sauf si <samp class="JavaScript">self.onerror</samp> est défini.</li>
+			<li>Évenement d'erreur&nbsp;: Avec <samp class="JavaScript">self.onerror</samp> (ou avec <samp class="JavaScript">addEventListener</samp>), l'événement créé n'est pas un objet mais une chaîne de caractères correspondant au message d'erreur.</li>
+			<li>Écoute sur les erreurs&nbsp;: Lorsqu'une erreur survient dans un shared-worker, les threads parents ne sont pas prévenus (<samp class="JavaScript">worker.onerror</samp> ne se déclenche pas).</li>
+			<li>Il n'est pas possible de créer un worker inline. la création d'un Blob fonctionne mais la création d'une URL à partir d'un objet ne fonctionne pas (Cela devrait être corrigé dans Opera 15).</li>
+			<li>Nombre de workers&nbsp;: Pour des raisons de performance, il n'est possible de créer qu'un maximum de 16 workers par page ou de 128 workers par session. Ensuite toute tentative de créer un nouveau worker générera une erreur de type QUOTA_EXCEEDED_ERR. Raison de plus pour bien terminer vos workers.<br>
+ Ces limites sont configurables par l'utilisateur (dans le <samp class="url">opera:config</samp>).</li>
+		</ol>
+	</section>
+	
+<hr>
+<p>Vous voilà prêt à affronter les différences entre les navigateurs. Mais n'oubliez pas que ces différences peuvent changer à chaque sortie d'une nouvelle version d'un navigateur.</p>
+
 </article>
 <footer></footer>
 </body>
