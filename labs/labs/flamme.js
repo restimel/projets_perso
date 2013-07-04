@@ -1,5 +1,6 @@
 function flammeAnimate(divID,divVent){
 	var flamme=document.getElementById(divID), //élément représentant la base de la flamme
+		souffler = document.getElementById("souffle"), // bouton permettant de souffler la flamme
 		t = 0, //variable pour les oscillations
 		animation=null, //fonction devant être appelée pour gérer l'animation actuelle
 		timer=0, //timer d'animation de l'allumette
@@ -178,28 +179,32 @@ function flammeAnimate(divID,divVent){
 	function changeVent(force){
 		if(typeof force === "undefined"){
 			iddle();
-			force=elemVent.value-vent;
+			force=elemVent.value-vent || 0;
 		}
 		vent+=force;
 		if(vent>10){
 			vent=10;
 			if(animation===burn){
-				animation=smoke;
-				clearInterval(timer);
-				timer=setInterval(animation,200);
+				eteindre();
 			}
 		}
 		if(vent<-10){
 			vent=-10;
 			if(animation===burn){
-				animation=smoke;
-				clearInterval(timer);
-				timer=setInterval(animation,200);
+				eteindre();
 			}
 		}
 		elemVent.value=vent;
 	}
 	this.changeVent=changeVent;
+	
+	function eteindre(){
+	//permet d'eteindre l'allumette
+		animation=smoke;
+		clearInterval(timer);
+		timer=setInterval(animation,200);
+		souffler.style.opacity = 0;
+	}
 	
 	var iddle = (function(){
 	//permet de cacher/afficher le message d'aide si l'utilisateur ne fait rien
@@ -232,10 +237,12 @@ function flammeAnimate(divID,divVent){
 			animation=burn;
 			clearInterval(timer);
 			timer=setInterval(animation,200);
+			souffler.style.opacity = 1;
 		}
 	}
-	flamme.onclick=allume;
+	flamme.onclick = allume;
+	souffler.onclick = eteindre;
 	changeVent(0);
 }
 
-var allumette=new flammeAnimate("flamme","vent");
+var allumette = new flammeAnimate("flamme","vent");

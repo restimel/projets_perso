@@ -69,9 +69,18 @@ aside{
 	-webkit-transition: opacity 3s;
 	transition: opacity 3s;
 }
+
+#souffle{
+	float : right;
+	opacity : 0;
+	-ms-transition: opacity 1s;
+	-webkit-transition: opacity 1s;
+	transition: opacity 1s;
+}
 </style>
 
 <div class="labsMenu labsMenuHaut">
+	<button id="souffle">Éteindre</button>
 	<!--<label>Perturbation avec la souris: <input type="checkbox" onchange="allumette.sourisVent(this.checked);"></label><br>Fonctionnalité expérimentale-->
 	<label>Vent aléatoire: <input type="checkbox" onchange="allumette.autoVent(this.checked);"></label><br>
 	<label>vent:<input type="number" id="vent" value="0" onchange="allumette.changeVent();"><button onclick="allumette.changeVent(-1);">-</button><button onclick="allumette.changeVent(1);">+</button></label>
