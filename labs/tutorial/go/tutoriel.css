@@ -1,0 +1,193 @@
+/* mise en forme pour le texte*/
+.information{
+	display:block;
+	background-color: rgba(150,250,150,0.6);
+	border : 2px dotted rgb(50,150,50);
+	padding : 0.7em;
+	
+	background-image: -ms-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -moz-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -o-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -webkit-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+}
+.warning{
+	display:block;
+	background-color: rgba(240,210,100,0.6);
+	border : 2px dotted rgb(140,110,0);
+	padding : 0.7em;
+	
+	background-image: -ms-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -moz-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -o-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -webkit-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+}
+.attention{
+	display:block;
+	background-color: rgba(250,150,150,0.6);
+	border : 2px dotted rgb(150,50,50);
+	padding : 0.7em;
+	
+	background-image: -ms-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -moz-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -o-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -webkit-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+}
+.question{
+	display:block;
+	background-color: rgba(150,150,250,0.6);
+	border : 2px dotted rgb(50,50,150);
+	padding : 0.7em;
+	
+	background-image: -ms-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -moz-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -o-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: -webkit-linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+	background-image: linear-gradient(top, rgba(250,250,250,0.6) 20%, rgba(250,250,250,0));
+}
+summary.information,summary.warning,summary.attention,summary.question{
+	border : none; /*pour éviter la double bordure*/
+}
+
+.filename{
+	font-family: monospace;
+	font-size : 0.95em;
+}
+.exemple{
+	font-style: italic;
+	font-size : 0.95em;
+}
+.humour{
+	font-size: smaller;
+}
+
+h3,h4,h5{
+	margin-top:2.5em;
+}
+
+em{
+	font-size : 1.2em;
+	font-weight : 800;
+}
+
+body{
+	background-image : url('../../ressources/fond_bleu.png');
+}
+
+article{
+	margin-left : 2em;
+	margin-right : 2em;
+	text-align : justify;
+	font-family : sans-serif;
+	max-width : 1000px;
+}
+p{
+	margin-left: 1.5em;
+	margin-right: 1em;
+}
+
+
+details{
+	border : 1px solid black;
+	background-color: rgba(220,220,220,0.5);
+	display: block;
+	margin-bottom : 0.5em;
+}
+summary{
+	cursor:pointer;
+}
+/*fallback pourles navigateur ne sachant pas gérer les balises details/summary*/
+summary.detailsClosed~*{
+	display:none;
+}
+summary.detailsClosed:before{
+	content:"▸ ";
+}
+summary.detailsOpen:before{
+	content:"▾ ";
+}
+
+
+/*Lien courant du chapitre*/
+.current{
+	padding: 0.25em;
+	margin-top: 0.5em;
+	background-color: rgba(247,230,83,0.9);
+}
+
+/*liens suivant/precedent dans le footer*/
+.lienPrecedent{
+	float : left;
+}
+.lienPrecedent:before{
+	content : "↩\a0";
+}
+
+.lienSuivant{
+	float : right;
+}
+.lienSuivant:after{
+	content : "\a0↪";
+}
+
+
+/*affichage des listes*/
+section ol{
+	list-style-type: none;
+}
+section ol>li:before{
+	content : "☞\a0";
+}
+ol.bug>li{
+	margin-top : 1em;
+}
+
+
+/*affichage de la table des matières*/
+nav{
+	float: right;
+	margin-left: 2em;
+	margin-right: 1em;
+	margin-bottom: 2em;
+	font-family: "Open Sans", sans-serif;
+}
+
+/*affichage des listes dans le menu*/
+nav>ol{
+	list-style-type: upper-roman;
+	font-size : x-large;
+}
+nav>ol ol{
+	font-size : smaller;
+	list-style-type: lower-roman;
+}
+nav>ol ol ol{
+	list-style-type: decimal;
+}
+nav>ol ol ol ol{
+	list-style-type: lower-alpha;
+}
+
+table{
+	border-collapse:collapse;
+}
+td{
+	border: 1px solid black;
+	padding: 0.5em;
+}
+th{
+	background-color: rgb(150,160,220);
+	padding: 0.15em;
+}
+
+
+/*mise en forme pour les code shell*/
+samp.shell{
+	display:inline;
+	font-family:courier,monospace;
+	font-size:0.8em;
+	background-color : rgba(10,15,10,0.9);
+	color : rgb(250,250,251);
+}

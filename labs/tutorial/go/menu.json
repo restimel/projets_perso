@@ -1,0 +1,21 @@
+{
+	"menu":[
+		{
+			"lien":"index.html",
+			"titre":"Introduction"
+		},
+		{
+			"titre":"Règles",
+			"sousMenu":[
+				{
+					"lien":"reglesDebutant.html",
+					"titre":"Règles du jeu"
+				}
+			]
+		},
+		{
+			"lien":"documentation.html",
+			"titre":"Sources et Documentations"
+		}
+	]
+}
