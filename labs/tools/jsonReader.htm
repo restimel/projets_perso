@@ -8,8 +8,9 @@
 	Original File : http://b.mariat.free.fr/tools/jsonReader.htm
 	Author : Benoit Mariat
 	Date : Dec 2011
-	Last update : June 2012 (search from joker token and found an object from its value)
--->	
+		update :	June 2012 (search from joker token and found an object from its value)
+					June 2013 (improve search by adding functions (typeof and length), and refactoring display)
+-->
 	<style>
 		#corps header{
 			font-weight : bold;
@@ -71,47 +72,91 @@
 			border : 1px solid black;
 			padding : 0.25em;
 		}
+		
+		.highlight{
+			background-color : rgba(250,250,50,0.6);
+		}
+		
+		.JSONLink{
+			cursor : pointer;
+			font-size : 0.95em;
+			font-style : italic;
+		}
+		
+		nav{
+			position: fixed;
+			bottom: 10px;
+			right: 10px;
+			padding: 1em;
+			box-shadow: 7px 7px 10px 5px #DDDDDD;
+			border : 1px dotted black;
+		}
+		
+		.small{
+			font-size : x-small;
+		}
 	</style>
 </head>
 <body>
 
 <div id="corps">
 
-	<section>
+	<section id="JSON1">
 		<header>Code JSON</header>
-		<label>JSON:<textarea id="source" placeholder="Code JSON to analyze" title="Update is done when loosing focus"></textarea></label>
-		<label>Human readable:<textarea id="source2" placeholder="output JSON with indentation" title="Update is done when loosing focus"></textarea></label>
+		<label>JSON:<textarea id="source" placeholder="Code JSON to analyze"></textarea></label>
+		<label>Human readable:<textarea id="source2" placeholder="output JSON with indentation"></textarea></label>
 	</section>
 	<hr style="width:50%">
 	<section class="objectPresentation">
-		<header>Objet hierarchy</header>
-		<div id="objet" class="objectContainer"></div>
+		<header>Object hierarchy</header>
+		<div id="OBJ1" class="objectContainer"></div>
 	</section>
 	<hr>
 	<section>
 		<header>2nd Code JSON</header>
-		<label>JSON:<textarea id="sourceBis" placeholder="Code JSON to analyze" title="Update is done when loosing focus"></textarea></label>
-		<label>Human readable:<textarea id="sourceBis2" placeholder="output JSON with indentation" title="Update is done when loosing focus"></textarea></label>
+		<label>JSON:<textarea id="sourceBis" placeholder="Code JSON to analyze"></textarea></label>
+		<label>Human readable:<textarea id="sourceBis2" placeholder="output JSON with indentation"></textarea></label>
 	</section>
 	<hr style="width:50%">
 	<section class="objectPresentation">
-		<header>Objet hierarchy</header>
-		<div id="objetBis" class="objectContainer"></div>
+		<header>Object hierarchy</header>
+		<div id="OBJ2" class="objectContainer"></div>
 	</section>
 	<hr>
 	<section>
-		<header><label><input type="checkbox" id="comparaisonResultDoIt" checked/>Difference between JSON</header></label>
+		<header><label><input type="checkbox" id="comparaisonResultDoIt" checked="">Difference between JSON</label></header>
 		<div id="comparaisonResult" class="comparaisonResult"></div>
 	</section>
 
 	<section id="javascript">
 		<header>JavaScript code to access an element</header>
-		<input id="codeJS" title="OBJ. désigne l'objet créé par JSON">&nbsp;</output>
+		<input id="codeJS" title="OBJ. désigne l&#39;objet créé par JSON">&nbsp;
 	</section>
 
+	
+	<nav>
+		<header>Navigation</header>
+		<a href="#JSON1">First JSON</a><br>
+		<a href="#OBJ1_search" class="small">Search for 1st JSON</a><br>
+		<a href="#JSON2">Second JSON</a><br>
+		<a href="#OBJ2_search" class="small">Search for 2nd JSON</a><br>
+		<a href="#comparaisonResultDoIt">Comparison</a><br>
+	</nav>
 </div>
 
+
+<!-- liste de recherche férquente -->
+<datalist id="commonSearch">
+	<option value="*.(typeof Array)">Search for Array</option>
+	<option value="*.(length 0)|*=null">Search for empty element</option>
+</datalist>
+
+
+
 <script>
+
+	//TODO ✍
+
 
 function countObj(myobj){
 //permet de compter le nombre de propriétés de l'objet
@@ -122,8 +167,8 @@ function countObj(myobj){
 
 function createLink(obj,elem,str){
 //permet de créer les blocs d'ouverture
-	return function(){
-		if(elem.style.display=="block"){
+	return function(e){
+		if(e !== true && elem.style.display=="block"){
 			elem.style.display="none";
 		}else{
 			if(!elem.innerHTML){
@@ -136,43 +181,72 @@ function createLink(obj,elem,str){
 
 function writeObj(objet,element,str){
 //permet d'afficher les propriétés sous formes d'éléments
-	var elem,body,titre,x,code;
+	var sct,elem,body,titre,x,code,txt;
 	element.innerHTML="";
 	for(x in objet){
+		code = str+attributeToString(x); //pour le chemin JS
+
+		//création de la zone de la propriétée
+		sct=document.createDocumentFragment();
+	
+		//nom de la propriété
 		titre=document.createElement("header");
 		titre.textContent=x;
+		titre.id=code;
+		
+		//information sur la propriété
 		elem=document.createElement("section");
 		elem.className="closeObject";
+		
+		//propriétés de la propriété
 		body=document.createElement("section");
 		body.className="openObject";
 		body.style.display="none";
-		code = str+attributeToString(x);
-		if(objet[x] === null){
-			elem.textContent=" (null)";
-		}else if(typeof objet[x] === "object"){
-			if(objet[x] instanceof Array){
-				elem.textContent=" (Array ["+objet[x].length+"])";
-				if(objet[x].length>0) titre.onclick=createLink(objet[x],body,code);
-			}else{
-				var nb=countObj(objet[x]);
-				elem.textContent=" ("+typeof objet[x]+" ["+nb+"])";
-				if(nb>0) titre.onclick=createLink(objet[x],body,code);
-			}
+		
+		//remplissage des sections
+		txt = displayObjInformation(objet[x]);
+		elem.textContent = txt[0];
+		if(txt[1]) titre.onclick=createLink(objet[x],body,code);
+		if(typeof objet[x] === "object"){
 			titre.className = "object";
-		}else if(typeof objet[x] === "string"){
-			elem.textContent=" \""+objet[x]+"\" (string ["+objet[x].length+"])";
-		}else{
-			elem.textContent=" "+objet[x]+" ("+typeof objet[x]+")";
 		}
-		elem.onmouseover=(function(msg){
+		
+		titre.onmouseover=elem.onmouseover=(function(msg){
 			return function(){document.getElementById("codeJS").value=msg;};
 			})(code);
-		element.appendChild(titre);
-		element.appendChild(elem);
-		element.appendChild(body);
-		element.appendChild(document.createElement("br"));
+		
+		//ajout au DOM
+		sct.appendChild(titre);
+		sct.appendChild(elem);
+		sct.appendChild(body);
+		sct.appendChild(document.createElement("br"));
+		element.appendChild(sct);
 	}
 	element.className="openObject";
+}
+
+function displayObjInformation(objet){
+//permet de décrire l'objet
+	var dsp = "",
+		nb;
+	
+	if(objet === null){
+		dsp = " (null)";
+	}else if(typeof objet === "object"){
+		if(objet instanceof Array){
+			nb = objet.length;
+			dsp = " (Array ["+nb+"])";
+		}else{
+			nb = countObj(objet);
+			dsp = " ("+typeof objet+" ["+nb+"])";
+		}
+	}else if(typeof objet === "string"){
+		dsp = " \""+objet+"\" (string ["+objet.length+"])";
+	}else{
+		dsp = " "+objet+" ("+typeof objet+")";
+	}
+	
+	return [dsp,nb];
 }
 
 function jsonVerify(str,inside,offset){
@@ -395,12 +469,14 @@ function jsonReader(str,elem_id){
 	element.innerHTML="";
 	var elem=document.createElement("section");
 	//elem.className="openObject";
-	writeObj(obj,elem,"OBJ");
+	writeObj(obj,elem,element.id);
 	element.appendChild(elem);
 	
 	var recherche = document.createElement("input");
+	recherche.id = elem_id + "_search";
+	recherche.setAttribute("list","commonSearch");
 	recherche.type="text";
-	recherche.title=recherche.placeholder="SEARCH: list values. Values should be written like JS objects and be separated by | use * from any member use = to found a content value; eg: arr[0]|arr[*]=1";
+	recherche.title=recherche.placeholder="SEARCH: list values. Values should be written like JS objects and be separated by |\n use * to match any member\n use = to found a content value\n eg: arr[0]|arr[*]=1";
 	recherche.onchange = function(){ //fonction de recherche
 		zone_recherche.innerHTML="";
 		if(this.value){
@@ -418,42 +494,89 @@ function jsonReader(str,elem_id){
 				search.push(searchComplet[i][0]);
 				i++;
 			}
+			
 			function deepSch(obj,path,i,indice){ //recherche pour une colonne
-				var index=indice||0,end=searchComplet[i].length;
+				var index=indice||0,end=searchComplet[i].length,car,r,add=false;
 				path = path || "";
+				
 				if(typeof obj !== "undefined" && obj !== null){
 					while(++index<end && (typeof obj[searchComplet[i][index]] !== 'undefined')){
-						path+="["+searchComplet[i][index]+"]";
+						path += attributeToString(searchComplet[i][index]);
 						obj=obj[searchComplet[i][index]];
 					}
 				}else{
 					index++;
 				}
+				
 				if(index === end){
-					rslt[i].push(obj)
+					rslt[i].push([path,displayObjInformation(obj)[0]])
 				}else{
 					//on vérifie si on est sur un caractère particulier
-					var car=searchComplet[i][index];
-					switch(searchComplet[i][index]){
+					car = searchComplet[i][index];
+					switch(car){
 						case "*" : //on accepte tous les attributs
 							var x;
 							for(x in obj){
-								deepSch(obj[x],path+"["+x+"]",i,index);
+								deepSch(obj[x], path+attributeToString(x),i,index);
 							}
 							break;
 						case "=" : //on recherche le contenu
-							if(obj==searchComplet[i][index+1] || searchComplet[i][index+1]==="*"){
-								rslt[i].push(path); //le chemin permettant d'obtenir cette valeur
+							r = searchComplet[i][index+1];
+							add = false;
+							if(obj==r){
+								add = true;
+							}else{
+								switch(r){
+									case "null":
+										if(obj === null){
+											add = true;
+										}
+										break;
+									case "false":
+										if(obj === false){
+											add = true;
+										}
+										break;
+									case "true":
+										if(obj === true){
+											add = true;
+										}
+										break;
+									case "*":
+										add = true;
+										break;
+									default:
+										//TODO vérifier si il y a une * dans le texte
+								}
 							}
+							
+							if(add){
+								//ajout de l'objet
+								rslt[i].push([path,displayObjInformation(obj)[0]]);
+							}
+							break;
+						default :
+						if(/^\([^)]+\)$/.test(car)){
+							//mode fonction
+							
+							if((r = car.match(/^\(typeof[\s=:]+([^)]+)\)$/i)) && (r[1] === typeof obj || (r[1] === "Array" && obj instanceof Array )) ){
+							//typeof
+								rslt[i].push([path,displayObjInformation(obj)[0]]);
+							}else if((r = car.match(/^\(length[\s=:]+(\d+)\)$/i)) && obj !== null && (typeof obj === "string" || typeof obj === "object") && (obj.length || countObj(obj)) == r[1]){
+							//length
+								rslt[i].push([path,displayObjInformation(obj)[0]]);
+							}
+						}
 					}
 				}
 
 			}
+			
 			function sch(o,path){
 				var x,fromI,pth;
-				path=path||"OBJ";
+				path = path||"OBJ1";
 				for(x in o){
-					pth=path+"["+x+"]";
+					pth = path+attributeToString(x);
 					fromI=0;
 					while(~search.indexOf(x,fromI)){//tant qu'on trouve une occurence de x dans search
 						fromI = search.indexOf(x,fromI);
@@ -473,7 +596,7 @@ function jsonReader(str,elem_id){
 			}
 			sch(obj); //recherche des éléments
 			
-			//affichage du résultat
+		//affichage du résultat
 			//entete
 			var table = document.createElement("table");
 			var row = table.insertRow(-1);
@@ -482,38 +605,114 @@ function jsonReader(str,elem_id){
 			while(i<li){
 				cel = document.createElement("th");
 				cel.textContent = liste[i++];
+				cel.colSpan = 2;
 				row.appendChild(cel);
 			}
 			
 			//résultats
-			var i=0, li=rslt.length, j=0, lj = rslt[0].length;
-			while(j<lj){
+			var i=0, li=rslt.length, j=0, jContinue = false;
+			do{
+				jContinue = false;
 				row = table.insertRow(-1);
 				i=0;
 				while(i<li){
+					if(!jContinue && typeof rslt[i][j+1] !== "undefined") jContinue = true;
 					cel = row.insertCell(-1);
-					cel.textContent=typeof rslt[i][j] === "undefined" ? "":rslt[i][j];
+					cel.textContent=typeof rslt[i][j] === "undefined" ? "":rslt[i][j][0]; //le test sert pour le cas où le nb de lignes est différent entre les recherches
+					cel.onclick = gotoObjLnk;
+					cel.className = "JSONLink";
+					
+					cel = row.insertCell(-1);
+					cel.textContent=typeof rslt[i][j] === "undefined" ? "":rslt[i][j][1]; //le test sert pour le cas où le nb de lignes est différent entre les recherches
 					i++;
 				}
 				j++;
-			}
+			}while(jContinue);
 			
 			zone_recherche.appendChild(table);
-		}
+			
+			//ajout de la recherche à la liste d'aide
+			setTimeout(function(str){
+				var dtl = document.getElementById("commonSearch"),
+					option;
+				
+				if(Array.prototype.some.call(dtl.options,function(opt){return opt.value === str;})) return;
+				
+				option = document.createElement("option");
+				option.value = str;
+				
+				dtl.appendChild(option);
+			},100,this.value);
+			
+		}//fin de la fonction de recherche dans un objet
 	};
+	
 	element.appendChild(recherche);
+	
 	var zone_recherche = document.createElement("div");
 	element.appendChild(zone_recherche);
 	
 	setTimeout(jsonCompare,50);
 }
 
+function gotoObjLnk(e){
+//visualise un objet à partir du contenu d'un élément
+	var path = e.target.textContent;
+	if(path) searchObj(path);
+}
+
 function searchObj(v,idObjet){
-	var element=document.getElementById(idObjet);
-	v=v.split(/"\].|"\]$|"\]\["|\["|\./g); //sépare tous les objets
-	alert("la recherche d'objet n'a pas encore été réalisé :(")
+//permet de rechercher une propriété et de l'afficher
+	var element=document.getElementById(idObjet),el;
+	
+	if(el = document.getElementById(v)){
+		//l'élément existe déjà
+		displayObj(el.parentNode);
+		
+		//mise en évidence
+		Array.prototype.forEach.call(document.querySelectorAll(".highlight"),function(el){el.className = "";});
+		el.className = "highlight";
+		el.scrollIntoView();
+	}else{
+		//l'élément n'existe pas ou n'a pas encore été ouvert
+		v=v.split(/"?\]\.|"?\]$|"?\]\["?|\["?|\./g); //sépare tous les objets
+		if(!v[v.length-1]) v.pop(); //enlève le dernier champ ("")
+		var i = 1,li=v.length,id = v[0];
+		
+		if(/^OBJ\d$/.test(id)){
+			id += attributeToString(v[i++]);
+		}else{
+			if(!id) id = (idObjet || "OBJ1");
+			else id = (idObjet || "OBJ1") + attributeToString(id);
+		}
+
+		while((el = document.getElementById(id)) && i<li){
+			if(el.onclick) el.onclick(true); //ouverture de l'objet
+			id += attributeToString(v[i++]);
+		}
+		
+		//mise en évidence
+		Array.prototype.forEach.call(document.querySelectorAll(".highlight"),function(el){el.className = "";});
+		if(el){
+			el.className = "highlight";
+			el.scrollIntoView();
+		}else{
+			alert('Object "'+v[--i]+'" has not been found in object "'+id.substr(0,id.length-attributeToString(v[i]).length)+'"');
+		}
+		
+	}
+	
+//	alert("la recherche d'objet n'a pas encore été réalisé :(")
 	return false;
 };
+
+function displayObj(el){
+//permet d'afficher un objet
+	while(el.style.display !== "block"){
+		el.style.display = "block";
+		el = el.parentNode;
+	}
+}
 
 function readableJSON(str){
 	var txt="";
@@ -534,8 +733,8 @@ function jsonCompare(){
 		return false;
 	}
 	
-	var obj1 = document.getElementById("objet");
-	var obj2 = document.getElementById("objetBis");
+	var obj1 = document.getElementById("OBJ1");
+	var obj2 = document.getElementById("OBJ2");
 	
 	//recherche obj1
 	if(obj1.firstChild && obj1.firstChild.nodeName === "SECTION"){
@@ -572,6 +771,7 @@ function jsonCompare(){
 }
 
 function compareObject(obj1,obj2,path,table){
+//compare les 2 objets
 	path = path || "";
 	table = table || null;
 	var x,liste=[];
@@ -614,6 +814,7 @@ function compareObject(obj1,obj2,path,table){
 }
 
 function addDifference(table,path,value1,value2){
+//étudie les différences entre 2 JSON
 	var row,cel;
 	if(!table){
 		table = document.createElement("table");
@@ -643,7 +844,11 @@ function addDifference(table,path,value1,value2){
 }
 
 function attributeToString(x){
+//permet d'afficher le séparateur d'objet correspond à une écriture logique
 	var code = "";
+	
+	if(x === "") return code;
+	
 	if(/^[^_a-z]|[^a-z0-9_]/i.test(x)){
 		if(isNaN(x)){
 			code='["'+x.replace(/(["\\])/g,"\\$1")+'"]';
@@ -659,25 +864,28 @@ function attributeToString(x){
 
 //ajout des événéments aux éléments
 document.getElementById("source").onchange=function(event){
-	jsonReader(this.value,'objet');
+	jsonReader(this.value,'OBJ1');
 	document.getElementById('source2').value=readableJSON(this.value);
 };
 document.getElementById("source2").onchange=function(event){
-	jsonReader(this.value,'objet');
+	jsonReader(this.value,'OBJ1');
 	this.value=readableJSON(this.value);
 };
 document.getElementById("sourceBis").onchange=function(event){
-	jsonReader(this.value,'objetBis');
+	jsonReader(this.value,'OBJ2');
 	document.getElementById('sourceBis2').value=readableJSON(this.value);
 };
 document.getElementById("sourceBis2").onchange=function(event){
-	jsonReader(this.value,'objetBis');
+	jsonReader(this.value,'OBJ2');
 	this.value=readableJSON(this.value);
 };
 document.getElementById("codeJS").onchange=function(event){
-	searchObj(this.value,'objet');
+	searchObj(this.value,'OBJ1');
 };
+
+//Ajout direct de la propriété display à block afin d'éviter d'aller trop loin avec la recherche d'objet
+document.getElementById("OBJ1").style.display = "block";
+document.getElementById("OBJ2").style.display = "block";
 </script>
 
-</body>
-</html>
+</body></html>
