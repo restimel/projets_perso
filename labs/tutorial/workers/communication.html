@@ -140,7 +140,7 @@ w.postMessage("Voici le port2",[channel.port2]);
  			Alors qu'il fonctionne très bien si vous le placer avant le <samp class="JavaScript">postMessage</samp>&nbsp;! Que s'est passé&nbsp;?</p>
  			
  			<p>C'est parce que votre port a été <strong>transféré</strong>, il n'est donc plus disponible dans votre premier thread. Il ne s'agit pas de l'envoi d'une référence mais bien de l'objet lui-même. C'est pourquoi depuis le début de cette section, je vous parle de transfert et d'objet transférable.</p>
- 			<p>En réalité, pour éviter le <em>cross-site scripting</em> (exécution de script provenant d'un autre site) et pour rester dans le modèle de séparation des données, le port a été copié, le lien a été transféré à la copie, puis l'objet original a été supprimé. Ainsi si vous ajoutez des attributs ou définissez des listeners, ils ne seront pas transmis.</p>
+ 			<p>En réalité, pour éviter le <strong>cross-site scripting</strong> (exécution de script provenant d'un autre site) et pour rester dans le modèle de séparation des données, le port a été copié, le lien a été transféré à la copie, puis l'objet original a été supprimé. Ainsi si vous ajoutez des attributs ou définissez des listeners, ils ne seront pas transmis.</p>
  		</details>
  		
  		<p class="information">N'oubliez pas qu'on écoute sur des ports. Donc si vous utilisez <samp class="JavaScript">addEventListener</samp>, vous devez d'abord utiliser <samp class="JavaScript">start()</samp> pour recevoir la communication.</p>

@@ -341,6 +341,9 @@ function color(source,inline){
 				}
 		}
 	}
+	if(mode === "//"){//on n'a pas quitté le mode commentaire
+			add("comment1");
+	}
 	
 	part+=" ";
 	verify();
