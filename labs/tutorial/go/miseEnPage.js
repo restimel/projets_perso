@@ -26,6 +26,18 @@ window.addEventListener("load",function(){
 },false);
 
 
+//récupération de la liste des pages
+(function(){
+	var xhr = new XMLHttprequest();
+	xhr.onreadystatechange = function() {
+    if (xmlhttp.readyState === 4){
+        alert(xmlhttp.readyState);//TODO
+    }
+};
+	xhr.open("GET","./menu.json",true);
+	xhr.send(null);
+})()
+
 //initialisation pour identifier le tutoriel et proposer les chapitres suivant/précédent
 window.addEventListener("load",function(){
 	var page = window.location.pathname.replace(/^.*\/([^/?#]+\.html).*/,"$1"),
