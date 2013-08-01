@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>jeu de GO : Règles</title>
 	<link rel="stylesheet" type="text/css" href="./tutoriel.css">
-	<script type="text/JavaScript" src="./miseEnPage.js"></script>
+	<script type="text/JavaScript" src="./miseEnPage.js" async></script>
 </head>
 <body>
 <h1>Le jeu de Go : Règles</h1>
@@ -35,6 +35,7 @@
 		<section id="principe">
 			<h4>Mise en place et principe du jeu</h4>
 			<p>Le jeu de Go se joue à deux joueurs qui se font face.</p>
+			<figure><img src="./images/gobanSize.png" alt="Différentes tailles de Goban"><figcaption>Il est possible de jouer avec différentes tailles de grilles.</figcaption></figure>
 			<p>Le jeu se déroule sur une grille, appelée goban. La taille de cette grille (définie par le nombre de lignes) est choisie au début la partie. Traditionnellement la taille est de 19×19, mais il est aussi fréquent d'utiliser des goban de taille 9×9, ou 13×13 (et plus rarement 11×11). Pour les débutants, il est conseillé de commencer avec un goban de 9×9 (la durée de la partie est plus courte).</p>
 			<p>Chaque joueur dispose de l'ensemble des jetons d'une couleur. Ces jetons sont appelés des "pierres". Traditionnellement les couleurs utilisées sont les noirs et les blancs. Le nombre de pierres qu'un joueur possède n'est pas limité. Mis à part leur couleur, toutes les pierres sont équivalentes.</p>
 			<p>Par convention, le joueur qui a les noirs commence la partie. Puis chaque joueur joue à tour de rôle.</p>
@@ -51,10 +52,15 @@
 		
 		<section id="capture">
 			<h4>Régle de capture</h4>
-			<p>Lorqu'un groupe de pierres se retrouve entouré par des pierres adverses et qu'il n'est alors relié à aucune intersection libre, il est capturé. L'ensemble des pierres formant ce groupe est alors retiré du jeu. Ces pierres sont généralement posées à côté du joueur adverse afin de compter facilement le nombre de "prisonniers".</p>
+			<figure><img src="./images/captureSimple.png" alt="Une pierre entourrée est capturée"><figcaption>Une pierre qui n'a plus de liberté est retirée du jeu, elle est capturée.</figcaption></figure>
+			<p>Lorqu'un groupe de pierres se retrouve entouré par des pierres adverses et qu'il n'est alors relié à aucune intersection libre, il est capturé (les pierres sont retirées du jeu). L'ensemble des pierres formant ce groupe est alors retiré du jeu. Ces pierres sont généralement posées à côté du joueur adverse afin de compter facilement le nombre de "prisonniers".</p>
 			<p>Deux intersections sont reliées si une ligne les relie. Chaque intersection (à l'exception de celles sur le bord et dans les coins) est reliée à quatre autres intersections.</p>
+			<figure><img src="./images/capture2pierres.png" alt="2 pierres reliées forment un groupe"><figcaption>La pierre marquée (Δ) n'a aucune libertée directe. Mais elle est reliée à une autre pierre blanche. En tout le groupe blanc possède encore 3 libertés avant d'être capturé.</figcaption></figure>
 			<p>Deux pierres de la même couleur situées sur des intersections reliées forment un groupe. Toutes les pierres de cette couleur reliées à ce groupe appartiennent elles aussi à ce groupe.</p>
+			<figure><img src="./images/captureDiagonal.png" alt="Les pierres en diagonale ne sont pas reliées"><figcaption>Les pierres blanches ne sont pas reliées. Noir peut donc capturer une pierre blanche en l'entourant.</figcaption></figure>
 			<p>Deux pierres en diagonale ne sont pas directement reliées.</p>
+			
+			<figure><img src="./images/captureCentreBordCoin.png" alt="Les différente captures"><figcaption>Ces formes représentent les manières de capturer une pierre (qui se trouverait sur les intersections marquées d'un rond (○)) au centre, sur un bord et dans un coin.</figcaption></figure>
 			<p>Pour capturer une pierre, il faut au minimum 4 pierres adverses autour (il n'en faut que 3 sur un bord et 2 dans un coin).<br>
 			Pour capturer un groupe de 2 pierres, il faut au minimum 6 pierres adverses (4 sur un bord).</p>
 			<p>Par convention, il est interdit de poser une pierre qui se ferait capturer ce tour-ci. Lorsqu'on la pose, le groupe auquel elle appartient désormais doit être relié à au moins une intersection libre.<br>
@@ -63,6 +69,7 @@
 		
 		<section id="exception">
 			<h4>Exception</h4>
+			<figure><img src="./images/explicationKO.png" alt="Une position ne doit pas se répéter"><figcaption>Noir peut capturer la pierre blanche. Mais si blanc capture la pierre noire, on se retrouve dans la première position. Blanc n'a donc pas le droit de capturer la pierre noire tout de suite.</figcaption></figure>
 			<p>Dans certains cas, on peut se retrouver dans une position qui a déjà été jouée. Cela arrive souvent lorsqu'on capture une pierre à l'aide d'une pierre qui pourra elle-même être capturée (cette situation est appelée Ko). Afin d'éviter de répéter à l'infini cette situation, il est interdit de jouer un coup qui répéterait une position.</p>
 			<p>Lorsqu'on se retrouve dans cette situation, il faut donc jouer ailleurs. Il sera possible de jouer sur cette intersection lors de son prochain coup (si son adversaire ne l'a pas fait entre-temps). En effet les deux pierres jouées ailleurs auront changé la position globale du goban.</p>
 		</section>

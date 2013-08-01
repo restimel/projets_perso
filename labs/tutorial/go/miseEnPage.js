@@ -31,41 +31,109 @@ window.addEventListener("load",function(){
 
 //récupération de la liste des pages
 (function(){
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState === 4){
+	var category = localStorage.category || "menu", //Type de menu
+		menu = null,
+		cat;
+	
+	//category en fonction de l'url
+	cat = location.search;
+	if(cat){
+		cat = cat.split(/[?&=]/);
+		cat.forEach(function(v,i){
+			if(v === "category"){
+				category = cat[i+1];
+			}
+		});
+	}
+	
+	function getMenu(){
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState === 4){
+			
+				if(xhr.status!==200 && xhr.status!==0){
+					console.error("menu.json is not readable (code "+xhr.status+")");
+					return;
+				}
+				
+				var json = xhr.responseText; //texte
+				menu = json && JSON.parse(json); //objet
+				
+				if(!menu){
+					console.error("menu is not readable");
+					return;
+				}
+				
+				loadMenu();
+			}
+		};
+		xhr.open("GET","menu.json",true);
+		xhr.send(null);
+	}
+	
+	//permet de remplir le menu
+	function loadMenu(){
+		var html = document.querySelector("nav"), //element html où le menu doit être écrit
+			elem; //sert à créer les éléments HTML
+	
+		if(!menu){
+			getMenu();
+			return false;
+		}
 		
-			if(xhr.status!==200 && xhr.status!==0){
-				console.error("menu.json is not readable (code "+xhr.status+")");
-				return;
+		//supprime le contenu précédent du menu
+		if(!html){
+			setTimeout(loadMenu,100);
+			return false;
+		}
+		html.innerHTML = "<header>Table des matières</header>";
+		
+		//ajoute le thème
+		html.appendChild(menuTheme(menu));
+		
+		//crée le menu en fonction de l'objet
+		if(!menu[category]){
+			category = "menu";
+		}
+		
+		html.appendChild(menuJSON(menu[category].liste));
+		navigation();
+
+	}
+	
+	function menuTheme(menu){
+		var html = document.createDocumentFragment(),
+			label = document.createElement("label"),
+			elemSelect = document.createElement("select"),
+			elemOption, theme;
+		
+		elemSelect.id="navMenu";
+		
+		label.textContent = "Thème :";
+		label.htmlFor = elemSelect.id;
+		for(theme in menu){
+			elemOption = document.createElement("option");
+			elemOption.textContent = menu[theme].titre;
+			elemOption.value = theme;
+			
+			if(category === theme){
+				elemOption.selected = true;
 			}
 			
-			var json = xhr.responseText, //texte
-				menu = json && JSON.parse(json), //objet
-				html = document.querySelector("nav"), //element html où le menu doit être écrit
-				elem, //sert à créer les éléments HTML
-				category = "menu"; //Type de menu //TODO en fonction de l'url
+			elemSelect.add(elemOption);
+		}
 		
-			if(!menu){
-				console.error("menu is not readable");
-				return;
-			}
-			
-			//supprime le contenu précédent du menu
-			html.innerHTML = "<header>Table des matières</header>";
-			
-			//crée le menu en fonction de l'objet
-			if(!menu[category]){
-				category = "menu";
-			}
-			
-			html.appendChild(menuJSON(menu[category]));
-			navigation();
+		elemSelect.onchange = function(){
+			category = this.value;
+			loadMenu();
+			localStorage.category = category;
+		}
 		
-    	}
-	};
-	xhr.open("GET","menu.json",true);
-	xhr.send(null);
+		html.appendChild(label);
+		html.appendChild(elemSelect);
+		
+		return html;
+	}
 	
 	//créer la structure HTML à partir d'un objet
 	function menuJSON(liste){
@@ -107,12 +175,15 @@ window.addEventListener("load",function(){
 	function navigation(){
 		var page = window.location.pathname.replace(/^.*\/([^/?#]+\.html).*/,"$1"),
 			lien = document.querySelector('a[href="'+page+'"]'),
-			liens = Array.prototype.slice.call(document.querySelectorAll("nav>ol>li>a,nav>ol>li>ol>li>a")),
+			liens = Array.prototype.slice.call(document.querySelectorAll("nav li>a")),
 			suivant = liens[liens.indexOf(lien)+1],
 			precedent = liens[liens.indexOf(lien)-1],
 			footer = document.querySelector("body>footer"),
 			elem;
-		lien.className="current";
+		
+		if(lien){
+			lien.className="current";
+		}
 	
 		//précédent
 		elem = document.createElement("a");
@@ -137,7 +208,31 @@ window.addEventListener("load",function(){
 		}
 		elem.className = "lienSuivant";
 		footer.appendChild(elem);
-
+		
+		//ajout des liens internes à la page
+		addInternalLink(document.querySelectorAll("section>h3"),(lien||document.querySelector("nav>ol")).parentNode);
 	}
+	
+	//ajoute les liens internes à la page dans le menu
+	function addInternalLink(liste,elemParent){
+		var i,
+			li=liste.length,
+			elemOL = document.createElement("ol"),
+			elemLI,elemA;
+		
+		for(i=0; i<li; i++){
+			elemLI = document.createElement("li");
+			
+			elemA = document.createElement("a");
+			elemA.href = "#"+liste[i].parentNode.id;
+			elemA.textContent = liste[i].textContent;
+			
+			elemLI.appendChild(elemA);
+			elemOL.appendChild(elemLI);
+		}
+		
+		elemParent.appendChild(elemOL);
+	}
+	
+	loadMenu();
 })()
-
