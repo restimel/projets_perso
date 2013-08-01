@@ -53,6 +53,19 @@
 						"titre":"Compter les points"
 					}
 				]
+			},
+			{
+				"titre":"Annexes",
+				"sousMenu":[
+					{
+						"lien":"lexique.html",
+						"titre":"Lexique"
+					},
+					{
+						"lien":"documentation.html",
+						"titre":"Sources et Documentations"
+					}
+				]
 			}
 		]
 	}
