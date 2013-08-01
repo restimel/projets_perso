@@ -181,6 +181,9 @@ window.addEventListener("load",function(){
 			footer = document.querySelector("body>footer"),
 			elem;
 		
+		//efface le footer
+		footer.innerHTML=""; //à voir s'il ne faut supprimer que les liens précédent/suivant
+		
 		if(lien){
 			lien.className="current";
 		}
