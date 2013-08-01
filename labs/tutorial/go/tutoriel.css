@@ -83,9 +83,20 @@ article{
 	font-family : sans-serif;
 	max-width : 1000px;
 }
+
 p{
 	margin-left: 1.5em;
 	margin-right: 1em;
+}
+
+figure{
+	display : block;
+	text-align: center;
+}
+
+figcaption{
+	font-style: italic;
+	margin-top: -0.1em;
 }
 
 
@@ -140,7 +151,7 @@ section ol{
 section ol>li:before{
 	content : "☞\a0";
 }
-ol.bug>li{
+ol.bug>li,#lexiqueGO li{
 	margin-top : 1em;
 }
 
