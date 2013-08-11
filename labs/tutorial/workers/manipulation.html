@@ -22,7 +22,23 @@
 	<li>Pour en savoir plus
 		<ol>
 			<li><a href="./communication.html">Communiquer avec des workers</a></li>
-			<li><a href="./manipulation.html">Manipulation des workers</a></li>
+			<li><a href="./manipulation.html">Manipulation des workers</a>
+				<ol>
+					<li><a href="#gestionErreur">La gestion des Erreurs</a></li>
+						<ol>
+							<li><a href="#gestionErreur"><samp class="JavaScript">onerror</samp> : détecter une erreur</a></li>
+							<li><a href="#debug">Débugger un worker</a></li>
+						</ol></li>
+					<li><a href="#origine">Connaître ses origines</a>
+						<ol>
+							<li><a href="#location"><samp class="JavaScript">location</samp></a></li>
+							<li><a href="#navigator"><samp class="JavaScript">navigator</samp></a></li>
+						</ol></li>
+					<li><a href="#importScript">Ajouter un script dynamiquement : <samp class="JavaScript">importScripts</samp></a></li>
+					<li><a href="#enchainer">Enchaîner les workers</a></li>
+					<li><a href="#inline">Créer un worker inline</a></li>
+				</ol>
+			</li>
 			<li><a href="./utilisation.html">Utilisation des workers</a></li>
 			<li><a href="./compatibilite.html">Support des Workers dans les navigateurs</a></li>
 		</ol>
@@ -34,7 +50,315 @@
 
 <article>
 	<h2>Manipulation des workers</h2>
+	<p>Dans ce chapitre, nous verrons les derniers détails concernant l'utilisation des workers.</p>
 
+	<p>Nous allons voir comment appréhender les erreurs qui se déclenchent dans les workers. Nous allons découvrir comment obtenir des informations sur l'environnement d'exécution. Et nous allons aussi explorer certaines méthodes propre aux workers.</p>
+
+	<section id="gestionErreur">
+		<h3>La gestion des Erreurs</h3>
+		<p>Il est possible que vos codes ne soient pas parfaits (pas la peine de se cacher, ça arrive même aux meilleurs). Il peut donc arriver que le worker plante, il vous sera alors utile de le savoir afin de le redémarrer automatiquement ou plus simplement pour débugger.</p>
+		<section id="onerror">
+			<h4><samp class="JavaScript">onerror</samp> : détecter une erreur</h4>
+			<p>Le listener <samp class="JavaScript">onerror</samp> permet d'être informé de l'apparition d'une erreur à l'intérieur du worker.</p>
+			<p>
+				Voici les propriétés intéressantes qui sont ajoutées à l'objet événement créé lors du déclenchement du listener&nbsp;:<ul>
+					<li><strong>message</strong>&nbsp;: contient le message d'erreur.</li>
+					<li><strong>filename</strong>&nbsp;: indique le nom du fichier qui a produit l'erreur.</li>
+					<li><strong>lineno</strong>&nbsp;: montre le numéro de ligne où l'erreur s'est produite.</li>
+				</ul>
+			</p>
+			<p class="information">Le listener peut être placé sur le worker, ou dans le worker. Si une erreur se produit dans le worker, ces deux listeners seront déclenchés.</p>
+			<details><summary class="information"><samp class="JavaScript">postError</samp></summary>
+				<p>Même si vous pouvez le trouver dans quelques navigateurs, il n'existe pas officiellement de fonction <samp class="JavaScript">postError</samp>. Car <samp class="JavaScript">onerror</samp> est censé détecter un problème majeur dans le code.<br>
+Toutefois si vous tenez à générer une erreur, vous pouvez utiliser <samp class="JavaScript">throw</samp> pour envoyer une erreur, et s'il n'y a pas de <samp class="JavaScript">try{}catch()</samp> l'erreur sera alors propagée. Elle pourra alors récupérée dans le thread parent via <samp class="JavaScript">onerror</samp>.<br>
+</p>
+			</details>
+			<p>Bien sûr, il est tout à fait possible d'utiliser <samp class="JavaScript">addEventListener</samp>.</p>
+			<section><header class="filename">main.js</header>
+				<code class="JavaScript">//création du worker
+var w = new Worker("worker.js");
+ 
+//réception des messages
+w.addEventListener("message",function(event){
+	alert("Le worker a répondu : " + event.data);
+},false);
+ 
+//gestion des erreurs
+w.addEventListener("error",function(event){
+	alert("Il a planté ! Son excuse est :\n"+ event.message +"\n\nfichier : "+ event.filename +"\nligne : "+ event.lineno);
+},false);
+ 
+w.postMessage("Bonjour");
+				</code>
+			</section>
+			<section><header class="filename">worker.js</header>
+				<code class="JavaScript">//gestion des messages
+function dialogue(event){
+	if(event.data == "Bonjour"){
+		throw "J'aime pas dire bonjour"; //génération d'une erreur
+	}
+}
+
+//gestion des messages
+addEventListener("message",dialogue,false);
+
+//gestion des erreurs en interne
+addEventListener("error",function(e){
+	postMessage("J'ai une erreur : "+ e.message);
+},false);
+				</code>
+			</section>
+			<a href="http://restimel.github.io/Tutoriels/webWorkers/dedicated5/index.html" target="_blank">Essayer !</a>
+
+			<p class="warning">Il n'y a aucune raison que les erreurs soient propagées à travers un canal de communication. On ne peut donc pas les observer à travers les ports de <samp class="JavaScript">MessageChannel</samp>, ni à travers les ports des shared-workers.</p>
+
+			<details><summary class="information">Comportement des navigateurs</summary>
+				<p>Il est à noter que les navigateurs ne sont pas encore parfaits sur ce point. Par exemple Opera n'écoutera pas toutes les erreurs à l'intérieur du worker si vous utilisez <samp class="JavaScript">addEventListener("error",f,false);</samp>.<br>
+Avec les shared-Workers, aucun navigateur actuel ne semble récupérer les erreurs sur le worker. Heureusement ils les capturent quand même à l'intérieur du worker.</p>
+			</details>
+		</section>
+
+
+		<section id="debug">
+			<h4>Débugger un worker</h4>
+
+			<p>Débugger les workers s'avère plus difficile que du code 'normal' pour la simple raison qu'en tant qu'utilisateur on ne se trouve pas dans le même thread. Avec la séparation des données, il n'est pas simple de savoir ce qu'il se passe à l'intérieur du worker. La récupération des erreurs devient alors une aide précieuse.</p>
+			<p>Tous les navigateurs ont maintenant une console intégrée (qui peut s'ouvrir à l'aide des raccourcis <kbd>F12</kbd> ou <kbd>Ctrl</kbd>+<kbd>shift</kbd>+<kbd>i</kbd> sur la majorité des navigateurs), qui permet d'afficher des informations très utiles. Cependant à l'intérieur des workers cette console n'est pas accessible. Certains navigateurs ont donc contourné le problème.<br>
+Avec Opera, la console est partagée avec celle du thread principal. Ceci est particulièrement pratique mais contredit le principe de zones distinctes.<br>
+Avec Chrome (et aussi Safari), il est possible d'ouvrir un espace de développement dans le worker grâce au "worker inspection". Cet espace de développement offre une console dédiée au worker et donc d'envoyer des messages dedans. Mais aussi de poser des breakpoints dans le worker afin de l'analyser pas à pas. Il y a de fortes chances qu'à terme tous les navigateurs proposeront une fonctionnalité similaire.</p>
+
+			<p>Vous pouvez aussi trouver sur internet des codes qui permettent de créer une référence à la console dans le worker en redirigeant son contenu dans celle du thread principal. Par exemple <a href="https://github.com/davidflanagan/WorkerConsole">le script de David Flanagan</a> pour créer une console partagée grâce au <samp class="JavaScript">MessageChannel</samp>.</p>
+
+			<p>Sinon vous pouvez vous contenter d'envoyer via <samp class="JavaScript">postMessage</samp> vos informations de debug en les encapsulant dans un objet.</p>
+
+			<p>En voici un exemple&nbsp;:<br>
+			<section><header class="filename">main.js</header>
+				<code class="JavaScript">var w = new Worker("worker.js");
+ 
+w.addEventListener("message",function(event){
+	if(typeof event.data === "object" && event.data.cmd && event.data.cmd === "debug"){
+		//il s'agit d'un message de debug
+		console.debug(event.data.msg);
+	}
+},false);
+				</code>
+			</section>
+			<section><header class="filename">worker.js</header>
+				<code class="JavaScript">function debug(obj){
+	postMessage({cmd:"debug", msg:obj});
+}
+/*
+  Maintenant, à n'importe quel endroit où l'on souhaite analyser la valeur d'un objet il suffit de faire :
+  debug(objet);
+  et sa valeur s'affichera dans la console.
+  ATTENTION: l'objet doit être clonable
+*/
+				</code>
+			</section>
+
+		</section>
+	</section>
+
+	<section id="origine">
+		<h3>Connaître ses origines</h3>
+		<p>Afin d'obtenir des informations sur le contexte d'exécution, deux objets sont disponibles dans l'espace global du worker : <samp class="JavaScript">location</samp> et <samp class="JavaScript">navigator</samp>.</p>
+		<section id="location">
+			<header>location</header>
+			<p>L'objet <samp class="JavaScript">location</samp> permet d'obtenir des informations sur l'appel du fichier d'origine qui fait fonctionner le thread. Toutes les propriétés sont en read-only, il n'est donc pas possible de les modifier comme on peut le faire avec <samp class="JavaScript">window.location</samp> dans le thread principal.</p>
+
+			<p>Pour montrer un exemple de ce que retournent les propriétés, on va considérer que notre worker a été appelé de cette manière <samp class="JavaScript">new Worker('http://b.mariat.free.fr:80/tutorial/workers/toto.js?tata=tutu#titi');</samp></p>
+
+			<ul>
+				<li><strong>href</strong>&nbsp;: Il s'agit de l'url complète (<samp>http://b.mariat.free.fr:80/tutorial/workers/toto.js?tata=tutu#titi</samp>)
+
+				<li><strong>protocol</strong>&nbsp;: Il s'agit du protocole utilisé (<samp>http:</samp>)
+
+				<li><strong>host</strong>&nbsp;: Il s'agit du serveur mais aussi du port utilisé (<samp>http://b.mariat.free.fr:80</samp>)
+
+				<li><strong>hostname</strong>&nbsp;: Cette fois, il ne s'agit du que du serveur (<samp>http://b.mariat.free.fr</samp>)
+
+				<li><strong>port</strong>&nbsp;: Et là, il ne s'agit que du port (<samp>80</samp>)
+
+				<li><strong>pathname</strong>&nbsp;: Il s'agit du chemin relatif depuis le serveur (<samp>/tutorial/workers/toto.js</samp>)
+
+				<li><strong>search</strong>&nbsp;: Il s'agit de la partie derrière le ? (<samp>?tata=tutu</samp>)
+
+				<li><strong>hash</strong>&nbsp;: Il s'agit de la partie derrière le # (<samp>#titi</samp>)
+			</ul>
+		</section>
+		
+		<p class="warning">Ces propriétés sont proches de celle de <samp class="JavaScript">window.location</samp>, toutefois <samp class="JavaScript">self.location</samp> ne comporte aucune méthode. Ceci peut facilement s'expliquer par le fait que les propriétés sont ici en lecture seule. Mais même <samp class="JavaScript">toString()</samp> ne retournera pas l'url comme on pourrait s'y attendre (il faut alors utiliser <samp class="JavaScript">self.location.href</samp>).</p>
+		<p class="information">Avec les shared-workers, pour qu'un code soit partagé il doit être appelé avec la même location. Ainsi si le hash ou le search est différent, les codes seront distincts et ne seront pas partagés.</p>
+
+		<section id="navigator">
+			<header>navigator</header>
+			<p>L'objet <samp class="JavaScript">navigator</samp> permet d'obtenir des informations sur le navigateur dans lequel le script s'exécute.</p>
+			<ul>
+				<li><strong>appName</strong>&nbsp;: Il s'agit du nom officiel du navigateur.
+
+				<li><strong>appVersion</strong>&nbsp;: Il s'agit de la version du navigateur (sous forme de chaîne de caractères).
+
+				<li><strong>platform</strong>&nbsp;: Il s'agit du nom de la plate-forme dans laquelle le navigateur fonctionne (Windows, Linux,…).
+
+				<li><strong>userAgent</strong>&nbsp;: Il s'agit de la chaîne d'identification complète du navigateur.
+
+				<li><strong>online</strong>&nbsp;: Permet d'indiquer si le navigateur travaille "en-ligne" ou non.
+			</ul>
+			<p class="information">Ces informations sont les mêmes que celles de <samp class="JavaScript">window.navigator</samp>.</p>
+		</section>
+	</section>
+
+	<section id="importScript">
+		<h3>Ajouter un script dynamiquement : <samp class="JavaScript">importScripts</samp></h3>
+		<p>Dans un worker, il est bien sûr possible d'utiliser <samp class="JavaScript">XMLHTTPRequests</samp> pour lire le contenu d'un fichier grâce à l'AJAX.</p>
+		<p>Toutefois si vous désirez charger un script dynamiquement, cela se complique fortement. En effet, vous ne pouvez pas créer de balise script et exécuter un code externe de cette manière. Pour pallier ce problème, il existe une nouvelle fonction disponible uniquement dans les workers : <strong><samp class="JavaScript">importScripts.</samp></strong></p>
+		<p>Cette fonction permet de charger de manière synchrone un code situé dans un fichier.</p>
+		<p>Supposons que vous ayez écrit une API nommée <span class="filename">calcul.js</span>.</p>
+		<section><header class="filename">calcul.js</header>
+			<code class="JavaScript">function addition(a, b){
+	return a + b;
+}
+			</code>
+		</section>
+		<p>Dans votre worker, vous pouvez écrire&nbsp;:</p>
+		<code class="JavaScript">importScripts("calcul.js");
+var resultat = addition(1, 2); // resultat vaut 3</code>
+		<p>À la ligne 1, l'interpréteur va charger et exécuter le code situé dans le fichier <span class="filename">calcul.js</span>. Puis, une fois fini, il va exécuter la deuxième ligne.</p>
+		<p>Il est aussi possible d'inclure directement plusieurs fichiers d'un coup&nbsp;:</p>
+		<code class="JavaScript">importScripts("calcul1.js", "calcul2.js", "calcul3.js", "calcul4.js");</code>
+		<p>L'ordre de chargement est du premier au dernier (de gauche à droite).</p>
+
+		<details><summary class="warning">Le contexte d'exécution des scripts importés est toujours l'espace global du worker (donc <samp class="JavaScript">self</samp>).</summary>
+			<p>Ce point est très important ! Examinons quelques exemples pour mieux comprendre sa signification.</p>
+			<p>Si on a dans le fichier <span class="filename">calc.js</span>&nbsp;:</p>
+			<section><header class="filename">calc.js</header>
+				<code class="JavaScript">a = b + c;</code>
+			</section>
+			<p>Et dans le worker :</p>
+			<code class="JavaScript">var a = 10,
+	b = 20,
+	c = 30;
+
+importScripts("calc.js");
+var resultat = a; //vaut 50</code>
+			<p>Effectivement la variable <samp class="JavaScript">a</samp> a été modifiée dans le fichier importé.<br>
+Ceci nous confirme le caractère synchrone de l'import.</p>
+			<p>Intégrons maintenant cet import dans une fonction (c'est-à-dire qu'il est appelé dans un contexte d'exécution qui est différent de l'espace global). Notre worker ressemble à ceci&nbsp;:</p>
+			<code class="JavaScript">var a = 10,
+	b = 20,
+	c = 30;
+ 
+function test(){
+	var a = 1,
+		b = 2,
+		c = 3;
+	importScripts("calc.js");
+	var resultat1 = a; //vaut 1
+	var resultat2 = self.a; //vaut 50
+}
+ 
+test();</code>
+			<p>Bien que <samp class="JavaScript">importScripts</samp> ait été appelé dans la fonction, son environnement de travail est l'espace global. Ce sont donc les variables <samp class="JavaScript">a</samp>, <samp class="JavaScript">b</samp> et <samp class="JavaScript">c</samp> de <samp class="JavaScript">self</samp> qui ont été modifiées et non pas les variables locales de la fonction <samp class="JavaScript">test</samp>.</p>
+			<p>Il ne s'agit donc pas d'une "copie" de code à l'endroit où il est appelé (comme pour l'<samp>include</samp> en PHP) mais bien d'une exécution de code.</p>
+		</details>
+		<p class="information">Si le même fichier est importé dans plusieurs workers, il s'exécutera de manière indépendante dans chaque worker. Ses actions ne seront pas partagées entre les workers, mais seront bien effectives dans l'environnement de chaque worker.</p>
+	</section>
+
+
+	<section id="enchainer">
+		<h3>Enchaîner les workers</h3>
+		<p>Et oui&nbsp;! Il est tout à fait possible d'enchaîner les workers&nbsp;!<br>
+C'est à dire que dans un worker, il est possible de créer un ou plusieurs nouveau(x) worker(s).</p>
+		<section><header class="filename">main.js</header>
+			<code class="JavaScript">// initialisation du worker
+var w = new Worker("worker1.js");
+w.addEventListener("message",
+	function(event){
+		alert("j'ai reçu le message suivant :\n"+ event.data);
+	}
+,false);
+ 
+// on envoie un message
+w.postMessage("Bonjour");
+			</code>
+		</section>
+		<section><header class="filename">worker1.js</header>
+			<code class="JavaScript">if(self.Worker){
+	// on crée un nouveau worker
+	var w = new Worker("worker2.js");
+
+	w.addEventListener("message",
+		function(event){
+			// transmission du message au parent (en le modifiant)
+			postMessage('worker2 a ce message pour toi : "'+ event.data + '"');
+		},
+	false);
+
+	// gestion de la communication avec le parent
+	addEventListener("message",
+		function(event){
+			// transmition du message au worker (sans changement)
+			w.postMessage(event.data);
+		},
+	false);
+
+}else{
+	//le navigateur ne gère pas	les workers dans un worker
+	postMessage("Votre navigateur ne supporte pas les Workers dans les Workers ☹");
+}
+			</code>
+		</section>
+		<section><header class="filename">worker2.js</header>
+			<code class="JavaScript">addEventListener("message",
+	function(event){
+		postMessage("Merci de m'écrire");
+	},
+false);
+			</code>
+		</section>
+		<a href="http://restimel.github.com/Tutoriels/webWorkers/dedicated4/index.html" target="_blank">Essayer !</a>
+		<p>Ce code transmet un message au premier worker qui le transmet au deuxième. Celui-ci répond, le premier worker le reçoit et le modifie puis le retransmet au script d'origine.</p>
+		<p>Vous aurez compris par vous même que worker2.js ne peut pas communiquer directement avec main.js, puisqu'il ne le connait pas. Il est obligé de passer par son parent pour lui adresser un message.</p>
+		<p>Il est bien sûr possible de créer plusieurs workers par thread et donc de gérer toute une ribambelle de scripts de cette manière.</p>
+		<p class="attention">Bien que cela soit possible, il n'est pas vraiment recommandé d'enchaîner trop de workers. Principalement à cause de leur consommation de ressources. Comme nous le verrons dans le <a href="./utilisation.html">prochain chapitre</a>.</p>
+
+		<details><summary>Les URL relatives prennent pour origine la page où le script tourne. Ainsi dans la page HTML, l'origine se trouve au niveau de la page HTML. Dans un worker, l'origine se trouve au niveau du fichier qui exécute le worker.</summary>
+			<p>Imaginons que vous ayez deux répertoires nommés html et scripts qui contiennent respectivement vos fichiers html et vos fichiers javascript. Ces répertoires sont situés tous deux dans le même répertoire parent.<br>
+Dans un fichier <span class="filename">index.html</span>, on appelle donc un script de cette manière&nbsp;:</p>
+			<section><header class="filename">index.html</header>
+				<code class="html"><script src="../scripts/main.js"></script></code>
+			</section>
+			<p>Dans ce fichier javascript on pourra donc créer un worker en l'appelant de cette manière&nbsp;:</p>
+			<section><header class="filename">main.js</header>
+				<code class="JavaScript"></code>
+			</section>
+			<p>Dans ce worker, si l'on veut créer un autre worker, on devra faire&nbsp;:</p>
+			<section><header class="filename">worker1.js</header>
+				<code class="html">var w = new Worker("worker2.js");</code>
+			</section>
+			<p>Faites donc bien attention à l'origine du script en cours d'exécution lorsque vous créez un worker.</p>
+		</details>
+	</section>
+
+
+	<section id="inline">
+		<h3>Créer un worker inline</h3>
+		<p>Dans certains cas, il peut être pratique de créer un worker dans le même code que celui qui va l'appeler.<br>
+Je tiens à préciser que cette méthode n'est à réserver que pour quelques cas très limités. En fait, je vous conseille même de l'éviter tant que vous le pouvez. Mais comme je vous ai promis de tout vous montrer sur les workers, je vais quand même vous le présenter.</p>
+		<p>Pour créer un worker il nous faut une URL vers du code.<br>
+Nous allons créer un <strong>Blob</strong> et créer une url vers son contenu.</p>
+
+			<h4>Création du BLOB</h4>
+			<p></p>
+
+			<h4>Création de l'url</h4>
+			<p></p>
+
+			<h4>Création du worker</h4>
+			<p></p>
+	</section>
+
+<hr>
 <p>Désolé cette page n'a pas encore été retranscrite sur mon site. J'y travaille aussi vite que possible.<br>
 Merci de votre patience.<br>
 <br>En attendant vous pouvez consulter le <a href="http://www.siteduzero.com/informatique/tutoriels/html5-web-workers-le-monde-parallele-du-javascript">tutoriel sur le site du zéro</a>.</p>
