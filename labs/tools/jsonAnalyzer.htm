@@ -139,7 +139,7 @@
 				<select id="pNNodeType">
 					<option value="nChild">New child</option>
 					<option value="nClChild">Clone last child as a new child</option>
-					<option value="nClChild">Clone this as a new sibling</option>
+					<option value="nClSibling">Clone this as a new sibling</option>
 				</select>
 				<button title="Create New Value" id="pAdd">Add</button> <button title="Remove this property" id="pDelete">Delete</button>
 			</section>
@@ -254,11 +254,15 @@ function writeObj(objet,element,str){
 		//remplissage des sections
 		txt = displayObjInformation(objet[x]);
 		elem.textContent = txt[0];
-		if(txt[1]) titre.onclick=createLink(objet[x],body,code);
+		if(txt[1]) titre.addEventListener("click",createLink(objet[x],body,code),false);
 		if(typeof objet[x] === "object"){
 			titre.className = "object";
 		}
-		titre.onmouseover = elem.onmouseover = updateCodeJS;
+		//ajout des événements
+		titre.addEventListener("mouseover",updateCodeJS,false);
+		elem.addEventListener("mouseover",updateCodeJS,false);
+		titre.addEventListener("click",updateCodeJS,false);
+		elem.addEventListener("click",updateCodeJS,false);
 		
 		//ajout au DOM
 		sct.appendChild(titre);
@@ -270,23 +274,51 @@ function writeObj(objet,element,str){
 	element.className="openObject";
 }
 
-function updateCodeJS(){
 //met à jour le code de la propriété et ses info (le contexte doit être l'element HTML d'affichage de la propriété)
-	var code = this.id,
-		lst = splitCode(code), //liste des propriétés
-		obj = getObjectFromCode(lst), //objet
-		info; //information à propos de l'objet
+var updateCodeJS = (function(){
+	var frozenTime=0; //timestamp jusqu'auquel le mouseover ne fonctionnera plus (car priorité click)
 	
-	document.getElementById("codeJS").value = code; //affichage du code
-	
-	info = displayObjInformation(obj); //récupération des infos
-	
-	//affichage des infos de propriétés
-	document.getElementById("pName").value = lst[lst.length-1];
-	document.getElementById("pValueStatus").textContent = info[0];
-	obj = JSON.stringify(obj);
-	document.getElementById("pValue").value = obj;
-}
+	return function (e){
+	//met à jour le code de la propriété et ses info (le contexte doit être l'element HTML d'affichage de la propriété)
+		if(e.type === "mouseover" && Date.now()<frozenTime){
+			//update gelé, l'affichage ne se fait pas
+			return false;
+		}
+		
+		var code = this.id || this.previousElementSibling.id,
+			lst = splitCode(code), //liste des propriétés
+			obj = getObjectFromCode(lst), //objet
+			info, //information à propos de l'objet
+			elem;
+		
+		document.getElementById("codeJS").value = code; //affichage du code
+		
+		info = displayObjInformation(obj); //récupération des infos
+		
+		//affichage de la liste d'option
+		if(typeof obj !== "object"){
+			document.querySelector('option[value="nChild"]').disabled = true;
+			elem = document.querySelector('option[value="nClChild"]');
+			elem.disabled = true;
+			elem = elem.parentNode;
+			if(elem.selectedIndex<2) elem.selectedIndex = 2;
+		}else{
+			document.querySelector('option[value="nChild"]').disabled = false;
+			document.querySelector('option[value="nClChild"]').disabled = false;
+		}
+		
+		//affichage des infos de propriétés
+		document.getElementById("pName").value = lst[lst.length-1];
+		document.getElementById("pValueStatus").textContent = info[0];
+		obj = JSON.stringify(obj);
+		document.getElementById("pValue").value = obj;
+		
+		//gèle du temps éventuel
+		if(e.type === "click"){
+			frozenTime = Date.now() + 7000;
+		}
+	};
+})();
 
 function displayObjInformation(objet){
 //permet de décrire l'objet (info sur son type, sa longueur ...)
@@ -747,10 +779,10 @@ function searchObj(v,idObjet){
 		el.scrollIntoView();
 	}else{
 		//l'élément n'existe pas ou n'a pas encore été ouvert
-		v=splitCode(v); //sépare toutes les propriétés
+		v = splitCode(v); //sépare toutes les propriétés
 		
 		i = 1;
-		li=v.length;
+		li = v.length;
 		id = v[0];
 		
 		if(/^OBJ\d$/.test(id)){
@@ -761,6 +793,7 @@ function searchObj(v,idObjet){
 		}
 
 		while((el = document.getElementById(id)) && i<li){
+			//TODO Fire event click on el
 			if(el.onclick) el.onclick(true); //ouverture de l'objet
 			id += attributeToString(v[i++]);
 		}
@@ -954,7 +987,7 @@ function updateEdit(){
 	}
 	elem.value = JSON.stringify(OBJ[prpties[0]]);
 	elem.onchange(); //déclenchement de la mise à jour de l'objet
-	searchObj(prpties.join('.'),prpties[0]);
+	searchObj(prpties.join('.'),prpties[0]); //mise en valeur de la mise à jour
 }
 
 function attributeToString(x){
