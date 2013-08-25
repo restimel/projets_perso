@@ -768,7 +768,12 @@ function searchObj(v,idObjet){
 //permet de rechercher une propriété et de l'afficher
 	var element=document.getElementById(idObjet),
 		el,i,li,id;
-	
+	var eventClick = new MouseEvent('click', {
+		'view': window,
+		'bubbles': true,
+		'cancelable': true
+	  });
+  
 	if(el = document.getElementById(v)){
 		//l'élément existe déjà
 		displayObj(el.parentNode);
@@ -793,8 +798,8 @@ function searchObj(v,idObjet){
 		}
 
 		while((el = document.getElementById(id)) && i<li){
-			//TODO Fire event click on el
-			if(el.onclick) el.onclick(true); //ouverture de l'objet
+			el.dispatchEvent(eventClick); //ouverture de l'objet
+			//if(el.onclick) el.onclick(true); //ouverture de l'objet (//TODO voir pourquoi true)
 			id += attributeToString(v[i++]);
 		}
 		
@@ -978,16 +983,88 @@ function updateEdit(){
 	
 	//mise à jour de l'affichage
 	prpties[prpties.length-1] = name;
+	displayAfterEdit(prpties[0],prpties.join('.'));
+}
+
+function newPropertie(){
+//crée une nouvelle propriété
+	var code = document.getElementById("codeJS").value, //code objet
+		prpties = splitCode(code), //liste des propriétés composant le code
+		obj = getObjectFromCode(prpties), //objet
+		parent = getObjectFromCode(prpties,-1), //parent de l'objet
+		name, //nom de la propriété
+		value = document.getElementById("pValue").value,
+		elem;
 	
-	if(prpties[0] === "OBJ1"){
+	//analyse de l'action à effecuer
+	switch(document.getElementById("pNNodeType").value){
+		case "nChild":
+			parent = obj;
+			value = null;
+			break;
+		case "nClChild":
+			parent = obj;
+			value; //TODO rechercher le dernier enfant
+			break;
+		case "nClSibling":
+			break;
+		default: //valeur non reconnue
+			return false;
+	}
+	//TODO à continuer cette fonction
+	//enlève l'ancienne propriété
+	name = prpties[prpties.length-1]; //nom de la propriété
+	delete parent[name];
+	
+	//ajoute la nouvelle valeur
+	name = document.getElementById("pName").value;
+	parent[name] = value.v;
+	
+	//mise à jour de l'affichage
+	prpties[prpties.length-1] = name;
+	displayAfterEdit(prpties[0],prpties.join('.'));
+}
+}
+
+function removePropertie(){
+//supprime la propriété active
+	
+	var code = document.getElementById("codeJS").value, //code objet
+		prpties = splitCode(code), //liste des propriétés composant le code
+		parent = getObjectFromCode(prpties,-1), //parent de l'objet
+		name = prpties[prpties.length-1], //nom de la propriété
+		value = document.getElementById("pValue").value,
+		elem;
+	
+	//confirmation de la suppression
+	if(!confirm("Propertie "+ name +" will be deleted.\nIt is located at "+code+"\n\nDo you confirm the deletion?")){
+		return false;
+	}
+	
+	//enlève l'ancienne propriété
+	delete parent[name];
+	
+	//mise à jour de l'affichage
+	prpties.pop();
+	displayAfterEdit(prpties[0],prpties.join('.'));
+}
+
+function displayAfterEdit(root,code){
+//mise à jour de l'affichage après une modification de l'objet
+/**
+ * root : nom de l'objet racine (OBJ1 ou OBJ2)
+ * code : chemin de l'objet à mettre en évidence
+ **/
+	var elem; //référence à l'élément source
+	if(root === "OBJ1"){
 		elem = document.getElementById("source");
 		
 	}else{
 		elem = document.getElementById("source2");
 	}
-	elem.value = JSON.stringify(OBJ[prpties[0]]);
+	elem.value = JSON.stringify(OBJ[root]);
 	elem.onchange(); //déclenchement de la mise à jour de l'objet
-	searchObj(prpties.join('.'),prpties[0]); //mise en valeur de la mise à jour
+	searchObj(code,root); //mise en valeur de la mise à jour
 }
 
 function attributeToString(x){
@@ -1033,6 +1110,8 @@ document.getElementById("codeJS").onchange=function(event){
 //Edition
 document.getElementById("pName").onchange = updateEdit;
 document.getElementById("pValue").onchange = updateEdit;
+document.getElementById("pAdd").onclick = newPropertie;
+document.getElementById("pDelete").onclick = removePropertie;
 
 //Ajout direct de la propriété display à block afin d'éviter d'aller trop loin avec la recherche d'objet
 document.getElementById("OBJ1").style.display = "block";
