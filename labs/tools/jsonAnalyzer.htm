@@ -768,11 +768,11 @@ function searchObj(v,idObjet){
 //permet de rechercher une propriété et de l'afficher
 	var element=document.getElementById(idObjet),
 		el,i,li,id;
-	var eventClick = new MouseEvent('click', {
+/*	var eventClick = new MouseEvent('click', {
 		'view': window,
 		'bubbles': true,
 		'cancelable': true
-	  });
+	  });*/
   
 	if(el = document.getElementById(v)){
 		//l'élément existe déjà
@@ -798,7 +798,8 @@ function searchObj(v,idObjet){
 		}
 
 		while((el = document.getElementById(id)) && i<li){
-			el.dispatchEvent(eventClick); //ouverture de l'objet
+			el.click();
+			//el.dispatchEvent(eventClick); //ouverture de l'objet
 			//if(el.onclick) el.onclick(true); //ouverture de l'objet (//TODO voir pourquoi true)
 			id += attributeToString(v[i++]);
 		}
@@ -991,39 +992,40 @@ function newPropertie(){
 	var code = document.getElementById("codeJS").value, //code objet
 		prpties = splitCode(code), //liste des propriétés composant le code
 		obj = getObjectFromCode(prpties), //objet
-		parent = getObjectFromCode(prpties,-1), //parent de l'objet
+		parent = getObjectFromCode(prpties,-1), //parent de l'objet (où il faut créer la propriété)
 		name, //nom de la propriété
-		value = document.getElementById("pValue").value,
+		value = document.getElementById("pValue").value, // valeur de la nouvelle propriété
 		elem;
 	
 	//analyse de l'action à effecuer
 	switch(document.getElementById("pNNodeType").value){
-		case "nChild":
+		case "nChild": //nouvelle propriété
 			parent = obj;
 			value = null;
 			break;
-		case "nClChild":
+		case "nClChild": //nouvelle propriété en clonant le dernier enfant
 			parent = obj;
 			value; //TODO rechercher le dernier enfant
+			console.warn("TODO nClChild: récupérer la valeur du dernier enfant");
 			break;
-		case "nClSibling":
+		case "nClSibling": //crée un frère
 			break;
 		default: //valeur non reconnue
 			return false;
 	}
-	//TODO à continuer cette fonction
-	//enlève l'ancienne propriété
-	name = prpties[prpties.length-1]; //nom de la propriété
-	delete parent[name];
+	
+	//mise en format du contenu
+	value = JSON.parse('{"v":'+value+'}').v;
+	
+	//création d'un nouveau nom
+	name = "newProperty"; //TODO améliorer ce nom TODO: cas du Array
 	
 	//ajoute la nouvelle valeur
-	name = document.getElementById("pName").value;
-	parent[name] = value.v;
+	parent[name] = value;
 	
 	//mise à jour de l'affichage
-	prpties[prpties.length-1] = name;
+	prpties[prpties.length-1] = name; //TODO vérifier le focus
 	displayAfterEdit(prpties[0],prpties.join('.'));
-}
 }
 
 function removePropertie(){
