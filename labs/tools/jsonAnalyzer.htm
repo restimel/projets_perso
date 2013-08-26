@@ -12,10 +12,15 @@
 					June 2013 (improve search by adding functions (typeof and length), and refactoring display)
 					August 2013 (add edition)
 -->
+
+<!--
+{"a":{"l0":{"l10":1,"l20":true,"l30":null},"l1":{"l11":1,"l21":true,"l31":null},"l2":{"l12":1,"l22":true,"l32":null},"l3":{"l13":1,"l23":false,"l33":null}},"b":{"l0":{"l10":1,"l20":true,"l30":null},"l1":{"l11":1,"l21":true,"l31":null},"l2":{"l12":1,"l22":true,"l32":null},"l3":{"l13":1,"l23":false,"l33":null}}}
+-->
 	<style>
 		#corps header{
 			font-weight : bold;
 			font-size : 1.5em;
+			cursor : pointer;
 		}
 		.openObject{
 			display: block;
@@ -54,6 +59,7 @@
 			right: 10px;
 			padding: 5px;
 			box-shadow: 7px 7px 10px 5px #DDDDDD;
+			background-color: rgba(250,250,255,0.95);
 		}
 		#corps #javascript input{
 			height: 20px;
@@ -91,6 +97,14 @@
 			padding: 1em;
 			box-shadow: 7px 7px 10px 5px #DDDDDD;
 			border : 1px dotted black;
+			background-color: rgba(250,250,255,0.95);
+		}
+		nav header{
+			cursor : pointer;
+		}
+		
+		.hide~*{
+			display:none;
 		}
 		
 		.small{
@@ -168,8 +182,6 @@
 
 <script>
 
-// TODO ✍
-// faire la lecture des infos des formulaires d'edit
 
 //Sauvegarde Globale des objets:
 var OBJ = {
@@ -280,7 +292,7 @@ var updateCodeJS = (function(){
 	
 	return function (e){
 	//met à jour le code de la propriété et ses info (le contexte doit être l'element HTML d'affichage de la propriété)
-		if(e.type === "mouseover" && Date.now()<frozenTime){
+		if(e && e.type === "mouseover" && Date.now()<frozenTime){
 			//update gelé, l'affichage ne se fait pas
 			return false;
 		}
@@ -314,7 +326,7 @@ var updateCodeJS = (function(){
 		document.getElementById("pValue").value = obj;
 		
 		//gèle du temps éventuel
-		if(e.type === "click"){
+		if(e && e.type === "click"){
 			frozenTime = Date.now() + 7000;
 		}
 	};
@@ -322,6 +334,7 @@ var updateCodeJS = (function(){
 
 function displayObjInformation(objet){
 //permet de décrire l'objet (info sur son type, sa longueur ...)
+//retourne ["info d'affichage","nb de'enfant","type de l'objet"]
 	var dsp = "", //affichage
 		nb, //nb d'enfant ou longueur
 		type; //type
@@ -764,15 +777,10 @@ function gotoObjLnk(e){
 	if(path) searchObj(path);
 }
 
-function searchObj(v,idObjet){
-//permet de rechercher une propriété et de l'afficher
+function searchObj(v,idObjet,openLast){
+//permet de rechercher une propriété et de la mettre en évidence
 	var element=document.getElementById(idObjet),
 		el,i,li,id;
-/*	var eventClick = new MouseEvent('click', {
-		'view': window,
-		'bubbles': true,
-		'cancelable': true
-	  });*/
   
 	if(el = document.getElementById(v)){
 		//l'élément existe déjà
@@ -799,16 +807,19 @@ function searchObj(v,idObjet){
 
 		while((el = document.getElementById(id)) && i<li){
 			el.click();
-			//el.dispatchEvent(eventClick); //ouverture de l'objet
-			//if(el.onclick) el.onclick(true); //ouverture de l'objet (//TODO voir pourquoi true)
 			id += attributeToString(v[i++]);
 		}
 		
+		if(openLast && el){
+			el.click();
+		}
+		
 		//mise en évidence
-		Array.prototype.forEach.call(document.querySelectorAll(".highlight"),function(el){el.className = "";});
+		Array.prototype.forEach.call(document.querySelectorAll(".highlight"),function(el){el.className = "";}); //suppression des précédentes mise en évidence
 		if(el){
 			el.className = "highlight";
 			el.scrollIntoView();
+			updateCodeJS.call(el); //mise à jour des info JS
 		}else{
 			alert('Object "'+v[--i]+'" has not been found in object "'+id.substr(0,id.length-attributeToString(v[i]).length)+'"');
 		}
@@ -962,25 +973,33 @@ function updateEdit(){
 		prpties = splitCode(code), //liste des propriétés composant le code
 		obj = getObjectFromCode(prpties), //objet
 		parent = getObjectFromCode(prpties,-1), //parent de l'objet
-		name, //nom de la propriété
-		value = document.getElementById("pValue").value,
+		name = document.getElementById("pName").value, //(nouveau) nom de la propriété
+		value = document.getElementById("pValue").value, // nouvelle valeur
+		tmp,
 		elem;
 	
 	//analyse la valeur à ajouter
 	try{
-		value = JSON.parse('{"v":'+value+'}');
+		tmp = JSON.parse('{"v":'+value+'}').v; //tmp est utilisé pour éviter de perdre la valeur originale de value (en cas d'erreur)
 	}catch(e){
+
 		//value is not valid
-		return null;
+		if(confirm('The value should be written as JSON.\n\nDo you mean "'+value+'" ?')){
+			tmp = value;
+		}else{
+			return null;
+		}
+		
 	}
+	value = tmp;
 	
 	//enlève l'ancienne propriété
-	name = prpties[prpties.length-1]; //nom de la propriété
-	delete parent[name];
+	if(name !== prpties[prpties.length-1]){
+		delete parent[ prpties[prpties.length-1] ];
+	}
 	
 	//ajoute la nouvelle valeur
-	name = document.getElementById("pName").value;
-	parent[name] = value.v;
+	parent[name] = value;
 	
 	//mise à jour de l'affichage
 	prpties[prpties.length-1] = name;
@@ -997,16 +1016,19 @@ function newPropertie(){
 		value = document.getElementById("pValue").value, // valeur de la nouvelle propriété
 		elem;
 	
-	//analyse de l'action à effecuer
+	//analyse de l'action à effectuer
 	switch(document.getElementById("pNNodeType").value){
 		case "nChild": //nouvelle propriété
 			parent = obj;
 			value = null;
+			prpties.push(null); //pour le focus
 			break;
 		case "nClChild": //nouvelle propriété en clonant le dernier enfant
 			parent = obj;
-			value; //TODO rechercher le dernier enfant
-			console.warn("TODO nClChild: récupérer la valeur du dernier enfant");
+			for(value in obj){} //recherche du dernier enfant
+			value = JSON.stringify(obj[value]);
+			console.log(value);
+			prpties.push(null); //pour le focus
 			break;
 		case "nClSibling": //crée un frère
 			break;
@@ -1018,13 +1040,17 @@ function newPropertie(){
 	value = JSON.parse('{"v":'+value+'}').v;
 	
 	//création d'un nouveau nom
-	name = "newProperty"; //TODO améliorer ce nom TODO: cas du Array
+	if(parent instanceof Array){
+		name = parent.length;
+	}else{
+		name = "newProperty"+countObj(parent);
+	}
 	
 	//ajoute la nouvelle valeur
 	parent[name] = value;
 	
 	//mise à jour de l'affichage
-	prpties[prpties.length-1] = name; //TODO vérifier le focus
+	prpties[prpties.length-1] = name;
 	displayAfterEdit(prpties[0],prpties.join('.'));
 }
 
@@ -1066,7 +1092,7 @@ function displayAfterEdit(root,code){
 	}
 	elem.value = JSON.stringify(OBJ[root]);
 	elem.onchange(); //déclenchement de la mise à jour de l'objet
-	searchObj(code,root); //mise en valeur de la mise à jour
+	searchObj(code,root,true); //mise en valeur de la mise à jour
 }
 
 function attributeToString(x){
@@ -1109,6 +1135,12 @@ document.getElementById("sourceBis2").onchange=function(event){
 document.getElementById("codeJS").onchange=function(event){
 	searchObj(this.value,'OBJ1');
 };
+//évenement pour cacher les blocs
+document.querySelector("#javascript header").onclick = 
+document.querySelector("nav header").onclick = 
+	function(){
+		this.classList.toggle("hide");
+	};
 //Edition
 document.getElementById("pName").onchange = updateEdit;
 document.getElementById("pValue").onchange = updateEdit;
