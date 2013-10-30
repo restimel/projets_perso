@@ -746,7 +746,7 @@ li.userAnswer>span{
 }
 	/*onglet*/
 #btn_about{
-	/*TODO mettre à droite*/
+	float: right;
 }
 
 
