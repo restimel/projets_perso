@@ -1,0 +1,73 @@
+{
+	"menu":{
+		"titre":"Tout découvrir",
+		"sousMenu":[
+			{
+				"lien":"index",
+				"titre":"Introduction"
+			},
+			{
+				"titre":"Règles",
+				"sousMenu":[
+					{
+						"lien":"reglesDebutant",
+						"titre":"Règles du jeu"
+					},
+					{
+						"lien":"comptage",
+						"titre":"Compter les points"
+					}
+				]
+			},
+			{
+				"titre":"Annexes",
+				"sousMenu":[
+					{
+						"lien":"lexique",
+						"titre":"Lexique"
+					},
+					{
+						"lien":"documentation",
+						"titre":"Sources et Documentations"
+					}
+				]
+			}
+		]
+	},
+	"debutant":{
+		"titre":"Débuter",
+		"sousMenu":[
+			{
+				"lien":"index",
+				"titre":"Introduction"
+			},
+			{
+				"titre":"Règles",
+				"sousMenu":[
+					{
+						"lien":"reglesDebutant",
+						"titre":"Règles du jeu"
+					},
+					{
+						"lien":"comptage",
+						"titre":"Compter les points"
+					}
+				]
+			},
+			{
+				"titre":"Annexes",
+				"sousMenu":[
+					{
+						"lien":"lexique",
+						"titre":"Lexique"
+					},
+					{
+						"lien":"documentation",
+						"titre":"Sources et Documentations"
+					}
+				]
+			}
+		]
+	}
+	
+}

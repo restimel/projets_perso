@@ -1,0 +1,6 @@
+{
+	"accueil":{"url":"pages/accueil.html","titre":"","lexique":[]},
+	"reglesDebutant":{"url":"pages/reglesDebutant.html","titre":"Règles du jeu","lexique":["goban","pierre","capture","ko","komi","jigo","groupe"]},
+	"comptage":{"url":"pages/comptage.html","titre":"Comptage des points","lexique":["prisonnier","comptage","jigo","kifu"]},
+	"documentation":{"url":"pages/documentation.html","titre":"Pour en savoir plus","lexique":["club","fédération"]}
+}
