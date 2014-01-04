@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf8">
+	<title>Broderie DMC</title>
+	<link rel="stylesheet" type="text/css" href="broderie.css" />
+</head>
+<body>
+	<section id="form">
+		<input type="file" id="source">
+		<label><input type="checkbox" id="dependance">dépendance</label>
+		<label><input type="number" id="optnumber" value="20">Nombre</label>
+	</section>
+	<section id="affichage">
+		<canvas id="canvas" width="100" height="100" style="width:100px;height:100px;"></canvas>
+	</section>
+	
+	<hr>	
+	<div class="mask">
+		<progress value="0" max="600" id="progress">
+	</div>
+	
+	<section id="result">
+	</section>
+	
+	<script src="./src/config.js"></script>
+	<script src="./src/controller.js"></script>
+	<script src="./src/tools.js"></script>
+</body>
+</html>

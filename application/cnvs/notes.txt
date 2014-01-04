@@ -1,0 +1,16 @@
+Hakone-LacAshi.jpg
+#color: 22
+dependance:true
+number: 20
+	correct
+
+#color: 17
+dependance:true
+number: 30
+	correct mais lac un peu pale
+
+#color: 20
+dependance:false
+number: 20
+	correct
+

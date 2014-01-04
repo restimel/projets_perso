@@ -1,0 +1,7 @@
+.displayMask{
+	background-color: rgba(210,220,240,0.8);
+	display: block;
+}
+.hideMask{
+	display: none;
+}
