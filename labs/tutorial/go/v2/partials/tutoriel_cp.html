@@ -1,12 +1,12 @@
 <section class="container">
 	
-	<article ng-include="page" autoscroll="true"></article>
+	<article class="span-18" ng-include="page" autoscroll="true"></article>
 	
-	<aside class="infobox">
+	<aside class="span-6 last">
 		
-		<nav ng-bind-html="menuHTML"></nav>
+		<nav class="span-6 last" ng-bind-html="menuHTML"></nav>
 
-		<ul class="vocabulary">
+		<ul class="span-6 last">
 			<li ng-repeat="word in lexique | inArray:vocabulary:'n' | orderBy:'n'">
 				<strong>{{word.n}}</strong>&nbsp;:
 				<p>{{word.d}}</p>

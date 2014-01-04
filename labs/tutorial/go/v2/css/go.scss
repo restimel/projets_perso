@@ -1,0 +1,15 @@
+
+.container article{
+	@extend .span-18;
+}
+
+.infobox{
+	@extend .span-6;
+	@extend .last;
+	
+	nav,.vocabulary{
+		@extend .span-6;
+		@extend .last;
+	}
+	
+}
