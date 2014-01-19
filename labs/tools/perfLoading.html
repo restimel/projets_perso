@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Analyze performance loading</title>
+	<style type="text/css">
+		label{
+			margin-left: 1em;
+		}
+
+		canvas{
+			background-color: transparent;
+			width: 100%;
+			height: 5em;
+			position: absolute;
+		}
+
+		.canvas{
+			position: relative;
+			background-color: white;
+			height: 5em;
+			padding: 0;
+		}
+
+		.legendColor{
+			display: inline-block;
+			width: 2em;
+			margin-left: 1em;
+		}
+
+		.inputSource{
+			height: 200px;
+		}
+
+		.inputSource textarea{
+			height: 150px;
+			width: 300px;
+		}
+
+		.helper{
+			position: absolute;
+			top: 0;
+			right: 0;
+			height: 200px;
+			padding: 1em;
+		}
+
+		#Results h2{
+			margin-bottom: 0;
+		}
+
+		#Results>header>a{
+			font-size: 0.75em;
+		}
+
+		#Results>header{
+			margin-bottom: 1em;
+		}
+		#details{
+			padding-left: 1em;
+		}
+		details{
+			padding-left: 1em;
+		}
+		details>p{
+			padding-left: 1em;
+			/*margin-left: -2em;*/
+		}
+		summary{
+			margin-left: -2em;
+		}
+	</style>
+</head>
+<body>
+
+<section>
+	<div class="inputSource">
+		<label>Performance source: <textarea id="source" placeholder="paste the performance JSON here"></textarea></label>
+	</div>
+	<div class="helper">
+		Generate the performance source code:<br>
+		<a id="helperBookmarklet" href="javascript:var p = typeof performance === 'object'?performance:null;prompt('Copy this to the analyzer',(p.location={url:location.href,title:document.title},JSON.stringify(p)));void(0);" title="Run this script in URL bar">
+			With Bookmarklet
+		</a><br>
+		<a id="helperConsole" href="javascript:(function(){var p = typeof performance === 'object'?performance:null;console.log('Copy the next string to the analyzer:');console.log((p.location={url:location.href,title:document.title},JSON.stringify(p)));})();" title="Run this script in console">
+			In console
+		</a><br>
+		<br>
+		More informaton about performance API:<br>
+		<a href="https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/NavigationTiming/Overview.html#sec-navigation-timing-interface" target="_blank">Navigation timing interface (W3C)</a>
+	</div>
+</section>
+<hr>
+
+<section id="Results">
+	<header>
+		<h2 id="title"></h2>
+		<a id="linkPage" href="" target="_blank"></a>
+	</header>
+	<section id="navigation"></section>
+	<section id="details"></section>
+	<section class="canvas">
+		<canvas id="graphAnalyze" ></canvas>
+		<canvas id="interactiveCanvas"></canvas>
+	</section>
+	<section id="info"></section>
+
+</section>
+
+<script>
+document.getElementById("helperBookmarklet").onclick = 
+document.getElementById("helperConsole").onclick =
+function(e){
+	e.preventDefault();
+	copyToClipboard(this.href,this.title);
+};
+
+document.getElementById("source").onchange = function(){
+	if(!this.value) return;
+	var performance = JSON.parse(this.value);
+	if(!performance) return;
+
+
+	var canvas = document.getElementById("graphAnalyze"),
+		iCanvas = document.getElementById("interactiveCanvas"),
+		ctx = canvas.getContext("2d"),
+		iCtx = iCanvas.getContext("2d"),
+		info = {
+			redirectCount : performance.navigation.redirectCount,
+			type : ['Navigate','Reload','history navigation'][performance.navigation.type]
+		},
+		listenerArea = [];
+
+	iCanvas.onmousemove = onMouseOver;
+	iCtx.fillStyle = '#000000';
+	iCtx.strokeStyle = '#000000';
+
+	//Header
+	document.getElementById("title").textContent = performance.location.title;
+	document.getElementById("linkPage").href = document.getElementById("linkPage").textContent = performance.location.url;
+
+	//Navigation
+	document.getElementById("navigation").innerHTML = (['link NAVIGATION','RELOAD page','HISTORY navigation'][performance.navigation.type] || 'unknown navigation') + '<br>' + performance.navigation.redirectCount + ' redirects';
+
+	//timing chronology
+	var timing = performance.timing,
+		refTime = timing.navigationStart,
+		chrono = [
+			{
+				name:"Total loading time",
+				value: timing.loadEventEnd - refTime,
+				start: 0,
+				color: -1,
+				sub: [
+					{
+						name: "unload",
+						value: timing.unloadEventEnd - timing.unloadEventStart,
+						start: calcStart(timing.unloadEventStart),
+						sub: []
+					},
+					{
+						name: "Network",
+						value: timing.responseEnd - timing.navigationStart,
+						start: calcStart(timing.navigationStart),
+						sub: [
+							{
+								name: "redirect",
+								value: timing.redirectEnd - timing.redirectStart,
+								start: calcStart(timing.redirectStart),
+								sub: []
+							},
+							{
+								name: "Fetch (App cache)",
+								value: timing.domainLookupStart - timing.fetchStart,
+								start: calcStart(timing.fetchStart),
+								sub: []
+							},
+							{
+								name: "DNS",
+								value: timing.domainLookupEnd - timing.domainLookupStart,
+								start: calcStart(timing.domainLookupStart),
+								sub: []
+							},
+							{
+								name: "TCP",
+								value: timing.connectEnd - timing.connectStart,
+								start: calcStart(timing.connectStart),
+								sub: [
+									{
+										name: "secure TCP",
+										value: timing.secureConnectionStart?(timing.connectEnd - timing.secureConnectionStart):0,
+										start: calcStart(timing.secureConnectionStart),
+										sub: []
+									}
+								]
+							},
+							{
+								name: "Communication",
+								value: timing.responseEnd - timing.requestStart,
+								start: calcStart(timing.requestStart),
+								sub: [
+									{
+										name: "Request & server time",
+										value: timing.responseStart - timing.requestStart,
+										start: calcStart(timing.requestStart),
+										sub: []
+									},
+									{
+										name: "Response",
+										value: timing.responseEnd - timing.responseStart,
+										start: calcStart(timing.responseStart),
+										sub: []
+									}
+								]
+							}
+						]
+					},
+					{
+						name: "Processing",
+						value: timing.domComplete - timing.domLoading,
+						start: calcStart(timing.domLoading),
+						sub: [
+							{
+								name: "Parsing",
+								value: timing.domInteractive - timing.domLoading,
+								start: calcStart(timing.domLoading),
+								sub: []
+							},
+							{
+								name: "Scripting",
+								value: timing.domComplete - timing.domInteractive,
+								start: calcStart(timing.domInteractive),
+								sub: []
+							},
+							{
+								name: "DOM Content loading",
+								value: timing.domContentLoadedEventEnd - timing.domContentLoadedEventStart,
+								start: calcStart(timing.domContentLoadedEventStart),
+								sub: []
+							}
+						]
+					},
+					{
+						name: "Loading event",
+						value: timing.loadEventEnd - timing.loadEventStart,
+						start: calcStart(timing.loadEventStart),
+						sub: []
+					}
+				]
+			}
+		];
+
+	var detailsInfo = document.getElementById("details");
+	detailsInfo.innerHTML = "";
+	detailsInfo.appendChild(createHTML(chrono));
+	displayGraph();
+
+	function calcStart(value){
+		return Math.max(0, value-refTime);
+	}
+
+	function createHTML(iList, tpsItem){
+		var container = document.createElement("p");
+		iList.forEach(function(item){
+			if(!item.color){
+				item.color = getColor();
+			}
+			var hasSub = item.sub && item.sub instanceof Array && item.sub.length,
+				mainCnt = document.createElement(hasSub ? 'details': 'p'),
+				cnt = hasSub ? document.createElement('summary'): mainCnt,
+				elem;
+
+			//legend color
+			if(tpsItem){
+				elem = document.createElement('span');
+				elem.className = 'legendColor';
+				elem.style.backgroundColor = 'hsla(' + item.color + ', 90%, 50%, 0.6)';
+				elem.innerHTML = '&nbsp;';
+				cnt.appendChild(elem);
+			}
+
+			//Label
+			elem = document.createElement('label');
+			elem.textContent = item.name + ': ' + item.value + 'ms';
+			cnt.appendChild(elem);
+
+			//display meter
+			if(tpsItem){
+				elem = document.createElement("meter");
+				elem.min = 0;
+				elem.max = tpsItem;
+				elem.value = item.value;
+				elem.optimum = 0;
+				elem.low = tpsItem/4;
+				elem.high = tpsItem/2;
+				cnt.appendChild(elem);
+			}
+
+			//display offset
+			if(tpsItem){
+				elem = document.createElement('label');
+				elem.textContent = 'Start at: '+ item.start + 'ms';
+				cnt.appendChild(elem);
+			}
+
+			//listener
+			if(tpsItem){
+				cnt.onmouseover = drawLimit.bind(this, item);
+			}
+
+			if(hasSub){
+				mainCnt.appendChild(cnt);
+				mainCnt.appendChild(createHTML(item.sub, item.value, 100));
+			}
+			container.appendChild(mainCnt);
+		});
+		return container;
+	}
+
+	function displayGraph(){
+		var width = canvas.width = iCanvas.width = canvas.offsetWidth;
+		canvas.height = iCanvas.height = 120;
+		var sz = width / chrono[0].value
+		
+		ctx.clearRect(0, 0, width, 120);
+		iCtx.clearRect(0, 0, width, 120);
+
+		listenerArea = [];
+		displayArea(chrono[0], sz, -1);
+	}
+
+	function displayArea(iList, sz, deep){
+		if(iList.color !== -1){
+			if(!iList.color){
+				iList.color = getColor();
+			}
+			var offsetX = iList.start * sz,
+				offsetY = deep * 20 ;
+
+			ctx.beginPath();
+			listenerArea.push([offsetX, offsetX + iList.value*sz, iList]);
+			ctx.strokeStyle = 'hsl('+iList.color+', 90%, 50%)';
+			ctx.fillStyle = 'hsla('+iList.color+', 90%, 50%, 0.6)';
+			ctx.rect(offsetX, offsetY, iList.value*sz, 100 - offsetY);
+
+			ctx.fill();
+			ctx.stroke();
+		}
+		if(iList.sub && iList.sub instanceof Array && iList.sub.length){
+			iList.sub.forEach(function(item){
+				displayArea(item, sz, deep + 1);
+			});
+		}
+
+	}
+
+	function onMouseOver(e){
+		var x = e.offsetX,
+			area = listenerArea.filter(function(v){
+				return x > v[0] - 5 && x < v[1] + 5;
+			}),
+			info = document.getElementById("info"),
+			html = 'time: '+ (x / canvas.offsetWidth * chrono[0].value).toFixed(2) +' ms<br>';
+
+		area.forEach(function(v){
+			var item = v[2];
+			html += '<p><header style="background-color: hsla('+item.color+', 90%, 50%, 0.6);">' + item.name + '</header> duration: '+item.value+'ms (start at '+ item.start+'ms)</p>';
+		});
+		info.innerHTML = html;
+
+		iCtx.clearRect(0, 0, canvas.offsetWidth, 120);
+		drawTimeLine(x);
+	}
+
+	function drawTimeLine(X, position, recalc){
+		var align,
+			x,
+			pos;
+
+		switch(position){
+			case 'right':
+				align = 'right';
+				break;
+			case 'left':
+				align = 'left';
+				break;
+			default:
+				align = 'center';
+			break;
+		}
+
+		if(recalc){
+			x = X * canvas.offsetWidth / chrono[0].value;
+			pos = X;
+		}else{
+			x = X;
+			pos = X / canvas.offsetWidth * chrono[0].value
+		}
+
+		iCtx.beginPath();
+
+		iCtx.moveTo(x, 0);
+		iCtx.lineTo(x, 100);
+		iCtx.lineTo(x - 5, 110);
+		iCtx.lineTo(x + 5, 110);
+		iCtx.lineTo(x, 100);
+
+		iCtx.fill();
+		iCtx.stroke();
+
+		iCtx.textAlign = align;
+		iCtx.fillText( " " + Math.floor(pos) + " " , x , position ? 100 : 120);
+	}
+
+	function drawLimit(item){
+		iCtx.clearRect(0, 0, canvas.offsetWidth, 120);
+		drawTimeLine(item.start, 'left', true);
+		drawTimeLine(item.start + item.value, 'right', true);
+	}
+
+};
+
+var getColor = (function(){
+	var i = 0;
+	return function(){
+		return 138 * i++ % 360;
+	};
+})();
+
+function copyToClipboard(text, title){
+	title = '\n\n' + title || '';
+	prompt('Copy to clipboard: Ctrl+C, Enter' + title, text);
+}
+</script>
+</body>
+</html>
