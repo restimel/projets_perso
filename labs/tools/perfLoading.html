@@ -16,10 +16,15 @@
 		}
 
 		.canvas{
-			position: relative;
+			position: absolute;
 			background-color: white;
 			height: 5em;
 			padding: 0;
+			/*padding-left: 1em;
+			padding-right: 1em;*/
+			bottom: 0.1em;
+			left: 1em;
+			right: 1em;
 		}
 
 		.legendColor{
@@ -29,19 +34,19 @@
 		}
 
 		.inputSource{
-			height: 200px;
+			height: 130px;
 		}
 
 		.inputSource textarea{
-			height: 150px;
-			width: 300px;
+			height: 120px;
+			width: 270px;
 		}
 
 		.helper{
 			position: absolute;
 			top: 0;
 			right: 0;
-			height: 200px;
+			height: 130px;
 			padding: 1em;
 		}
 
@@ -56,18 +61,42 @@
 		#Results>header{
 			margin-bottom: 1em;
 		}
+
 		#details{
 			padding-left: 1em;
 		}
+
 		details{
 			padding-left: 1em;
 		}
+
 		details>p{
 			padding-left: 1em;
-			/*margin-left: -2em;*/
 		}
+
 		summary{
 			margin-left: -2em;
+		}
+
+		#contexts{
+			position: absolute;
+			top: 140px;
+			bottom: 5.1em;
+			left: 1em;
+			right: 23em;
+			overflow: auto;
+			margin: 0;
+		}
+
+		#info{
+			position: absolute;
+			bottom: 5.1em;
+			right: 1em;
+			width: 20em;
+			border: 1px solid black;
+			overflow: auto;
+			padding: 1em;
+			margin: 0;
 		}
 	</style>
 </head>
@@ -91,20 +120,22 @@
 	</div>
 </section>
 <hr>
-
 <section id="Results">
-	<header>
-		<h2 id="title"></h2>
-		<a id="linkPage" href="" target="_blank"></a>
-	</header>
-	<section id="navigation"></section>
-	<section id="details"></section>
+
+	<section id="contexts">
+		<header>
+			<h2 id="title"></h2>
+			<a id="linkPage" href="" target="_blank"></a>
+		</header>
+		<p id="navigation"></p>
+		<p id="details"></p>
+	</section>
+
+	<section id="info"></section>
 	<section class="canvas">
 		<canvas id="graphAnalyze" ></canvas>
 		<canvas id="interactiveCanvas"></canvas>
 	</section>
-	<section id="info"></section>
-
 </section>
 
 <script>
@@ -129,11 +160,18 @@ document.getElementById("source").onchange = function(){
 			redirectCount : performance.navigation.redirectCount,
 			type : ['Navigate','Reload','history navigation'][performance.navigation.type]
 		},
-		listenerArea = [];
+		listenerArea = [],
+		frozen = 0;
 
-	iCanvas.onmousemove = onMouseOver;
 	iCtx.fillStyle = '#000000';
 	iCtx.strokeStyle = '#000000';
+
+	/* Listener */
+	iCanvas.onmousemove = onMouseOver;
+	iCanvas.onclick = function(){
+		clearTimeout(frozen);
+		frozen = setTimeout(function(){frozen=0;},3000);
+	};
 
 	//Header
 	document.getElementById("title").textContent = performance.location.title;
@@ -323,7 +361,6 @@ document.getElementById("source").onchange = function(){
 		var sz = width / chrono[0].value
 		
 		ctx.clearRect(0, 0, width, 120);
-		iCtx.clearRect(0, 0, width, 120);
 
 		listenerArea = [];
 		displayArea(chrono[0], sz, -1);
@@ -355,6 +392,7 @@ document.getElementById("source").onchange = function(){
 	}
 
 	function onMouseOver(e){
+		if(frozen) return false;
 		var x = e.offsetX,
 			area = listenerArea.filter(function(v){
 				return x > v[0] - 5 && x < v[1] + 5;
@@ -413,6 +451,7 @@ document.getElementById("source").onchange = function(){
 	}
 
 	function drawLimit(item){
+		if(frozen) return false;
 		iCtx.clearRect(0, 0, canvas.offsetWidth, 120);
 		drawTimeLine(item.start, 'left', true);
 		drawTimeLine(item.start + item.value, 'right', true);
