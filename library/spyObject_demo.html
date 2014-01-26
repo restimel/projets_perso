@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>demo spy Object</title>
+</head>
+<body>
+<style>
+#liste{
+	width:500px;
+	border:1px solid green;
+	overflow:auto;/*sera ajouté de toute façon*/
+	-webkit-overflow-scrolling:touch; /*ipad hack*/
+	
+	height:500px; /*important pour que le script fonctionne correctement,cette valeur doit être une valeur fixe (pas un %)*/
+}
+
+
+
+
+section{
+	float: right;
+	width: 40%;
+	padding: 2em;
+}
+</style>
+<h1>Spying Object library</h1>
+<section>
+<a href="./spyObject.js" target="_blank">Download the SpyObject JavaScript file</a><br>
+<br>
+<p>This library provides a spyObject function to monitor methods inside objects (like number of calls and time spent inside).<br>
+This library is oriented for performance analyzis.<br><br>
+ <em>The use of this spy could badly impact performance.</em></p>
+<br>
+<h2>How to use this library?</h2>
+<p>Call the spyObject function, to generate all spies.<br>
+<br>
+<em>To continue...</em>
+</p>
+<h3>Methods</h3>
+<p>
+<em>TODO...</em>
+<ul>
+<li><strong>containerElement</strong>: it is a reference to the container DOM element object. All items will be display in this container.</li>
+<li><strong>"vertical"</strong>: it is the orientation of your scroll. Currently only "vertical" is supported.</li>
+<li><strong>estimatedHeight</strong>: it is an estimation of the height of an item. This value is to give the scrollbar a real appearence. When the item is displayed its real height is then used. This value is a number.</li>
+<li><strong>extraItems</strong>: it is the number of items displayed up and down which is not visible but still in the DOM. This is usefull to avoid items to late. This value is a number.</li>
+</ul>
+<br>
+Methods you can use are:
+<ul>
+	<li><strong>add(fCreation, fHide, position)</strong>: add a new item to the list<ul>
+		<li><strong>fCreation</strong>: it is a function which is called when the item should be displayed. This function should generate the contents of the item. This function is called in the item element context (the keyword this reffered to the element displayed). The first argument is the position in the list of the displayed item.</li>
+		<li><strong>fHide</strong>: it is a function which is called just before the item would be hidden (and removed from DOM). This function is called in the item element context (the keyword this reffered to the element displayed). The first argument is the position in the list of this item.</li>
+		<li><strong>position</strong>: it is the position where this new item should placed in the list. By default it is put at the end of the list.</li>
+	</ul></li>
+	<li><strong>remove(pst)</strong>: remove an item from the list. The item removed is in return.<ul>
+		<li><strong>pst</strong>: it is the position of the item to be removed.</li>
+	</ul></li>
+	<li><strong>refresh()</strong>: refresh the displayed list</li>
+	<li><strong>move(old_position, new_position)</strong>: move an item from old_position to new_position</li>
+	<li><strong>scrollTo(pst)</strong>: scroll to the item at position pst</li>
+</ul>
+</p>
+</section>
+
+<fieldset><legend>Demonstration</legend>
+	
+	<div id="result"></div><!--this is the container-->
+
+	<fieldset>
+		<legend>Manipulate Object</legend>
+			
+	</fieldset>
+	<fieldset>
+		<legend>Library option</legend>
+			<label>Use the paging library: <input id="genLibrary" type="checkbox" checked></label><br>
+			<label>Number of extra items displayed: <input id="genExtra" type="number" min="0" value="2"></label><br>
+	</fieldset>
+	<button id="generate">Generate list and run library</button>
+</fieldset>
+
+<script src="spyObject.js"></script>
+<script>
+var obj = {};
+obj.fn = function(nb){
+	var i = nb || 100, n = 1;
+	while(i){
+		n += i--;
+	}
+	return n;
+};
+
+obj.fn100 = function(){
+	return this.fn(100);
+}
+
+obj.fn1000 = function(){
+	return this.fn(1000);
+}
+
+obj.manySubCall = function(){
+	this.fn1000();
+	this.fn100();
+	var t = ["toto"];
+	return this.fn1000() - this.fn100();
+}
+
+//add the spy on obj
+var spy = spyObject(obj, 'obj');
+
+//run the test case
+obj.fn();
+
+var t = 2;
+while(t < 100){
+	t = obj.fn(t);
+}
+
+obj.fn1000();
+obj.fn100();
+obj.fn100();
+obj.manySubCall();
+
+//Analyze results
+document.getElementById('result').innerHTML = spy.getPerfCode(true);
+</script>
+</body>
+</html>
