@@ -470,6 +470,57 @@ function copyToClipboard(text, title){
 	title = '\n\n' + title || '';
 	prompt('Copy to clipboard: Ctrl+C, Enter' + title, text);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+function spyObject(obj, prefix){
+	prefix = prefix || '';
+	var perfMeasured = [];
+	
+	function replaceAll(obj){
+		var x;
+		for(x in obj){
+			if(obj.hasOwnProperty(x) && typeof obj[x] === 'function' ){
+				replaceFunc(x, obj);
+			}
+		}
+	}
+	
+	function replaceFunc(f, obj){
+		var fn = obj[f];
+		obj[f] = function(){
+			var t = performance.now(),
+				r = fn.apply(this, arguments);
+			perfMeasured.push({
+				name: prefix + '.' + f,
+				start: t,
+				duration: performance.now() - t
+			});
+			return r;
+		};
+	}
+
+	replaceAll(obj);
+	return function timeline(){
+		//TODO: mettre les sous fonction en arbre
+		return perfMeasured;
+	}
+	//TODO: stat{nb de call/function; nb de call interne; duration moyen}
+}
+
+
+
+
+
 </script>
 </body>
 </html>
