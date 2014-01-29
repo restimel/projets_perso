@@ -1,565 +1,569 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf8">
-	<!--
-	perfAnalyzing.html
+    <meta charset="utf8">
+    <!--
+    perfAnalyzing.html
 
-	Author: Benoit Mariat (b.mariat@gmail.com)
-	Date: January 2014
+    Author: Benoit Mariat (b.mariat@gmail.com)
+    Date: January 2014
 
-	License: You are free to use, share, redistribute and modify it if you keep all authors and contributors names. ( http://creativecommons.org/licenses/by/3.0/)
+    License: You are free to use, share, redistribute and modify it if you keep all authors and contributors names. ( http://creativecommons.org/licenses/by/3.0/)
 
-	Vous êtes autorisés à utiliser, partager, redistribuer et modifier ce code tant que vous gardez les noms des auteurs et contributeurs. (http://creativecommons.org/licenses/by/3.0/deed.fr)
+    Vous êtes autorisés à utiliser, partager, redistribuer et modifier ce code tant que vous gardez les noms des auteurs et contributeurs. (http://creativecommons.org/licenses/by/3.0/deed.fr)
 
-	Original file: http://b.mariat.free.fr/
-	-->
-	<meta author="Benoit Mariat">
-	<meta date="2014/01/19">
-	<title>Analyze performance</title>
-	<style type="text/css">
-		label{
-			margin-left: 1em;
-		}
+    Original file: http://b.mariat.free.fr/
+    -->
+    <meta author="Benoit Mariat">
+    <meta date="2014/01/19">
+    <title>Analyze performance</title>
+    <style type="text/css">
+        label{
+            margin-left: 1em;
+        }
 
-		canvas{
-			background-color: transparent;
-			width: 100%;
-			height: 5em;
-			position: absolute;
-		}
+        canvas{
+            background-color: transparent;
+            width: 100%;
+            height: 5em;
+            position: absolute;
+        }
 
-		.canvas{
-			position: absolute;
-			background-color: white;
-			height: 5em;
-			padding: 0;
-			/*padding-left: 1em;
-			padding-right: 1em;*/
-			bottom: 0.1em;
-			left: 1em;
-			right: 1em;
-		}
+        .canvas{
+            position: absolute;
+            background-color: white;
+            height: 5em;
+            padding: 0;
+            /*padding-left: 1em;
+            padding-right: 1em;*/
+            bottom: 0.1em;
+            left: 1em;
+            right: 1em;
+        }
 
-		.legendColor{
-			display: inline-block;
-			width: 2em;
-			margin-left: 1em;
-		}
+        .legendColor{
+            display: inline-block;
+            width: 2em;
+            margin-left: 1em;
+        }
 
-		.inputSource{
-			height: 130px;
-		}
+        .inputSource{
+            height: 130px;
+        }
 
-		.inputSource textarea{
-			height: 120px;
-			width: 270px;
-		}
+        .inputSource textarea{
+            height: 120px;
+            width: 270px;
+        }
 
-		.helper{
-			position: absolute;
-			top: 0;
-			right: 0;
-			height: 130px;
-			padding: 1em;
-		}
+        .helper{
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 130px;
+            padding: 1em;
+        }
 
-		#Results h2{
-			margin-bottom: 0;
-		}
+        #Results h2{
+            margin-bottom: 0;
+        }
 
-		#Results>header>a{
-			font-size: 0.75em;
-		}
+        #Results>header>a{
+            font-size: 0.75em;
+        }
 
-		#Results>header{
-			margin-bottom: 1em;
-		}
+        #Results>header{
+            margin-bottom: 1em;
+        }
 
-		#details{
-			padding-left: 1em;
-		}
+        #details{
+            padding-left: 1em;
+        }
+        .options{
+            padding-left: 1em;
+        }
 
-		details{
-			padding-left: 1em;
-		}
+        details{
+            padding-left: 1em;
+        }
 
-		details>p{
-			padding-left: 1em;
-		}
+        details>p{
+            padding-left: 1em;
+        }
 
-		summary{
-			margin-left: -2em;
-		}
+        summary{
+            margin-left: -2em;
+        }
 
-		#contexts{
-			position: absolute;
-			top: 140px;
-			bottom: 5.1em;
-			left: 1em;
-			right: 23em;
-			overflow: auto;
-			margin: 0;
-		}
+        #contexts{
+            position: absolute;
+            top: 140px;
+            bottom: 5.1em;
+            left: 1em;
+            right: 23em;
+            overflow: auto;
+            margin: 0;
+        }
 
-		#info{
-			position: absolute;
-			bottom: 5.1em;
-			right: 1em;
-			width: 20em;
-			border: 1px solid black;
-			overflow: auto;
-			padding: 1em;
-			padding-bottom: 0;
-			padding-top: 0;
-			margin: 0;
-		}
-	</style>
+        #info{
+            position: absolute;
+            bottom: 5.1em;
+            right: 1em;
+            width: 20em;
+            border: 1px solid black;
+            overflow: auto;
+            padding: 1em;
+            padding-bottom: 0;
+            padding-top: 0;
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
 
 <section>
-	<div class="inputSource">
-		<label>Performance source: <textarea id="source" placeholder="paste the performance JSON here"></textarea></label>
-	</div>
-	<div class="helper">
-		Generate the performance source code:<br>
-		<a id="helperBookmarklet" href="javascript:(function(){var p = typeof performance === 'object'?performance:null;prompt('Copy this to the analyzer',(p.location={url:location.href,title:document.title},JSON.stringify(p)));})();void(0);" title="Run this script in URL bar">
-			With Bookmarklet
-		</a><br>
-		<a id="helperConsole" href="javascript:(function(){var p = typeof performance === 'object'?performance:null;console.log('Copy the next string to the analyzer:');console.log((p.location={url:location.href,title:document.title},JSON.stringify(p)));})();" title="Run this script in console">
-			In console
-		</a><br>
-		<a id="helperSpy" href="../library/spyObject_demo.html">
-			Spying objects
-		</a><sup>(ext)</sup><br>
-		<br>
-		More information about performance API:<br>
-		<a href="https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/NavigationTiming/Overview.html#sec-navigation-timing-interface" target="_blank">Navigation timing interface (W3C)</a>
-	</div>
+    <div class="inputSource">
+        <label>Performance source: <textarea id="source" placeholder="paste the performance JSON here"></textarea></label>
+    </div>
+    <div class="helper">
+        Generate the performance source code:<br>
+        <a id="helperBookmarklet" href="javascript:(function(){var p = typeof performance === 'object'?performance:null;prompt('Copy this to the analyzer',(p.location={url:location.href,title:document.title},JSON.stringify(p)));})();void(0);" title="Run this script in URL bar">
+            With Bookmarklet
+        </a><br>
+        <a id="helperConsole" href="javascript:(function(){var p = typeof performance === 'object'?performance:null;console.log('Copy the next string to the analyzer:');console.log((p.location={url:location.href,title:document.title},JSON.stringify(p)));})();" title="Run this script in console">
+            In console
+        </a><br>
+        <a id="helperSpy" href="../library/spyObject_demo.html">
+            Spying objects
+        </a><sup>(ext)</sup><br>
+        <br>
+        More information about performance API:<br>
+        <a href="https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/NavigationTiming/Overview.html#sec-navigation-timing-interface" target="_blank">Navigation timing interface (W3C)</a>
+    </div>
 </section>
 <hr>
 <section id="Results">
 
-	<section id="contexts">
-		<header>
-			<h2 id="title"></h2>
-			<a id="linkPage" href="" target="_blank"></a>
-		</header>
-		<p id="navigation"></p>
-		<p id="details"></p>
-	</section>
+    <section id="contexts">
+        <header>
+            <h2 id="title"></h2>
+            <a id="linkPage" href="" target="_blank"></a>
+        </header>
+        <p id="navigation"></p>
+        <p id="details"></p>
+    </section>
 
-	<section id="info"></section>
-	<section class="canvas">
-		<canvas id="graphAnalyze" ></canvas>
-		<canvas id="interactiveCanvas"></canvas>
-	</section>
+    <section id="info"></section>
+    <section class="canvas">
+        <canvas id="graphAnalyze" ></canvas>
+        <canvas id="interactiveCanvas"></canvas>
+    </section>
 </section>
 
 <script>
-document.getElementById('helperBookmarklet').onclick = 
+document.getElementById('helperBookmarklet').onclick =
 document.getElementById('helperConsole').onclick =
 function(e){
-	e.preventDefault();
-	copyToClipboard(this.href, this.title);
+    e.preventDefault();
+    copyToClipboard(this.href, this.title);
 };
 
 document.getElementById('source').onchange = manageCode;
 
 var getColor = (function(){
-	var i = 0;
-	return function(){
-		return 138 * i++ % 360;
-	};
+    var i = 0;
+    return function(){
+        return 138 * i++ % 360;
+    };
 })();
 
 function copyToClipboard(text, title){
-	title = '\n\n' + title || '';
-	prompt('Copy to clipboard: Ctrl+C, Enter' + title, text);
+    title = '\n\n' + title || '';
+    prompt('Copy to clipboard: Ctrl+C, Enter' + title, text);
 }
 
 
 function manageCode(){
-	if(!this.value) return;
-	var perf = JSON.parse(this.value);
-	if(!perf) return;
+    'use strict';
 
-	perf = parse(perf);
-	render(perf);
-	
+    if(!this.value){ return; }
+    var perf = JSON.parse(this.value);
+    if(!perf){ return; }
 
-	
+    perf = parse(perf);
+    render(perf);
 
-	
+    function parse(obj){
+        var perfLog = {};
 
+        perfLog.information = obj.information || [];
+        perfLog.chrono = obj.chrono || [];
 
-	
+        if(obj.timing){
+            perfLog.chrono = parseTiming(obj.timing);
+        }
+        perfLog.chrono = perfLog.chrono.sort(function(a,b){return a.start - b.start;});
 
-	
+        if(obj.navigation){
+            perfLog.information = perfLog.information.concat(parseNavigation(obj.navigation));
+        }
 
+        perfLog.title = obj.location && obj.location.title || '';
+        perfLog.url = obj.location && obj.location.url || '';
 
+        searchDuration();
 
-	function parse(obj){
-		var perfLog = {};
+        function parseTiming(timing){
+            //timing chronology
+            var refTime = timing.navigationStart,
+                chrono = [
+                    {
+                        name: 'Total loading time',
+                        value: timing.loadEventEnd - refTime,
+                        start: 0,
+                        color: -1,
+                        sub: [
+                            {
+                                name: 'unload',
+                                value: timing.unloadEventEnd - timing.unloadEventStart,
+                                start: calcStart(timing.unloadEventStart),
+                                sub: []
+                            },
+                            {
+                                name: 'Network',
+                                value: timing.responseEnd - timing.navigationStart,
+                                start: calcStart(timing.navigationStart),
+                                sub: [
+                                    {
+                                        name: 'redirect',
+                                        value: timing.redirectEnd - timing.redirectStart,
+                                        start: calcStart(timing.redirectStart),
+                                        sub: []
+                                    },
+                                    {
+                                        name: 'Fetch (App cache)',
+                                        value: timing.domainLookupStart - timing.fetchStart,
+                                        start: calcStart(timing.fetchStart),
+                                        sub: []
+                                    },
+                                    {
+                                        name: 'DNS',
+                                        value: timing.domainLookupEnd - timing.domainLookupStart,
+                                        start: calcStart(timing.domainLookupStart),
+                                        sub: []
+                                    },
+                                    {
+                                        name: 'TCP',
+                                        value: timing.connectEnd - timing.connectStart,
+                                        start: calcStart(timing.connectStart),
+                                        sub: [
+                                            {
+                                                name: 'secure TCP',
+                                                value: timing.secureConnectionStart?(timing.connectEnd - timing.secureConnectionStart):0,
+                                                start: calcStart(timing.secureConnectionStart),
+                                                sub: []
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        name: 'Communication',
+                                        value: timing.responseEnd - timing.requestStart,
+                                        start: calcStart(timing.requestStart),
+                                        sub: [
+                                            {
+                                                name: 'Request & server time',
+                                                value: timing.responseStart - timing.requestStart,
+                                                start: calcStart(timing.requestStart),
+                                                sub: []
+                                            },
+                                            {
+                                                name: 'Response',
+                                                value: timing.responseEnd - timing.responseStart,
+                                                start: calcStart(timing.responseStart),
+                                                sub: []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                name: 'Processing',
+                                value: timing.domComplete - timing.domLoading,
+                                start: calcStart(timing.domLoading),
+                                sub: [
+                                    {
+                                        name: 'Parsing',
+                                        value: timing.domInteractive - timing.domLoading,
+                                        start: calcStart(timing.domLoading),
+                                        sub: []
+                                    },
+                                    {
+                                        name: 'Scripting',
+                                        value: timing.domComplete - timing.domInteractive,
+                                        start: calcStart(timing.domInteractive),
+                                        sub: []
+                                    },
+                                    {
+                                        name: 'DOM Content loading',
+                                        value: timing.domContentLoadedEventEnd - timing.domContentLoadedEventStart,
+                                        start: calcStart(timing.domContentLoadedEventStart),
+                                        sub: []
+                                    }
+                                ]
+                            },
+                            {
+                                name: 'Loading event',
+                                value: timing.loadEventEnd - timing.loadEventStart,
+                                start: calcStart(timing.loadEventStart),
+                                sub: []
+                            }
+                        ]
+                    }
+                ];
 
-		perfLog.information = obj.information || [];
-		perfLog.chrono = obj.chrono || [];
+                function calcStart(value){
+                    return Math.max(0, value-refTime);
+                }
 
-		if(obj.timing){
-			perfLog.chrono = parseTiming(obj.timing);
-		}
-		perfLog.chrono = perfLog.chrono.sort(function(a,b){return a.start - b.start;});
+            return chrono;
+        }
 
-		if(obj.navigation){
-			perfLog.information = perfLog.information.concat(parseNavigation(obj.navigation));
-		}
+        function parseNavigation(nav){
+            var info = [];
 
-		perfLog.title = obj.location && obj.location.title || '';
-		perfLog.url = obj.location && obj.location.url || '';
+            info.push(['link NAVIGATION','RELOAD page','HISTORY navigation'][nav.type] || 'unknown navigation');
+            info.push(nav.redirectCount + ' redirects');
 
-		searchDuration();
+            return info;
+        }
 
-		function parseTiming(timing){
-			//timing chronology
-			var refTime = timing.navigationStart,
-				chrono = [
-					{
-						name: 'Total loading time',
-						value: timing.loadEventEnd - refTime,
-						start: 0,
-						color: -1,
-						sub: [
-							{
-								name: 'unload',
-								value: timing.unloadEventEnd - timing.unloadEventStart,
-								start: calcStart(timing.unloadEventStart),
-								sub: []
-							},
-							{
-								name: 'Network',
-								value: timing.responseEnd - timing.navigationStart,
-								start: calcStart(timing.navigationStart),
-								sub: [
-									{
-										name: 'redirect',
-										value: timing.redirectEnd - timing.redirectStart,
-										start: calcStart(timing.redirectStart),
-										sub: []
-									},
-									{
-										name: 'Fetch (App cache)',
-										value: timing.domainLookupStart - timing.fetchStart,
-										start: calcStart(timing.fetchStart),
-										sub: []
-									},
-									{
-										name: 'DNS',
-										value: timing.domainLookupEnd - timing.domainLookupStart,
-										start: calcStart(timing.domainLookupStart),
-										sub: []
-									},
-									{
-										name: 'TCP',
-										value: timing.connectEnd - timing.connectStart,
-										start: calcStart(timing.connectStart),
-										sub: [
-											{
-												name: 'secure TCP',
-												value: timing.secureConnectionStart?(timing.connectEnd - timing.secureConnectionStart):0,
-												start: calcStart(timing.secureConnectionStart),
-												sub: []
-											}
-										]
-									},
-									{
-										name: 'Communication',
-										value: timing.responseEnd - timing.requestStart,
-										start: calcStart(timing.requestStart),
-										sub: [
-											{
-												name: 'Request & server time',
-												value: timing.responseStart - timing.requestStart,
-												start: calcStart(timing.requestStart),
-												sub: []
-											},
-											{
-												name: 'Response',
-												value: timing.responseEnd - timing.responseStart,
-												start: calcStart(timing.responseStart),
-												sub: []
-											}
-										]
-									}
-								]
-							},
-							{
-								name: 'Processing',
-								value: timing.domComplete - timing.domLoading,
-								start: calcStart(timing.domLoading),
-								sub: [
-									{
-										name: 'Parsing',
-										value: timing.domInteractive - timing.domLoading,
-										start: calcStart(timing.domLoading),
-										sub: []
-									},
-									{
-										name: 'Scripting',
-										value: timing.domComplete - timing.domInteractive,
-										start: calcStart(timing.domInteractive),
-										sub: []
-									},
-									{
-										name: 'DOM Content loading',
-										value: timing.domContentLoadedEventEnd - timing.domContentLoadedEventStart,
-										start: calcStart(timing.domContentLoadedEventStart),
-										sub: []
-									}
-								]
-							},
-							{
-								name: 'Loading event',
-								value: timing.loadEventEnd - timing.loadEventStart,
-								start: calcStart(timing.loadEventStart),
-								sub: []
-							}
-						]
-					}
-				];
+        function searchDuration(){
+            var max = -Infinity,
+                li = perfLog.chrono.length;
 
-				function calcStart(value){
-					return Math.max(0, value-refTime);
-				}
+            while(li--){
+                max = Math.max(max, perfLog.chrono[li].start + perfLog.chrono[li].value);
+            }
 
-			return chrono;
-		}
+            perfLog.size = max;
+        }
 
-		function parseNavigation(nav){
-			var info = [];
+        return perfLog;
 
-			info.push(['link NAVIGATION','RELOAD page','HISTORY navigation'][nav.type] || 'unknown navigation');
-			info.push(nav.redirectCount + ' redirects');
+    }
 
-			return info;
-		}
+    function render(perfLog){
+        var canvas = document.getElementById('graphAnalyze'),
+            iCanvas = document.getElementById('interactiveCanvas'),
+            ctx = canvas.getContext('2d'),
+            iCtx = iCanvas.getContext('2d'),
+            listenerArea = [],
+            frozen = 0;
 
-		function searchDuration(){
-			var max = -Infinity,
-				li = perfLog.chrono.length;
+            iCtx.fillStyle = '#000000';
+            iCtx.strokeStyle = '#000000';
 
-			while(li--){
-				max = Math.max(max, perfLog.chrono[li].start + perfLog.chrono[li].value);
-			}
+            /* Listener */
+            iCanvas.onmousemove = onMouseOver;
+            iCanvas.onclick = function(){
+                clearTimeout(frozen);
+                frozen = setTimeout(function(){frozen=0;},3000);
+            };
 
-			perfLog.size = max;
-		}
+            //Header
+            document.getElementById('title').textContent = perfLog.title;
+            document.getElementById('linkPage').href = document.getElementById('linkPage').textContent = perfLog.url;
 
-		return perfLog;
+            //Navigation
+            var txt = '';
+            perfLog.information.forEach(function(text){
+                txt += text + '<br>';
+            });
+            document.getElementById('navigation').innerHTML = txt;
 
-	}
+            //details
+            var detailsInfo = document.getElementById('details');
+            detailsInfo.innerHTML = '';
+            detailsInfo.appendChild(createHTML(perfLog.chrono));
+            displayGraph();
 
-	function render(perfLog){
-		var canvas = document.getElementById('graphAnalyze'),
-			iCanvas = document.getElementById('interactiveCanvas'),
-			ctx = canvas.getContext('2d'),
-			iCtx = iCanvas.getContext('2d'),
-			listenerArea = [],
-			frozen = 0;
+        function createHTML(iList, tpsItem){
+            var container = document.createElement('p');
+            iList.forEach(function(item){
+                if(!item.color){
+                    item.color = getColor();
+                }
+                var hasSub = item.sub && item.sub instanceof Array && item.sub.length,
+                    mainCnt = document.createElement(hasSub ? 'details': 'p'),
+                    cnt = hasSub ? document.createElement('summary'): mainCnt,
+                    elem;
 
-			iCtx.fillStyle = '#000000';
-			iCtx.strokeStyle = '#000000';
+                //legend color
+                if(item.color > -1){
+                    elem = document.createElement('span');
+                    elem.className = 'legendColor';
+                    elem.style.backgroundColor = 'hsla(' + item.color + ', 90%, 50%, 0.6)';
+                    elem.innerHTML = '&nbsp;';
+                    cnt.appendChild(elem);
+                }
 
-			/* Listener */
-			iCanvas.onmousemove = onMouseOver;
-			iCanvas.onclick = function(){
-				clearTimeout(frozen);
-				frozen = setTimeout(function(){frozen=0;},3000);
-			};
+                //Label
+                elem = document.createElement('label');
+                elem.textContent = item.name + ': ' + item.value + 'ms';
+                cnt.appendChild(elem);
 
-			//Header
-			document.getElementById('title').textContent = perfLog.title;
-			document.getElementById('linkPage').href = document.getElementById('linkPage').textContent = perfLog.url;
+                //display meter
+                if(item.color > -1 && tpsItem){
+                    elem = document.createElement('meter');
+                    elem.min = 0;
+                    elem.max = tpsItem;
+                    elem.value = item.value;
+                    elem.optimum = 0;
+                    elem.low = tpsItem/4;
+                    elem.high = tpsItem/2;
+                    cnt.appendChild(elem);
+                }
 
-			//Navigation
-			var txt = '';
-			perfLog.information.forEach(function(text){
-				txt += text + '<br>';
-			});
-			document.getElementById('navigation').innerHTML = txt;
+                //display offset
+                if(item.color > -1){
+                    elem = document.createElement('label');
+                    elem.textContent = 'Start at: '+ item.start + 'ms';
+                    cnt.appendChild(elem);
+                }
 
-			//details
-			var detailsInfo = document.getElementById('details');
-			detailsInfo.innerHTML = '';
-			detailsInfo.appendChild(createHTML(perfLog.chrono));
-			displayGraph();
+                //display option
+                if(item.option){
+                    elem = document.createElement('span');
+                    elem.className = 'options';
+                    elem.textContent = 'Options: '+ JSON.stringify(item.option).substr(0, 50);
+                    cnt.appendChild(elem);
 
-		function createHTML(iList, tpsItem){
-			var container = document.createElement('p');
-			iList.forEach(function(item){
-				if(!item.color){
-					item.color = getColor();
-				}
-				var hasSub = item.sub && item.sub instanceof Array && item.sub.length,
-					mainCnt = document.createElement(hasSub ? 'details': 'p'),
-					cnt = hasSub ? document.createElement('summary'): mainCnt,
-					elem;
+                    elem.onclick = (function(item){return function(){console.log('option:',item.option, 'memory:', item.memory);};})(item);
+                }
 
-				//legend color
-				if(item.color > -1){
-					elem = document.createElement('span');
-					elem.className = 'legendColor';
-					elem.style.backgroundColor = 'hsla(' + item.color + ', 90%, 50%, 0.6)';
-					elem.innerHTML = '&nbsp;';
-					cnt.appendChild(elem);
-				}
+                //listener
+                if(item.color > -1){
+                    cnt.onmouseover = drawLimit.bind(this, item);
+                }
 
-				//Label
-				elem = document.createElement('label');
-				elem.textContent = item.name + ': ' + item.value + 'ms';
-				cnt.appendChild(elem);
+                if(hasSub){
+                    mainCnt.appendChild(cnt);
+                    mainCnt.appendChild(createHTML(item.sub, item.value, 100));
+                }
+                container.appendChild(mainCnt);
+            });
+            return container;
+        }
 
-				//display meter
-				if(item.color > -1 && tpsItem){
-					elem = document.createElement('meter');
-					elem.min = 0;
-					elem.max = tpsItem;
-					elem.value = item.value;
-					elem.optimum = 0;
-					elem.low = tpsItem/4;
-					elem.high = tpsItem/2;
-					cnt.appendChild(elem);
-				}
+        function displayGraph(){
+            var width = canvas.width = iCanvas.width = canvas.offsetWidth;
+            canvas.height = iCanvas.height = 120;
 
-				//display offset
-				if(item.color > -1){
-					elem = document.createElement('label');
-					elem.textContent = 'Start at: '+ item.start + 'ms';
-					cnt.appendChild(elem);
-				}
+            var sz = width / perfLog.size;
 
-				//listener
-				if(item.color > -1){
-					cnt.onmouseover = drawLimit.bind(this, item);
-				}
+            ctx.clearRect(0, 0, width, 120);
 
-				if(hasSub){
-					mainCnt.appendChild(cnt);
-					mainCnt.appendChild(createHTML(item.sub, item.value, 100));
-				}
-				container.appendChild(mainCnt);
-			});
-			return container;
-		}
+            listenerArea = [];
+            perfLog.chrono.forEach(function(item){
+                displayArea(item, sz, 0);
+            });
+        }
 
-		function displayGraph(){
-			var width = canvas.width = iCanvas.width = canvas.offsetWidth;
-			canvas.height = iCanvas.height = 120;
+        function displayArea(iList, sz, deep){
+            if(iList.color !== -1){
+                if(!iList.color){
+                    iList.color = getColor();
+                }
+                var offsetX = iList.start * sz,
+                    offsetY = deep * 20 ;
 
-			var sz = width / perfLog.size
-			
-			ctx.clearRect(0, 0, width, 120);
+                ctx.beginPath();
+                listenerArea.push([offsetX, offsetX + iList.value*sz, iList]);
+                ctx.strokeStyle = 'hsl('+iList.color+', 90%, 50%)';
+                ctx.fillStyle = 'hsla('+iList.color+', 90%, 50%, 0.6)';
+                ctx.rect(offsetX, offsetY, iList.value*sz, 100 - offsetY);
 
-			listenerArea = [];
-			perfLog.chrono.forEach(function(item){
-				displayArea(item, sz, 0);
-			});
-		}
+                ctx.fill();
+                ctx.stroke();
+            }
 
-		function displayArea(iList, sz, deep){
-			if(iList.color !== -1){
-				if(!iList.color){
-					iList.color = getColor();
-				}
-				var offsetX = iList.start * sz,
-					offsetY = deep * 20 ;
+            if(iList.sub && iList.sub instanceof Array && iList.sub.length){
+                iList.sub.forEach(function(item){
+                    displayArea(item, sz, deep + 1);
+                });
+            }
 
-				ctx.beginPath();
-				listenerArea.push([offsetX, offsetX + iList.value*sz, iList]);
-				ctx.strokeStyle = 'hsl('+iList.color+', 90%, 50%)';
-				ctx.fillStyle = 'hsla('+iList.color+', 90%, 50%, 0.6)';
-				ctx.rect(offsetX, offsetY, iList.value*sz, 100 - offsetY);
+        }
 
-				ctx.fill();
-				ctx.stroke();
-			}
+        function onMouseOver(e){
 
-			if(iList.sub && iList.sub instanceof Array && iList.sub.length){
-				iList.sub.forEach(function(item){
-					displayArea(item, sz, deep + 1);
-				});
-			}
+            if(frozen){ return false;}
+            var x = e.offsetX,
+                area = listenerArea.filter(function(v){
+                    return x > v[0] - 5 && x < v[1] + 5;
+                }),
+                info = document.getElementById('info'),
+                html = 'time: '+ (x / canvas.offsetWidth * perfLog.size).toFixed(3) +' ms<br>';
 
-		}
+            area.forEach(function(v){
+                var item = v[2];
+                html += '<p><header style="background-color: hsla('+item.color+', 90%, 50%, 0.6);">' + item.name + '</header> duration: '+item.value+'ms (start at '+ item.start+'ms)</p>';
+            });
+            info.innerHTML = html;
 
-		function onMouseOver(e){
+            iCtx.clearRect(0, 0, canvas.offsetWidth, 120);
+            drawTimeLine(x);
+        }
 
-			if(frozen) return false;
-			var x = e.offsetX,
-				area = listenerArea.filter(function(v){
-					return x > v[0] - 5 && x < v[1] + 5;
-				}),
-				info = document.getElementById('info'),
-				html = 'time: '+ (x / canvas.offsetWidth * perfLog.size).toFixed(3) +' ms<br>';
+        function drawTimeLine(X, position, recalc){
+            var align,
+                x,
+                pos;
 
-			area.forEach(function(v){
-				var item = v[2];
-				html += '<p><header style="background-color: hsla('+item.color+', 90%, 50%, 0.6);">' + item.name + '</header> duration: '+item.value+'ms (start at '+ item.start+'ms)</p>';
-			});
-			info.innerHTML = html;
+            switch(position){
+                case 'right':
+                    align = 'right';
+                    break;
+                case 'left':
+                    align = 'left';
+                    break;
+                default:
+                    align = 'center';
+                break;
+            }
 
-			iCtx.clearRect(0, 0, canvas.offsetWidth, 120);
-			drawTimeLine(x);
-		}
+            if(recalc){
+                x = X * canvas.offsetWidth / perfLog.size;
+                pos = X;
+            }else{
+                x = X;
+                pos = X / canvas.offsetWidth * perfLog.size;
+            }
 
-		function drawTimeLine(X, position, recalc){
-			var align,
-				x,
-				pos;
+            iCtx.beginPath();
 
-			switch(position){
-				case 'right':
-					align = 'right';
-					break;
-				case 'left':
-					align = 'left';
-					break;
-				default:
-					align = 'center';
-				break;
-			}
+            iCtx.moveTo(x, 0);
+            iCtx.lineTo(x, 100);
+            iCtx.lineTo(x - 5, 110);
+            iCtx.lineTo(x + 5, 110);
+            iCtx.lineTo(x, 100);
 
-			if(recalc){
-				x = X * canvas.offsetWidth / perfLog.size;
-				pos = X;
-			}else{
-				x = X;
-				pos = X / canvas.offsetWidth * perfLog.size
-			}
+            iCtx.fill();
+            iCtx.stroke();
 
-			iCtx.beginPath();
+            iCtx.textAlign = align;
+            iCtx.fillText( ' ' + Math.floor(pos) + ' ' , x , position ? 100 : 120);
+        }
 
-			iCtx.moveTo(x, 0);
-			iCtx.lineTo(x, 100);
-			iCtx.lineTo(x - 5, 110);
-			iCtx.lineTo(x + 5, 110);
-			iCtx.lineTo(x, 100);
+        function drawLimit(item){
+            if(frozen){ return false;}
+            iCtx.clearRect(0, 0, canvas.offsetWidth, 120);
+            drawTimeLine(item.start, 'left', true);
+            drawTimeLine(item.start + item.value, 'right', true);
+        }
 
-			iCtx.fill();
-			iCtx.stroke();
-
-			iCtx.textAlign = align;
-			iCtx.fillText( ' ' + Math.floor(pos) + ' ' , x , position ? 100 : 120);
-		}
-
-		function drawLimit(item){
-			if(frozen) return false;
-			iCtx.clearRect(0, 0, canvas.offsetWidth, 120);
-			drawTimeLine(item.start, 'left', true);
-			drawTimeLine(item.start + item.value, 'right', true);
-		}
-
-	}
+    }
 
 }
 
