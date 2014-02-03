@@ -8,8 +8,7 @@
  * Date : 2014 - 01 - 25 (creation)
  *
  *
- *
- This script provides a spyObject function to monitor methods
+ * This script provides a spyObject function to monitor methods
  * inside objects (like number of calls and time spent inside).
  *
  * The goal of this library is to supply numbers about performance
@@ -35,7 +34,7 @@
 		@{Object} obj: object where method to spy are located
 		@{String} prefix: a text to identify the 'owner' of methods spyed.
 		@{Array[String]} exclude: list of methods name to not spy.
- **/
+**/
 function spyObject(obj, prefix, exclude){
 	'use strict';
 	prefix = prefix || '';
@@ -266,6 +265,28 @@ function spyObject(obj, prefix, exclude){
 			precision: obj.value - d1,
 			timeInSpy: d2 - d1
 		};
+
+	};
+
+	spyInterface.test = function (){
+		var obj = {
+				v: 0,
+				f: function(){this.v++;},
+				g: function(){this.v++;}
+			},
+			d1, d2,
+			t = performance.now();
+		obj.f();
+		d1 = performance.now() - t;
+		
+		replaceFunc('g', obj, 'TEST');
+		t = performance.now();
+		obj.g();
+		d2 = performance.now() - t;
+
+		obj = perfMeasured.pop();
+
+		console.log('without',d1, 'with',d2, 'measured',obj.value, obj);
 
 	};
 

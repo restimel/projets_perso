@@ -2,6 +2,18 @@
 <html>
 <head>
 	<meta charset="utf-8" />
+	<!--
+	spyObject_demo.html
+
+	Author: Benoit Mariat (b.mariat@gmail.com)
+	Date: January 2014
+
+	License: You are free to use, share, redistribute and modify it if you keep all authors and contributors names. ( http://creativecommons.org/licenses/by/3.0/)
+
+	Vous êtes autorisés à utiliser, partager, redistribuer et modifier ce code tant que vous gardez les noms des auteurs et contributeurs. (http://creativecommons.org/licenses/by/3.0/deed.fr)
+
+	Original file: http://b.mariat.free.fr/
+	-->
 	<title>demo spy Object</title>
 </head>
 <body>
@@ -82,7 +94,10 @@ Methods you can use are:
 
 <script src="spyObject.js"></script>
 <script>
-var obj = {};
+var obj = {
+	val: 42,
+	f: function(){ return this.val;}
+};
 obj.fn = function(nb){
 	var i = nb || 100, n = 1;
 	while(i){
@@ -106,16 +121,26 @@ obj.manySubCall = function(){
 	return this.fn1000() - this.fn100();
 }
 
+var objTest = function(){
+	obj.val += 10;
+}
+
 //add the spy on obj
 var spy = spyObject(obj, 'obj');
 
 //run the test case
 obj.fn();
 
+objTest();
+
 var t = 2;
 while(t < 100){
 	t = obj.fn(t);
 }
+
+spy.start('objTest');
+objTest();
+spy.stop('objTest')
 
 obj.fn1000();
 obj.fn100();
@@ -124,6 +149,7 @@ obj.manySubCall();
 
 //Analyze results
 document.getElementById('result').innerHTML = spy.getPerfCode(true);
+spy.test();
 </script>
 </body>
 </html>
