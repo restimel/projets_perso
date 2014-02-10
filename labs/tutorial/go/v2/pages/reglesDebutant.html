@@ -1,21 +1,21 @@
-<h2>Règles du jeu</h2>
+<h2>Règles Générales du jeu</h2>
 <section id="enonce">
 	<h3>Énoncé des Règles</h3>
 	<ol>
 		<li><strong>Principe</strong>&nbsp;: Les joueurs jouent alternativement.</li>
-		<li><strong>Jouer</strong>&nbsp;: Un joueur peut poser une pierre sur n'importe quelle intersection libre du goban.</li>
+		<li><strong>Jouer</strong>&nbsp;: Un joueur peut poser une pierre sur n'importe quelle intersection libre du jeu.</li>
 		<li><strong>Capture</strong>&nbsp;: Un groupe de pierres de la même couleur qui n'est relié à aucune intersection libre est capturé.</li>
 		<li><strong>Exception</strong>&nbsp;: Il est interdit de jouer un coup qui ferait répéter une position déjà jouée.</li>
 		<li><strong>Victoire</strong>&nbsp;: Le joueur ayant le plus de points remporte la partie.</li>
 	</ol>
-	<p>Bien que quelques précisions soient nécessaires sur certains points, l'énoncé de ces règles suffit pour jouer au jeu de Go.</p>
+	<p>Bien que quelques précisions soient nécessaires sur certains points, l'énoncé de ces 5 règles suffit pour jouer au jeu de Go.</p>
 </section>
 <section id="precision">
 	<h3>Précisions sur ces Règles</h3>
 	<section id="principe">
 		<h4>Mise en place et principe du jeu</h4>
 		<p>Le jeu de Go se joue à deux joueurs qui se font face.</p>
-		<p>Le jeu se déroule sur une grille, appelée goban. La taille de cette grille (définie par le nombre de lignes) est choisie au début la partie. Traditionnellement la taille est de 19×19, mais il est aussi fréquent d'utiliser des goban de taille 9×9, ou 13×13 (et plus rarement 11×11). Pour les débutants, il est conseillé de commencer avec un goban de 9×9 (la durée de la partie est plus courte).</p>
+		<p>Le jeu se déroule sur une grille, appelée goban. La taille de cette grille (définie par le nombre de lignes) est choisie au début la partie. Traditionnellement la taille est de 19×19, mais il est fréquent d'utiliser des goban de taille 9×9, ou 13×13 (et plus rarement 11×11). Pour des débutants, il est conseillé de commencer avec un goban de 9×9 (la durée de la partie est plus courte).</p>
 		<figure><img src="./images/gobanSize.png" alt="Différentes tailles de Goban"><figcaption>Il est possible de jouer avec différentes tailles de grilles.</figcaption></figure>
 		<p>Chaque joueur dispose de l'ensemble des jetons d'une couleur. Ces jetons sont appelés des "pierres". Traditionnellement les couleurs utilisées sont les noirs et les blancs. Le nombre de pierres qu'un joueur possède n'est pas limité. Mis à part leur couleur, toutes les pierres sont équivalentes.</p>
 		<p>Par convention, le joueur qui a les noirs commence la partie. Puis chaque joueur joue à tour de rôle.</p>
@@ -24,8 +24,8 @@
 	<section id="jouer">
 		<h4>Jouer</h4>
 		<p>Lorsque c'est son tour, un joueur a la possibilité de poser une nouvelle pierre de sa couleur sur une des intersections libres du goban.</p>
-		<p>Il est autorisé de poser sa pierre sur n'importe quelle intersection libre du goban, y compris sur les intersections où il y avait précédemment des pierres qui ont été capturées.</p>
-		<p>Il est autorisé de jouer sur les intersections sur les bords ou dans les coins. Mais ces intersections ne sont reliées qu'à 3 (respectivement 2) autres intersections.</p>
+		<p>Il est autorisé de poser sa pierre sur n'importe quelle intersection libre du goban, y compris sur les intersections où il y avait précédemment des pierres qui ont été capturées (Cf <a href="#capture">la capture</a>).</p>
+		<p>Il est autorisé de jouer sur les intersections situées sur les bords ou dans les coins. Mais ces intersections ne sont reliées qu'à 3 (respectivement 2) autres intersections.</p>
 		<p>Les pierres ne se déplacent pas. Une fois posée, une pierre reste à son emplacement jusqu'à la fin de la partie (ou jusqu'à sa capture).</p>
 		<p>Un joueur a la possibilité de ne pas poser de pierre lors de son tour. On dit qu'il "passe". Un joueur qui passe a toujours la possibilité de poser à nouveau une pierre lors de son prochain tour. Lorsque les deux joueurs passent successivement, la partie est considérée comme terminée.</p>
 	</section>

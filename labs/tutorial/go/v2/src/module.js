@@ -10,10 +10,10 @@ tutorialApp.config(['$routeProvider',
 		$routeProvider.when('/:menuId/:pageId',{
 			templateUrl : 'partials/tutoriel.html',
 			controller : "tutoCtrl"
-		}).when('/',{
+		})/*.when('/',{
 			templateUrl : 'partials/accueil.html',
 			controller : "tutoCtrl"
-		}).otherwise({redirectTo : '/'});
+		})*/.otherwise({redirectTo : '/menu/accueil'});
 	}]);
 
 tutorialApp.filter('inArray', function(){
@@ -42,11 +42,13 @@ tutorialApp.filter('displayMenu',function($sce){
 		if(!item) return "";
 		
 		var out = '<li>';
+		
 		if(item.lien){
 			out += '<a href="#/'+mId+'/'+item.lien+'">'+item.titre+'</a>';
 		}else{
 			out += item.titre;
 		}
+
 		if(typeof item.sousMenu === "object"){
 			out += "<ul>"+displayItems(item.sousMenu)+"</ul>";
 		}

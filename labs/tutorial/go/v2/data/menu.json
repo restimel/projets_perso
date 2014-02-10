@@ -68,6 +68,95 @@
 				]
 			}
 		]
+	},
+	"todo": {
+		"titre": "Pages à réaliser",
+		"sousMenu": [
+			{
+				"lien": "Histoire",
+				"sousMenu": [
+					{
+						"lien": "histoireChronologie",
+						"titre": "Chronologie"
+					},
+					{
+						"lien": "histoireChine",
+						"titre": "l'Histoire en Chine"
+					},
+					{
+						"lien": "histoireJapon",
+						"titre": "l'Histoire au Japon"
+					},
+					{
+						"lien": "histoireCorée",
+						"titre": "l'Histoire en Corée"
+					},
+					{
+						"lien": "histoireOccident",
+						"titre": "l'Histoire en Occident"
+					},
+					{
+						"lien": "joueursCelebres",
+						"titre": "Des joueurs célébres"
+					}
+				]
+			},
+			{
+				"lien": "légendes",
+				"sousMenu": [
+					{
+						"lien": "contesLégendes",
+						"titre": "Chronologie"
+					},
+					{
+						"lien": "contesChine",
+						"titre": "Contes, légendes et anecdotes en Chine"
+					},
+					{
+						"lien": "conteJapon",
+						"titre": "Contes, légendes et anecdotes au Japon"
+					},
+					{
+						"lien": "conteCorée",
+						"titre": "Contes, légendes et anecdotes en Corée"
+					},
+					{
+						"lien": "contesOccident",
+						"titre": "Contes, légendes et anecdotes ailleurs dans le monde"
+					}
+				]
+			},
+			{
+				"lien": "Matériels",
+				"sousMenu": [
+					{
+						"lien": "materielGoban",
+						"titre": "Goban"
+					},
+					{
+						"lien": "materielPierres",
+						"titre": "Les pierres"
+					},
+					{
+						"lien": "materielBols",
+						"titre": "Les bols"
+					},
+					{
+						"lien": "materielsAutres",
+						"titre": "???"
+					}
+				]
+			},
+			{
+				"lien": "Regles",
+				"sousMenu": [
+					{
+						"lien": "reglesDiff",
+						"titre": "Différence entre les règles"
+					}
+				]
+			}
+		]
 	}
 	
 }
