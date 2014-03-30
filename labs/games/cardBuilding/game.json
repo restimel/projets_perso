@@ -1,0 +1,111 @@
+var data = {
+	"cards": [
+		{
+			"name": "",
+			"details": [{
+				"theme": "movement",
+				"effect": "+1MNA MVT1",
+				"grid": [[1,0,"mvt"]]
+			},
+			{
+				"theme": "movement",
+				"effect": "-1MNA MVT2",
+				"grid": [[1,0,"mvt"], [2,0,"mvt"]]
+			}]
+		},
+		{
+			"name": "",
+			"details": [{
+				"theme": "movement",
+				"effect": "+1MNA MVT1",
+				"grid": [[-1,0,"mvt"]]
+			},
+			{
+				"theme": "movement",
+				"effect": "-1MNA MVT2",
+				"grid": [[-1,0,"mvt"], [-2,0,"mvt"]]
+			}]
+		},
+		{
+			"name": "",
+			"details": [{
+				"theme": "movement",
+				"effect": "+1MNA MVT1",
+				"grid": [[0,1,"mvt"]]
+			},
+			{
+				"theme": "movement",
+				"effect": "-1MNA MVT2",
+				"grid": [[0,1,"mvt"], [0,2,"mvt"]]
+			}]
+		},
+		{
+			"name": "",
+			"details": [{
+				"theme": "movement",
+				"effect": "+1MNA MVT1",
+				"grid": [[0,-1,"mvt"]]
+			},
+			{
+				"theme": "movement",
+				"effect": "-1MNA MVT2",
+				"grid": [[0,-1,"mvt"], [0,-2,"mvt"]]
+			}]
+		},
+		{
+			"name": "",
+			"details": [{
+				"theme": "attack",
+				"effect": "-2MNA ATK-1PV",
+				"grid": [[1,0,"atk"], [-1,0,"atk"], [0,1,"atk"], [0,-1,"atk"],
+						 [1,1,"atk"], [1,-1,"atk"], [-1,1,"atk"], [-1,-1,"atk"]]
+			},
+			{
+				"theme": "attack",
+				"effect": "-3MNA ATK-1PV",
+				"grid": [[1,0,"atk"], [-1,0,"atk"], [0,1,"atk"], [0,-1,"atk"],
+						 [1,1,"atk"], [1,-1,"atk"], [-1,1,"atk"], [-1,-1,"atk"],
+						 [2,0,"atk"], [-2,0,"atk"], [0,2,"atk"], [0,-2,"atk"]]
+			}]
+		},
+		{
+			"name": "",
+			"details": [{
+				"theme": "attack",
+				"effect": "-2MNA ATK-3PV",
+				"grid": [[1,0,"atk"], [-1,0,"atk"], [0,1,"atk"], [0,-1,"atk"]]
+			},
+			{
+				"theme": "attack",
+				"effect": "-3MNA ATK-3PV",
+				"grid": [[1,1,"atk"], [1,-1,"atk"], [-1,1,"atk"], [-1,-1,"atk"]]
+			}]
+		},
+		{
+			"name": "",
+			"details": [{
+				"theme": "regeneration",
+				"effect": "+3MNA",
+				"grid": []
+			},
+			{
+				"theme": "defense",
+				"effect": "-1MNA DEF5PV",
+				"grid": []
+			}]
+		},
+		{
+			"name": "",
+			"details": [{
+				"theme": "defense",
+				"effect": "DEF1PV",
+				"grid": []
+			},
+			{
+				"theme": "special",
+				"effect": "-1MNA CTK-1PV DEF1PV",
+				"grid": []
+			}]
+		},
+	]
+};

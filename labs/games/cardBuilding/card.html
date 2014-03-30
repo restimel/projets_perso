@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta chartype="utf-8">
+	<title>Card building</title>
+	<link rel="stylesheet" type="text/css" href="./card.css">
+</head>
+<body>
+<div id="pages"></div>
+
+<script type="text/javascript" src="game.json"></script>
+
+<script type="text/javascript">
+var pages = document.getElementById('pages'),
+	cSize = 100;
+
+function addCard(card){
+	var info = card.details,
+		name = card.name,
+		cardElem = document.createElement('div'),
+		action1 = document.createElement('div'),
+		action2 = document.createElement('div'),
+		area1 = document.createElement('canvas'),
+		area2 = document.createElement('canvas'),
+		effect1 = document.createElement('div'),
+		effect2 = document.createElement('div'),
+		container;
+
+	cardElem.className = 'card';
+	action1.className = 'action1 ' + info[0].theme;
+	action2.className = 'action2 ' + info[1].theme;
+	area1.className = area2.className = 'area';
+	area1.width = area1.height = area2.width = area2.height = cSize;
+	effect1.className = effect2.className = 'effects';
+
+	convertText(info[0].effect, effect1);
+	convertText(info[1].effect, effect2);
+
+	drawGrid(info[0].grid, area1);
+	drawGrid(info[1].grid, area2);
+
+	container = document.createElement('div');
+	container.appendChild(area1);
+	container.appendChild(effect1);
+	action1.appendChild(container);
+	container = document.createElement('div');
+	container.appendChild(effect2);
+	container.appendChild(area2);
+	action2.appendChild(container);
+	cardElem.appendChild(action1);
+	cardElem.appendChild(action2);
+	pages.appendChild(cardElem);
+}
+
+function convertText(text, elem) {
+	var texts = text.split(' '),
+		effect, span;
+
+	if (texts.length > 1) {
+		texts.forEach(function(txt) { convertText(txt, elem);});
+	} else {
+		texts = /^([A-Z]{3})?([+-]?\d)([A-Z]*)$/.exec(text);
+		if(!texts){
+			console.warn('effect could not been generated:', text);
+			return
+		}
+
+		effect = document.createElement('span');
+		if (!texts[1]) {
+			effect.className = 'effect DFL';
+		} else {
+			effect.className = 'effect ' + texts[1];
+		}
+
+		span = document.createElement('span');
+		span.className = texts[3] || '';
+		span.textContent = texts[2];
+		effect.appendChild(span);
+
+		elem.appendChild(effect);
+	}
+}
+
+function drawGrid (grid, canvas) {
+	var ctx = canvas.getContext('2d'),
+		i,
+		gSize = 5, offset = cSize / (gSize + 1),
+		nbCases = grid.length
+		center = offset * (gSize + 1)/2;
+
+	ctx.beginPath();
+	for (i = 0; i < gSize; i++) {
+		ctx.moveTo(offset, offset * (i + 1));
+		ctx.lineTo(cSize - offset, offset * (i + 1));
+
+		ctx.moveTo(offset * (i + 1), offset);
+		ctx.lineTo(offset * (i + 1), cSize - offset);
+	}
+	ctx.stroke();
+
+	ctx.beginPath();
+	ctx.arc(center, center, offset / 4, 0, 2 * Math.PI, false);
+	ctx.fill();
+
+	for (i = 0; i < nbCases; i++) {
+		switch (grid[i][2]) {
+			case 'atk':
+				LocateAtk (ctx, center, grid[i], offset);
+				break;
+			case 'mvt':
+				LocateMvt (ctx, center, grid[i], offset);
+				break;
+			case 'spc':
+				LocateSpecial (ctx, center, grid[i], offset);
+				break;
+			default: 
+				LocateMvt (ctx, center, grid[i], offset);
+		}
+	}
+
+}
+
+function LocateMvt (ctx, center, position, offset) {
+	ctx.save();
+	ctx.beginPath();
+	ctx.arc(center + position[0] * offset, center + position[1] * offset, offset / 3, 0, 2 * Math.PI, false);
+	ctx.strokeStyle = 'rgb(250, 250, 100)';
+	ctx.stroke();
+	ctx.restore();
+}
+
+function LocateAtk (ctx, center, position, offset) {
+	ctx.save();
+	ctx.beginPath();
+	ctx.arc(center + position[0] * offset, center + position[1] * offset, offset / 2.5, 0, 2 * Math.PI, false);
+	ctx.strokeStyle = 'rgb(200, 100, 100)';
+	ctx.stroke();
+	ctx.restore();
+}
+
+function LocateSpecial (ctx, center, position, offset) {
+	ctx.save();
+	ctx.beginPath();
+	ctx.arc(center + position[0] * offset, center + position[1] * offset, offset / 3.5, 0, 2 * Math.PI, false);
+	ctx.strokeStyle = 'rgb(210, 200, 0)';
+	ctx.stroke();
+	ctx.restore();
+}
+
+data.cards.forEach(addCard);
+</script>
+
+</body>
+</html>

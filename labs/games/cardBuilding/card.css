@@ -1,0 +1,132 @@
+.card {
+	width: 67mm; /* 63mm; */
+	height: 92mm; /* 88mm; */
+	border: 2mm solid black;
+	border-radius: 2mm;
+
+	background-color: #FFF;
+	padding:0;
+	display: inline-block;
+}
+
+.attack {
+	background-color: rgb(255, 100, 175);
+}
+.movement {
+	background-color: rgb(175, 100, 255);	
+}
+.defense {
+	background-color: rgb(105, 150, 255);	
+}
+.regeneration {
+	background-color: rgb(100, 255, 175);
+}
+.special {
+	background-color: rgb(150, 155, 155);
+}
+
+.action1, .action2 {
+	margin: 0;
+	height: 50%;
+	position: relative;
+}
+
+.action1>*, .action2>*{
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+.action1>*{
+	background-color: rgba(255, 255, 255, 0.2);
+}
+
+.action2>*{
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+.area {
+	width: 35mm;
+	height: 35mm;
+	margin: 1mm;
+	margin-top: 5.5mm;
+	display: inline-block;
+	background-color: rgba(0,0,0,0.05);
+}
+
+.action1 .area {
+	float: left;
+}
+
+.action2 .area {
+	float: right;
+}
+
+#pages {
+	vertical-align: bottom;
+}
+
+body {
+	/*line-height: 60mm;*/
+	vertical-align: top;
+}
+
+.effects {
+	display: inline-block;
+	width: 30mm;
+	/*line-height: 20mm;*/
+}
+
+.effect {
+	white-space: nowrap;
+	font-weight: bold;
+	display: block;
+	margin-top: 5mm;
+	text-align: center;
+	width: 100%;
+}
+
+/* effect types */
+.ATK:before {
+	content: '\2694';
+	color: rgb(200,100,100);
+}
+
+.DEF:before {
+	content: '\25C6';
+	color: rgb(100,200,100);
+}
+
+.CTK:before {
+	content: '\26A0\2694';
+	color: rgb(200,180,100);
+}
+
+.DFL>span {
+	padding: 0.7mm;
+	border: 0.5mm solid rgb(0,0,0);
+	border-radius: 1cm;
+}
+
+.MVT {
+	color: rgb(250,250,100);
+}
+.MVT:before {
+	content: '\27A0';
+}
+
+/* effect costs */
+.PV{
+	color: rgb(200,10,10);
+}
+.PV:after {
+	content: '\2665';
+}
+
+.MNA{
+	color: rgb(100,200,200);
+}
+.MNA:after{
+	content: '\26A1'; /*⚡';*/
+}
