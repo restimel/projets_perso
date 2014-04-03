@@ -7,6 +7,7 @@
 	background-color: #FFF;
 	padding:0;
 	display: inline-block;
+	line-height: 92mm;
 }
 
 .attack {
@@ -29,6 +30,8 @@
 	margin: 0;
 	height: 50%;
 	position: relative;
+	line-height: 15px;
+	font-size: 15px;
 }
 
 .action1>*, .action2>*{
