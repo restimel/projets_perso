@@ -62,7 +62,7 @@ var data = {
 			},
 			{
 				"theme": "attack",
-				"effect": "-5MNA ATK-1PV",
+				"effect": "-4MNA ATK-1PV",
 				"grid": [[1,0,"atk"], [-1,0,"atk"], [0,1,"atk"], [0,-1,"atk"],
 						 [1,1,"atk"], [1,-1,"atk"], [-1,1,"atk"], [-1,-1,"atk"],
 						 [2,0,"atk"], [-2,0,"atk"], [0,2,"atk"], [0,-2,"atk"]]
@@ -107,5 +107,31 @@ var data = {
 				"grid": []
 			}]
 		},
+		{
+			"name": "",
+			"details": [{
+				"theme": "attack",
+				"effect": "-2MNA ATK-4PV",
+				"grid": [[0,-1,"atk"]]
+			},
+			{
+				"theme": "attack",
+				"effect": "-4MNA ATK-2PV",
+				"grid": [[2,-2,"atk"], [-1,0,"atk"], [0,1,"atk"]]
+			}]
+		},
+		{
+			"name": "",
+			"details": [{
+				"theme": "attack",
+				"effect": "-2MNA ATK-1PV",
+				"grid": [[-2,0,"atk"], [-1,0,"atk"]]
+			},
+			{
+				"theme": "attack",
+				"effect": "-3MNA ATK-2PV DEF1PV",
+				"grid": [[1,-1,"atk"], [1,0,"atk"], [1,1,"atk"]]
+			}]
+		}
 	]
 };
