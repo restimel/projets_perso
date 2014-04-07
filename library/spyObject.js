@@ -126,8 +126,8 @@ function spyObject(obj, prefix, exclude){
 
 	/**
 	 * Generate a timeline collection of method called.
-	 * method that are stored in tree when they are called by another spyed method.
-	 *	  @{Boolean} resetStartTime: if true start property refers to the time since the first call of a method in thi spy
+	 * measurements are stored in tree when they are called by another spyed method.
+	 *	  @{Boolean} resetStartTime: if true start property refers to the time since the first call of a method in this spy
 	 **/
 	spyInterface.timeline = function (resetStartTime){
 		//generate a list of called ordonate in trees
@@ -239,6 +239,9 @@ function spyObject(obj, prefix, exclude){
 		}
 	};
 
+	/**
+	 * Add a measurement with the smallest call. This try to measure performance impact of a spy.
+	 */
 	spyInterface.test = function (){
 		var obj = {
 				v: 0,
@@ -268,28 +271,9 @@ function spyObject(obj, prefix, exclude){
 
 	};
 
-	spyInterface.test = function (){
-		var obj = {
-				v: 0,
-				f: function(){this.v++;},
-				g: function(){this.v++;}
-			},
-			d1, d2,
-			t = performance.now();
-		obj.f();
-		d1 = performance.now() - t;
-		
-		replaceFunc('g', obj, 'TEST');
-		t = performance.now();
-		obj.g();
-		d2 = performance.now() - t;
-
-		obj = perfMeasured.pop();
-
-		console.log('without',d1, 'with',d2, 'measured',obj.value, obj);
-
-	};
-
+	/**
+	 * Reset all measurements
+	 */
 	spyInterface.clear = function(){
 		perfMeasured = [];
 		currentMeasure = [];

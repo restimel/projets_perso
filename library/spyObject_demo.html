@@ -46,32 +46,57 @@ This library is oriented for performance analyzis.<br><br>
 <br>
 <h2>How to use this library?</h2>
 <p>Call the spyObject function, to generate all spies.<br>
-<br>
-<em>To continue...</em>
+	<code>var spy = spyObject(obj, 'object_name');</code>
+It is possible to add spies on other object with <code>spy.add(obj2, 'object_name2');</code>
+Then run the workflow you want to analyze.
 </p>
+<p>You can add custom measure point with spy.start() and spy.stop().</p>
+<p>When your tests are finished you collect information with spy.getPerfCode(). This could be analyzed with <a href="http://b.mariat.free.fr/tools/perfLoading.html">Performance analyzer</a>.</p>
+
 <h3>Methods</h3>
+<h4>Generic configuration</h4>
 <p>
-<em>TODO...</em>
 <ul>
-<li><strong>containerElement</strong>: it is a reference to the container DOM element object. All items will be display in this container.</li>
-<li><strong>"vertical"</strong>: it is the orientation of your scroll. Currently only "vertical" is supported.</li>
-<li><strong>estimatedHeight</strong>: it is an estimation of the height of an item. This value is to give the scrollbar a real appearence. When the item is displayed its real height is then used. This value is a number.</li>
-<li><strong>extraItems</strong>: it is the number of items displayed up and down which is not visible but still in the DOM. This is usefull to avoid items to late. This value is a number.</li>
+<li><strong>spyObject.mode</strong> (string): This defines how measurements will be recorded.
+<ul>
+	<li><em>log</em> [default]: measurements are stored in memory. It could be retrieve with the getPerfCode method. If performance.now API are supported it will be used otherwise JS Date object is used for measurement.</li>
+	<li><em>console</em>: measurements are done in console with console.time. They are not recorded and could not been retrieved either by console.</li>
 </ul>
-<br>
-Methods you can use are:
+</li>
+</ul>
+</p>
+
+<h4>Most important instance methods</h4>
+<p>
 <ul>
-	<li><strong>add(fCreation, fHide, position)</strong>: add a new item to the list<ul>
-		<li><strong>fCreation</strong>: it is a function which is called when the item should be displayed. This function should generate the contents of the item. This function is called in the item element context (the keyword this reffered to the element displayed). The first argument is the position in the list of the displayed item.</li>
-		<li><strong>fHide</strong>: it is a function which is called just before the item would be hidden (and removed from DOM). This function is called in the item element context (the keyword this reffered to the element displayed). The first argument is the position in the list of this item.</li>
-		<li><strong>position</strong>: it is the position where this new item should placed in the list. By default it is put at the end of the list.</li>
+	<li><strong>add(obj, prefix, exclude)</strong>: Add a spy on all object's methods.
+	<ul>
+		<li><em>obj</em> {Object}: object where methods to spy are located.</li>
+		<li><em>prefix</em> {String}: a description of the object.</li>
+		<li><em>exclude</em> {Array[String]}: list of function name to <b>not</b> spy.</li>
 	</ul></li>
-	<li><strong>remove(pst)</strong>: remove an item from the list. The item removed is in return.<ul>
-		<li><strong>pst</strong>: it is the position of the item to be removed.</li>
+	<li><strong>start(name, option)</strong>: Start a measurement.<br>
+		Currently the measurement is only performance log. It is not changing with spyObject.mode.
+	<ul>
+		<li><em>name</em> {String}: name of the measurement.</li>
+		<li><em>option</em> {*}: additional information to put with the measurement.</li>
 	</ul></li>
-	<li><strong>refresh()</strong>: refresh the displayed list</li>
-	<li><strong>move(old_position, new_position)</strong>: move an item from old_position to new_position</li>
-	<li><strong>scrollTo(pst)</strong>: scroll to the item at position pst</li>
+	<li><strong>stop(name)</strong>: Stop a measurement.
+	<ul>
+		<li><em>name</em> {String}: name of the measurement to stop. It should match the name given with method start.</li>
+	</ul></li>
+	<li><strong>test()</strong>: Add a measurement with the smallest call. This try to measure performance impact of a spy.</li>
+	<li><strong>clear()</strong>: Reset all measurements.</li>
+	<li><strong>comment(comment, option)</strong>: Add a comment in the trace log.
+	<ul>
+		<li><em>comment</em> {String}: name/text of the comment.</li>
+		<li><em>option</em> {*}: additional information to put with the comment.</li>
+	</ul></li>
+	<li><strong>getPerfCode(resetStartTime)</strong>: Get the log result of measurements.
+	<ul>
+		<li><em>resetStartTime</em> {Boolean}: If true all time takes as reference the smallest value of all logs.</li>
+	</ul></li>
+	<li><strong>getSpied()</strong>: Get a list of all functions which are currently spied.</li>
 </ul>
 </p>
 </section>
@@ -80,16 +105,7 @@ Methods you can use are:
 	
 	<div id="result"></div><!--this is the container-->
 
-	<fieldset>
-		<legend>Manipulate Object</legend>
-			
-	</fieldset>
-	<fieldset>
-		<legend>Library option</legend>
-			<label>Use the paging library: <input id="genLibrary" type="checkbox" checked></label><br>
-			<label>Number of extra items displayed: <input id="genExtra" type="number" min="0" value="2"></label><br>
-	</fieldset>
-	<button id="generate">Generate list and run library</button>
+	<p>See code to understand how it is generated (at end of the page).</p>
 </fieldset>
 
 <script src="spyObject.js"></script>
@@ -149,7 +165,7 @@ obj.manySubCall();
 
 //Analyze results
 document.getElementById('result').innerHTML = spy.getPerfCode(true);
-spy.test();
+console.log(spy.test());
 </script>
 </body>
 </html>
