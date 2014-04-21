@@ -1,7 +1,7 @@
 var data = {
 	"cards": [
 		{
-			"name": "",
+			"name": "Saut",
 			"details": [{
 				"theme": "movement",
 				"effect": "+1MNA MVT1",
@@ -14,7 +14,7 @@ var data = {
 			}]
 		},
 		{
-			"name": "",
+			"name": "Saut",
 			"details": [{
 				"theme": "movement",
 				"effect": "+1MNA MVT1",
@@ -27,7 +27,7 @@ var data = {
 			}]
 		},
 		{
-			"name": "",
+			"name": "Saut",
 			"details": [{
 				"theme": "movement",
 				"effect": "+1MNA MVT1",
@@ -40,7 +40,7 @@ var data = {
 			}]
 		},
 		{
-			"name": "",
+			"name": "Saut",
 			"details": [{
 				"theme": "movement",
 				"effect": "+1MNA MVT1",
@@ -53,7 +53,7 @@ var data = {
 			}]
 		},
 		{
-			"name": "",
+			"name": "Attaque circulaire",
 			"details": [{
 				"theme": "attack",
 				"effect": "-3MNA ATK-1PV",
@@ -69,7 +69,7 @@ var data = {
 			}]
 		},
 		{
-			"name": "",
+			"name": "Attaque de proximité",
 			"details": [{
 				"theme": "attack",
 				"effect": "-3MNA ATK-3PV",
@@ -82,7 +82,7 @@ var data = {
 			}]
 		},
 		{
-			"name": "",
+			"name": "Concentration",
 			"details": [{
 				"theme": "regeneration",
 				"effect": "+4MNA",
@@ -95,7 +95,7 @@ var data = {
 			}]
 		},
 		{
-			"name": "",
+			"name": "Coup fourré",
 			"details": [{
 				"theme": "defense",
 				"effect": "DEF1PV",
@@ -108,7 +108,7 @@ var data = {
 			}]
 		},
 		{
-			"name": "",
+			"name": "Attaque précise",
 			"details": [{
 				"theme": "attack",
 				"effect": "-2MNA ATK-4PV",
@@ -121,7 +121,7 @@ var data = {
 			}]
 		},
 		{
-			"name": "",
+			"name": "Coup de pied retourné",
 			"details": [{
 				"theme": "attack",
 				"effect": "-2MNA ATK-1PV",

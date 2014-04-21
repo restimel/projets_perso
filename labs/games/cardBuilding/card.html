@@ -18,6 +18,7 @@ function addCard(card){
 	var info = card.details,
 		name = card.name,
 		cardElem = document.createElement('div'),
+		titleElem = document.createElement('header'),
 		action1 = document.createElement('div'),
 		action2 = document.createElement('div'),
 		area1 = document.createElement('canvas'),
@@ -27,11 +28,14 @@ function addCard(card){
 		container;
 
 	cardElem.className = 'card';
+	titleElem.className = 'title';
 	action1.className = 'action1 ' + info[0].theme;
 	action2.className = 'action2 ' + info[1].theme;
 	area1.className = area2.className = 'area';
 	area1.width = area1.height = area2.width = area2.height = cSize;
 	effect1.className = effect2.className = 'effects';
+
+	titleElem.textContent = name;
 
 	convertText(info[0].effect, effect1);
 	convertText(info[1].effect, effect2);
@@ -47,6 +51,7 @@ function addCard(card){
 	container.appendChild(effect2);
 	container.appendChild(area2);
 	action2.appendChild(container);
+	cardElem.appendChild(titleElem);
 	cardElem.appendChild(action1);
 	cardElem.appendChild(action2);
 	pages.appendChild(cardElem);
@@ -147,7 +152,9 @@ function LocateSpecial (ctx, center, position, offset) {
 	ctx.restore();
 }
 
-data.cards.forEach(addCard);
+for(var i = 2; i>0; i--) {
+	data.cards.forEach(addCard);
+}
 </script>
 
 </body>

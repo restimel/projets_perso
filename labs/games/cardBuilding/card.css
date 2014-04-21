@@ -1,6 +1,6 @@
 .card {
-	width: 67mm; /* 63mm; */
-	height: 92mm; /* 88mm; */
+	width: 63mm; /* 67mm; */
+	height: 88mm; /* 92mm; */
 	border: 2mm solid black;
 	border-radius: 2mm;
 
@@ -26,9 +26,17 @@
 	background-color: rgb(150, 155, 155);
 }
 
+.title {
+	height: 10mm;
+	width: 59mm;
+	font-weight: bold;
+	line-height: 10mm;
+	text-align: center;
+}
+
 .action1, .action2 {
 	margin: 0;
-	height: 50%;
+	height: 40mm;
 	position: relative;
 	line-height: 15px;
 	font-size: 15px;
@@ -51,7 +59,7 @@
 
 .area {
 	width: 35mm;
-	height: 35mm;
+	height: 30mm;
 	margin: 1mm;
 	margin-top: 5.5mm;
 	display: inline-block;
