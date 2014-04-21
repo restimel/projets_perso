@@ -2,7 +2,7 @@
 	{
 		"n": "Goban",
 		"p": 0,
-		"d": "Grille où se déroule la partie. Lorsqu'elles sont jouées, les pierres sont placées sur le goban. Ce terme désigne principalement le plateau de jeu où se trouve cette grille.",
+		"d": "Plateau où se déroule la partie . Sur le goban une grille indique l'espace de jeu. Les pierres sont placées sur le goban lorsqu'elles sont jouées.",
 		"e": "En japonais, goban (碁盤) signifie plateau de Go (盤, ban = plateau).",
 		"r": [],
 		"i":[]
@@ -122,6 +122,16 @@
 		"e": "Terme japonais (棋譜) utilisé tel quel en français et en anglais, il est aussi utilisé pour le shogi. Ce mot est originaire de chine 棋谱 (qípǔ).",
 		"r": [
 			"goban"
+		],
+		"i":["comptage"]
+	},
+	{
+		"n": "Territoire",
+		"p": 0,
+		"d": "Espace qui n'est entouré que par un seul joueur (ou alors toutes les pierres adverse présentes sont considérées comme morte). Chaque intersection d'un territoire rapporte 1 point à son propriétaire.",
+		"e": "",
+		"r": [
+			"goban","comptage"
 		],
 		"i":["comptage"]
 	}

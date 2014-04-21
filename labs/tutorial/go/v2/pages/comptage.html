@@ -29,55 +29,146 @@
 	Le comptage a lieu une fois que les deux joueurs se sont mis d'accord sur les groupes morts et vivants. Les groupes morts sont alors retirés du jeu et ajoutés aux prisonniers.
 </p>
 
+<p>Le même gagnant sera désigné quelque soit la méthode utilisée (sauf exception très particulière et très rare). Par contre le score calculé peut légèrement varié selon le contexte de la fin de partie.
+</p>
+
 <section id="comptageJaponais">
 	<header><h3>Méthode de comptage Japonais</h3></header>
 	<p>Cette méthode permet de compter facilement le score de chaque joueur basé sur leur territoire et leurs prisonniers.</p>
 
 	<p>Cette approche se base sur deux principes&nbsp;:
 		<ol>
-			<li>Un prisionnier vaut un point et une intersection de territoire vaut aussi un point. Donc placer un de ses prisonniers dans le territoire adverse enlève un point à chaque joueur et ne change pas le résultat final.</li>
+			<li>Un prisonnier vaut un point et une intersection de territoire vaut aussi un point. Donc placer un de ses prisonniers dans le territoire adverse enlève un point à chaque joueur et ne change pas le résultat final.</li>
 			<li>Déplacer une pierre située dans son territoire pour la mettre ailleurs dans son territoire ne change pas la taille du territoire.</li>
 		</ol>
 	</p>
 
 	<p>
-		La méthode consiste donc à ajouté les prisonniers dans le territoire adverse.
+		On commence par ajouter les prisonniers dans le territoire adverse.
 		<figure>
-			<header>Position après avoir ajouter les prisonniers</header>
+			<header>Position après avoir ajouté les prisonniers</header>
 			<img src="./images/comptage_prisonniers.png" alt="Ajout des prisonniers">
 			<figcaption>
 				Noir ajoute son prisonnier dans le territoire blanc.<br>
-				Blanc ajoute ses 2 prisonniers dans le territoires noir.
+				Blanc ajoute ses 2 prisonniers dans le territoire noir.
 			</figcaption>
 		</figure>
 	</p>
 	<p>
-		Puis à arranger le territoire de chaque joueurs pour réaliser des rectangles qui seront plus facilement comptable. On essaie généralement de réaliser des rectangles regroupant des multiples de 10 points.
+		Puis à arranger le territoire de chaque joueur pour réaliser des rectangles qui seront plus facilement comptables. On essaie généralement de réaliser des rectangles regroupant des multiples de 10 points.
 		<figure>
-			<header>Position après avoir arrangé les territoires</header>
-			<img src="./images/comptage_deplacement.png" alt="Arrangement des territoires">
+			<header>Arrangement du territoire</header>
+			<img src="./images/comptage_deplacement.png" alt="Arrangement des territoires noir et blanc">
 			<figcaption>
-				Pour noir, une zone de 10 points (2×5) a été réalisé en bas pour en bas et une autre de 7 points (3×2 +1) en haut.<br>
+				Pour noir, une zone de 10 points (2×5) a été réalisé en bas et une autre de 7 points (3×2 +1) en haut.<br>
 				Pour blanc, une seule zone de 12 points (3×4) a été crée en haut à droite.
 			</figcaption>
 		</figure>
 	</p>
 	<p>
-		Il suffit maintenant de compter les points.<br>
-		Noir possède 17 points (10 + 7).<br>
-		Blanc possède 12 points + 5½ de komi. Ce qui fait 17½ pour blanc.
+		Il suffit maintenant de compter les points, il ne faut pas oublier le komi qui est ajouté au score de blanc.
+		<figure>
+			<header>Comptage du territoire</header>
+			<img src="./images/comptage_japonais.png" alt="Arrangement des territoires noir et blanc">
+			<figcaption>
+				Noir possède 17 points (10 + 7).<br>
+				Blanc possède 12 points + 5½ de komi. Ce qui fait 17½ pour blanc.
+			</figcaption>
+		</figure>
 	</p>
 	<p>
-		On peut donc en déduire que Blanc a gagné d'un demi point.
+		On peut donc en déduire que Blanc a gagné d'un demi-point.
 	</p>
 </section>
 
 <section id="comptageChinois">
 	<header><h3>Méthode de comptage Chinois</h3></header>
-	<p>A venir prochainement (j'espère...).</p>
+	<p>Cette méthode permet de compter facilement le score de chaque joueur basé sur leur territoire et leurs pierres encore présentes sur le Goban.<br>
+	Cette méthode à l'avantage de ne pas dépendre des prisonniers. Ainsi si un joueur a rangé ses prisonniers dans le bol adverse, il est toujours possible de finir la partie et de connaitre le résultat.</p>
+
+	<p>Cette approche se base sur deux principes&nbsp;:
+		<ol>
+			<li>À la fin de la partie chaque intersection appartient soit à noir, soit à blanc.</li>
+			<li>Pour avoir plus de points que son adversaire, il suffit de contrôler plus d'intersections que lui. Il faut donc en contrôler plus que la moitié du jeu.</li>
+		</ol>
+	</p>
+	
+	<p>
+		On commence par choisir une couleur (blanc ou noir) et on remplit tous ses territoires avec des pierres.
+		<figure>
+			<header>Position après avoir remplit les territoires de blanc</header>
+			<img src="./images/comptage_remplissage.png" alt="Remplissage des territoires de blanc">
+			<figcaption>
+				Toutes les intersections libres du territoires blanc sont remplacées par des pierres.
+			</figcaption>
+		</figure>
+	</p>
+	
+	<p>
+		On retire ensuite toute sles pierres de la couleur adverse.
+		<figure>
+			<header>Position après avoir retiré les pierres noires</header>
+			<img src="./images/comptage_enlevement.png" alt="Retraits despierres noires">
+			<figcaption>
+				Toutes les pierres noires sont retirées du jeu.
+			</figcaption>
+		</figure>
+	</p>
+	
+	<p>
+		On regroupe toutes les pierres restantes sur une moitié du goban.<br>
+		Si ces pierres dépassent le centre du goban c'est que ce joueur dispose de plus de points que son adversaire. Dans le cas où la partie se joue avec un komi, il faut compter le score de chacun pour établir la différence.
+		<figure>
+			<header>Position après avoir regroupées les pierres blanches</header>
+			<img src="./images/comptage_chinois.png" alt="Retraits despierres noires">
+			<figcaption>
+				Les pierres blanches n'atteignent pas le centre (il manque 3 intersections). Cela signifie que noir a plus de points que blanc.<br>
+				Toutefois la partie se joue avec un komi, on doit donc compter l'écart de points.<br>
+				<section><header>1ere méthode: comptage du score de chacun</header>
+				Blanc possède 4×9 + 2 = 38 points, auquel il faut ajouter le komi de 5½. Ce qui donne donc 43½ points.<br>
+				Noir possède le reste soit 5×9 - 2 = 43 points.
+				</section>
+				<section><header>2eme méthode: comptage de l'écart</header>
+				On compte le nombre de pierre manquant pour arriver au tengen, donc ici 2.<br>
+				On multiplie ce score par 2 et on ajoute 1 (le tengen).<br>
+				L'avantage de noir est donc de 2×2 + 1 = 5. Or le komi est de 5½, donc blanc gagne d'un demi point.
+				</section>
+			</figcaption>
+		</figure>
+	</p>
 </section>
 
 <section id="comptageING">
 	<header><h3>Méthode de comptage ING</h3></header>
-	<p>A venir prochainement (j'espère...).</p>
+	<p>Cette méthode est une variante de la méthode chinoise. Elle demande de jouer la partie avec un nombre de pierre égale à la moitié du goban (donc 40 pour un goban 9×9, 180 pierres pour un goban 19×19).</p>
+	<p>À la fin de la partie, chaque joueur remplit ses territoires avec le reste de ses pierres.<br>
+	Celui qui arrive à placer toutes ses pierres possèdent plus de point que son adversaire.</p>
+	<p>Pour compter l'écart de points, il suffit d'appliquer le même calcul que précédement. On multiplie par 2 le nombre de pierres restante et on ajoute 1. Ce résultat donne l'écart de point dans le jeu.<br>
+	On ajoute ou soustrait le komi à ce résultat pour obtenir le score final de la partie.</p>
+	<p>Il est assez pénible de devoir compter les pierres avant une partie (surtout s'il faut en compter 180). Un matériel adapté, comme un bol ING, permet de réaliser ce comptage facilement. Un bol ING permet de ranger exactement 180 pierres.<br>
+	Dans des situations où un groupe de pierres est mort mais n'est pas encore capturé, il peut arriver que l'on épuise le nombre total de pierres avant la fin de la partie sans pour autant garantir que ce joueur gagne.<br>
+	Pour ces raisons cette méthode est assez rarement utilisée bien que ce soit la méthode de comptage la plus rapide.</p>
+</section>
+
+<section id="comptageNaive">
+	<header><h3>Méthode naïve</h3></header>
+	<p>Cette méthode est relativement simple et est très adaptée aux débutants. Elle est toutefois particulièrement longue et n'est pas adapté lorsque qu'il y a un komi. De plus, dans certaines situations, elle peut mener à un résultat contraire aux précédentes méthodes de comptage.<br>
+	Elle n'est donc jamais utilisée par les joueurs de Go.<br>
+	</p>
+
+	<p>Cette approche se base sur un seul principe&nbsp;:
+		<ol>
+			<li>Celui qui a le plus de points est celui qui a le plus d'espace libre disponible.</li>
+		</ol>
+	</p>
+	
+	<p>La méthode est très simple: les joueurs ne passent pas et continuent de jouer jusqu'à ce qu'un joueur soit complètement éliminé du jeu.<br>
+		Les joueurs continuent donc de jouer dans leurs territoires jusqu'à ce que l'un se fasse capturer. À ce stade, il n'est normalement pas nécessaire de continuer car celui qui vient de capturer devrait l'emporter.
+	</p>
+	
+	<p>L'avantage de cette méthode est qu'elle permet aux débutants de ne pas se soucier des groupes morts qui persistent en fin de partie. De plus les débutants ont très souvent du mal à distinguer ce qui marque la fin d'une partie (il n'y a plus de points à prendre).
+	</p>
+	
+	<p>Cette méthode a le gros inconvénient d'être très longue. Il faut jouer sur toutes les intersections du jeu (voir plusieurs fois dessus si on veut aller jusqu'à capturer toutes les pierres). Ce qui signifie environ 80 coups pour une partie en 9×9, alors que les joueurs de la partie de référence en n'ont joué qu'une cinquantaine.
+	</p>
 </section>

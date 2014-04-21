@@ -59,7 +59,7 @@ function spyObject(obj, prefix, exclude){
 			case 'console': replaceFuncConsole(f, obj, prefix); break;
 			case 'log':
 			default:
-				if(!performance || !performance.now){
+				if(typeof performance === 'undefined' || !performance.now){
 					replaceFuncLogDate(f, obj, prefix);
 				}else{
 					replaceFuncLog(f, obj, prefix); break;
@@ -126,8 +126,8 @@ function spyObject(obj, prefix, exclude){
 
 	/**
 	 * Generate a timeline collection of method called.
-	 * method that are stored in tree when they are called by another spyed method.
-	 *	  @{Boolean} resetStartTime: if true start property refers to the time since the first call of a method in thi spy
+	 * measurements are stored in tree when they are called by another spyed method.
+	 *	  @{Boolean} resetStartTime: if true start property refers to the time since the first call of a method in this spy
 	 **/
 	spyInterface.timeline = function (resetStartTime){
 		//generate a list of called ordonate in trees
@@ -215,81 +215,120 @@ function spyObject(obj, prefix, exclude){
 	 * 		@{String} name: name of the measurement
 	 *		@{Any} option: additional information to put with the measurement
 	 */
-	spyInterface.start = function(name, option){
-		var obj = {
-				name: name,
-				option: option
-			};
+	if (typeof performance !== 'undefined') {
+		spyInterface.start = function(name, option){
+			var obj = {
+					name: name,
+					option: option
+				};
 
-		currentMeasure.push(obj);
+			currentMeasure.push(obj);
 
-		obj.start = performance.now();
-	};
+			obj.start = performance.now();
+		};
+	} else {
+		//fallback
+		spyInterface.start = function(name, option){
+			var obj = {
+					name: name,
+					option: option
+				};
+
+			currentMeasure.push(obj);
+
+			obj.start = (new Date()).getTime();
+		};
+	}
 
 	/**
 	 * Stop a measurement
 	 *		@{String} name: name of the measurement to stop. It should match the name given with method start
 	 */
-	spyInterface.stop = function(name){
-		var t = performance.now(),
-			obj = getLastMeasure(name);
-		if(obj){
-			obj.value = t - obj.start;
-			perfMeasured.push(obj);
-		}
-	};
-
-	spyInterface.test = function (){
-		var obj = {
-				v: 0,
-				f: function(){this.v++;},
-				g: function(){this.v++;}
-			},
-			d1, d2,
-			t = performance.now();
-		obj.f();
-		d1 = performance.now() - t;
-
-		replaceFunc('g', obj, 'TEST');
-		t = performance.now();
-		obj.g();
-		d2 = performance.now() - t;
-
-		if(spyObject.mode !== 'console'){
-			obj = perfMeasured.pop();
-		}else{
-			obj.value = NaN;
-		}
-
-		return {
-			precision: obj.value - d1,
-			timeInSpy: d2 - d1
+	if (typeof performance !== 'undefined') {
+		spyInterface.stop = function(name){
+			var t = performance.now(),
+				obj = getLastMeasure(name);
+			if(obj){
+				obj.value = t - obj.start;
+				perfMeasured.push(obj);
+			}
 		};
+	} else {
+		spyInterface.stop = function(name){
+			var t = (new Date()).getTime(),
+				obj = getLastMeasure(name);
+			if(obj){
+				obj.value = t - obj.start;
+				perfMeasured.push(obj);
+			}
+		};
+	}
 
-	};
+	/**
+	 * Add a measurement with the smallest call. This try to measure performance impact of a spy.
+	 */
+	if (typeof performance !== 'undefined') {
+		spyInterface.test = function (){
+			var obj = {
+					v: 0,
+					f: function(){this.v++;},
+					g: function(){this.v++;}
+				},
+				d1, d2,
+				t = performance.now();
+			obj.f();
+			d1 = performance.now() - t;
 
-	spyInterface.test = function (){
-		var obj = {
-				v: 0,
-				f: function(){this.v++;},
-				g: function(){this.v++;}
-			},
-			d1, d2,
+			replaceFunc('g', obj, 'TEST');
 			t = performance.now();
-		obj.f();
-		d1 = performance.now() - t;
-		
-		replaceFunc('g', obj, 'TEST');
-		t = performance.now();
-		obj.g();
-		d2 = performance.now() - t;
+			obj.g();
+			d2 = performance.now() - t;
 
-		obj = perfMeasured.pop();
+			if(spyObject.mode !== 'console'){
+				obj = perfMeasured.pop();
+			}else{
+				obj.value = NaN;
+			}
 
-		console.log('without',d1, 'with',d2, 'measured',obj.value, obj);
+			return {
+				precision: obj.value - d1,
+				timeInSpy: d2 - d1
+			};
+		};
+	} else {
+		//fallback
+		spyInterface.test = function (){
+			var obj = {
+					v: 0,
+					f: function(){this.v++;},
+					g: function(){this.v++;}
+				},
+				d1, d2,
+				t = (new Date()).getTime();
+			obj.f();
+			d1 = (new Date()).getTime() - t;
 
-	};
+			replaceFunc('g', obj, 'TEST');
+			t = (new Date()).getTime();
+			obj.g();
+			d2 = (new Date()).getTime() - t;
 
+			if(spyObject.mode !== 'console'){
+				obj = perfMeasured.pop();
+			}else{
+				obj.value = NaN;
+			}
+
+			return {
+				precision: obj.value - d1,
+				timeInSpy: d2 - d1
+			};
+		};
+	}
+
+	/**
+	 * Reset all measurements
+	 */
 	spyInterface.clear = function(){
 		perfMeasured = [];
 		currentMeasure = [];
@@ -297,6 +336,7 @@ function spyObject(obj, prefix, exclude){
 
 	/**
 	 * Add a comment in the trace log
+	 * This is currently only supported with performance API
 	 *		@{String} comment: name/text of the comment
 	 *		@{Any} option: additional information to put with the comment
 	 */
@@ -309,6 +349,10 @@ function spyObject(obj, prefix, exclude){
 		});
 	};
 	
+	/**
+	 * Get the log result of measurements
+	 *		@{Boolean} resetStartTime: If true all time takes as reference the smallest value of all logs.
+	 */
 	spyInterface.getPerfCode = function(resetStartTime){
 		var info = [], i, obj,
 			stat = spyInterface.statistic();
