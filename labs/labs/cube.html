@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Cube 3D CSS</title>
+</head>
+<body>
+
+<style>
+
+/* Grid layout */
+.cube-shadow {
+   opacity: 0.6;
+	z-index: 1;
+	width: 400px;
+	height: 400px;
+	-webkit-transform-style: preserve-3d;
+   -o-transform-style: preserve-3d;
+   -moz-transform-style: preserve-3d;
+   -ms-transform-style: preserve-3d;
+   transform-style: preserve-3d;
+   -webkit-transform: translateX(-50px) translateY(-220px) rotateX(-135deg);
+   -o-transform: translateX(-50px) translateY(-200px) rotateX(-135deg);
+   -moz-transform: translateX(-50px) translateY(-200px) rotateX(-135deg);
+   -ms-transform: translateX(-50px) translateY(-200px) rotateX(-135deg);
+   transform: translateX(-50px) translateY(-200px) rotateX(-135deg);
+}
+
+.cube-shadow table {
+	border-collapse: collapse;
+}
+.cube-shadow td{
+   border: 5px solid black;
+   width: 85px;
+   height: 85px;
+}
+
+
+/* The global container is where the perpsective is defined for 3D transformations. It is initialzed with CSS styles perspective and perspective-origin. */
+#container{
+   width: position: relative;
+   width: 400px;
+   height: 400px;
+   margin: 0px auto;
+   -webkit-perspective: 1000px;
+   -webkit-perspective-origin: 50% 50%;
+   -moz-perspective: 1000px;
+   -moz-perspective-origin: 50% 50%;
+   -o-perspective: 1000px;
+   -o-perspective-origin: 50% 50%;
+   perspective: 1000px;
+   perspective-origin: 50% 50%;
+   
+   -webkit-transform: scale(0.6);
+   -moz-transform: scale(0.6);
+   -o-transform: scale(0.6);
+   -ms-transform: scale(0.6);
+   transform: scale(0.6);
+}
+
+/* Build the cube */
+
+/* the cube */
+.cube{
+	z-index: 2;
+	position: relative;
+	width: 300px;
+	height: 300px;
+	-webkit-transform-style: preserve-3d;
+	-moz-transform-style: preserve-3d;
+	-o-transform-style: preserve-3d;
+	-ms-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+}
+
+/* the faces */
+.face{
+	width: 300px;
+	height: 300px;
+	position: absolute;
+	text-align: center;
+	font-size: 80px;
+	font-size: 40px;
+	opacity: 0.85;
+	border: solid 4px black;
+	background-color: rgb(0, 150, 255);
+	box-shadow: 0 0 150px 0 rgba(0,0,0,0.5) inset;
+	overflow: hidden;
+}
+
+.side1{
+   	opacity: 0.95;
+    -webkit-transform: translateZ(150px);
+    -moz-transform: translateZ(150px);
+    -o-transform: translateZ(150px);
+    -ms-transform: translateZ(150px);
+    transform: translateZ(150px);
+    z-index: 10;
+}
+.side2{
+    -webkit-transform: translateX(150px) rotateY(90deg);
+    -moz-transform: translateX(150px) rotateY(90deg);
+    -o-transform: translateX(150px) rotateY(90deg);
+    -ms-transform: translateX(150px) rotateY(90deg);
+    transform: translateX(150px) rotateY(90deg);
+    z-index: 10;
+}
+.side3{
+	-webkit-transform: translateX(-150px) rotateY(-90deg);
+	-moz-transform: translateX(-150px) rotateY(-90deg);
+	-o-transform: translateX(-150px) rotateY(-90deg);
+	-ms-transform: translateX(-150px) rotateY(-90deg);
+	transform: translateX(-150px) rotateY(-90deg);
+}
+.side4{
+	-webkit-transform: translateY(150px) rotateX(-90deg);
+	-moz-transform: translateY(150px) rotateX(-90deg);
+	-o-transform: translateY(150px) rotateX(-90deg);
+	-ms-transform: translateY(150px) rotateX(-90deg);
+	transform: translateY(150px) rotateX(-90deg);
+}
+.side5{
+	-webkit-transform: translateY(-150px) rotateX(90deg);
+	-moz-transform: translateY(-150px) rotateX(90deg);
+	-o-transform: translateY(-150px) rotateX(90deg);
+	-ms-transform: translateY(-150px) rotateX(90deg);
+	transform: translateY(-150px) rotateX(90deg);
+ }
+.side6{
+	-webkit-transform: translateZ(-150px) rotateX(180deg) rotateZ(180deg);
+	-moz-transform: translateZ(-150px) rotateX(180deg) rotateZ(180deg);
+	-o-transform: translateZ(-150px) rotateX(180deg) rotateZ(180deg);
+	-ms-transform: translateZ(-150px) rotateX(180deg) rotateZ(180deg);
+	transform: translateZ(-150px) rotateX(180deg) rotateZ(180deg);
+ }
+
+ /* Some styling on sides for the demo */
+ .side1 {
+ 	font-size: 30px;
+ }
+ .side1 header{
+ 	font-size: 35px;
+ 	font-weight: bold;
+ }
+
+ .side5 a{
+ 	position: absolute;
+	top: 25%;
+	left: 0;
+ }
+
+ #cubeColor[value="red"] + .cube .face {
+ 	background-color: red;
+ }
+ #cubeColor[value="green"] + .cube .face {
+ 	background-color: green;
+ }
+ #cubeColor[value="yellow"] + .cube .face {
+ 	background-color: yellow;
+ }
+ #cubeColor[value="cyan"] + .cube .face {
+ 	background-color: cyan;
+ }
+ #cubeColor[value="purple"] + .cube .face {
+ 	background-color: purple;
+ }
+
+ input {
+ 	cursor: pointer;
+ }
+
+/* Controls */
+.control {
+	position: absolute;
+	bottom: 0;
+	margin: auto;
+}
+
+</style>
+
+<div id="container">
+	<input type="hidden" id="cubeColor" value="">
+	<div class="cube">
+		<div class="face side6">
+			<img src="img/smiley.png" alt="smiley">
+		</div><!--back-->
+		<div class="face side5">
+			<a href="https://github.com/restimel" target="_blank">Visit my Github page!</a>
+		</div>
+		<div class="face side4">
+		</div>
+		<div class="face side3">
+			<fieldset>
+				<legend>Cube color</legend>
+				<label><input type="radio" name="cubeColor" value="red">red</label><br>
+				<label><input type="radio" name="cubeColor" value="green">green</label><br>
+				<label><input type="radio" name="cubeColor" value="yellow">yellow</label><br>
+				<label><input type="radio" name="cubeColor" value="cyan">cyan</label><br>
+				<label><input type="radio" name="cubeColor" value="purple">purple</label><br>
+			</fieldset>
+		</div> <!--left-->
+		<div class="face side2">
+			<header>Rotation</header>
+	      	<div>X: <output class="vx"></output></div>
+	      	<div>Y: <output class="vy"></output></div>
+	      	<div>Z: <output class="vz"></output></div>
+		</div><!--right-->
+		<div class="face side1">
+			<header>Welcome on this demo</header>
+			<p>This cube is built only in <b>HTML</b> and <b>CSS</b>.<br>
+			As you can see on its different sides there are some HTML features.
+			</p>
+			</div><!--front-->
+	</div>
+	<div class="cube-shadow">
+		<table>
+			<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+			<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+			<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+			<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+			<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+			<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+		</table>
+	</div>
+</div>
+
+
+<div class="control">
+	<label>X: <input type="range" value="0" min="0" max="360" oninput="changePosition('x', this.value)"></label> <output class="vx"></output><br>
+	<label>Y: <input type="range" value="0" min="0" max="360" oninput="changePosition('y', this.value)"></label> <output class="vy"></output><br>
+	<label>Z: <input type="range" value="0" min="0" max="360" oninput="changePosition('z', this.value)"></label> <output class="vz"></output><br>
+</div>
+
+<script>
+	var position = {
+		x: 15,
+		y: 15,
+		z: 15
+	}
+	var cube = document.querySelector('.cube');
+
+	function changeText(className, value) {
+		Array.prototype.forEach.call(document.querySelectorAll('.' + className), function(el) {
+			el.textContent = value;
+		});
+	}
+
+	function changePosition(param, value) {
+		position[param] = value;
+		changeText('v' + param, value + '°');
+
+		rotate();
+	}
+
+	function rotate() {
+		var transform = 'rotateX('+ position.x +'deg)  rotateY('+ position.y +'deg) rotateZ('+ position.z +'deg)';
+
+		cube.style.WebkitTransform = transform;
+	}
+
+	for(var x in position) {
+		changePosition(x, position[x]);
+	}
+
+	Array.prototype.forEach.call(document.querySelectorAll('input[name="cubeColor"'), function(el) {
+		el.onchange = function() {
+			document.getElementById('cubeColor').value = this.value;
+		};
+	});
+
+</script>
+
+</body>
+</html>
