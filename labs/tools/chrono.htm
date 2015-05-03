@@ -13,17 +13,52 @@
 </style>
 </head>
 <body>
-<section id="corps">
-	<div id="result">Time: 0 ms</div>
-	<hr>
-	<button id="play" title="(re)start">&gt;</button> - <button id="pause" title="pause">||</button> - <button id="stop" title="stop">&#9632;</button> - <button id="record" title="record this timestamp">&#9679;</button>
-	<hr>
-	<div id="test"></div>
-	<hr>
-	<div id="chrono.htm"></div>
-</section>
+	<details>
+		<summary>
+			Configuration
+		</summary>
+		TODO...
+		<fieldset>
+			<legend>KeyBoard</legend>
+			<label>Waiting time before start: <input type="number" value="15000">ms</label>
+			<label>Number of steps: <input type="number" value="3" title="It stops after 3 hits"></label>
+			<label>Keyboard for action: <input type="text"></label>
+		</fieldset>
+		<fieldset>
+			<legend>Chronometer</legend>
+			<label>Start time: <input type="number" value="0"></label>
+			<fieldset>
+				<legend>Order</legend>
+				<label><input type="radio" name="order" value="1" checked>Increment</label>
+				<label><input type="radio" name="order" value="-1">Decrement</label>
+			</fieldset>
+	</details>
+	<section id="corps">
+		<div id="result">Time: 0 ms</div>
+		<hr>
+		<button id="play" title="(re)start">&gt;</button> - <button id="pause" title="pause">||</button> - <button id="stop" title="stop">&#9632;</button> - <button id="record" title="record this timestamp">&#9679;</button>
+		<hr>
+		<div id="test"></div>
+		<hr>
+		<div id="chrono.htm"></div>
+	</section>
 
 <script type="text/javascript">
+/*
+	TODO:
+		* Design graphique
+			- Chrono digital
+			- Better look
+		* Sauvegarde
+			- config
+			- Records
+			- Nom des enregistrmeents intermédiaires
+		* Configuration
+			- mapper config avec les actions utilisateur
+		* Affichage
+			/ séparation heure/min/secondes/ms
+			- renaming des elements
+*/
 var pause=-1; // -1:arret; 0:play; 1:pause
 var temps=0; // temps accumulé
 var d = new Date();
@@ -37,6 +72,34 @@ var nextAction = null;
 
 function getTime(partial) {
 	return (Date.now() - d) * config.sens + ( partial ? 0 : temps);
+}
+
+function formatTime(time, mode) {
+	var order = time >= 0;
+		t = order ? time : -time,
+		ms = t % 1000,
+		s = Math.floor(t / 1000 % 60),
+		min = Math.floor(t / 60000 % 60),
+		h = Math.floor(t / 3600000),
+		format = '[H]h [min]min [s]s [ms]ms',
+		text = format.replace(/\[([^\]]+)]/g, function(_, c) {
+			switch(c) {
+				case 'H': return h;
+				case 'min': return min;
+				case 's': return s;
+				case 'ms': return ms;
+				case 'Min': return h*60 + min;
+				case 'S': return h*3600 + min*60 + s;
+				case 'Ms': return t;
+				default: return '?';
+			}
+		}).replace(/\b0\w+\s?/g, '');
+
+	if (!order) {
+		text = '-' + text;
+	}
+
+	return text;
 }
 
 function change_state(state){
@@ -55,7 +118,7 @@ function change_state(state){
 			}
 			if(temps){
 				pause=-1;
-				document.getElementById('test').innerHTML+="<br>Stop: "+temps+" ms";
+				document.getElementById('test').innerHTML+="<br>Stop: "+formatTime(temps);
 				temps=0;
 				document.getElementById('result').innerHTML="Time: "+temps+" ms";
 			}
@@ -64,13 +127,13 @@ function change_state(state){
 			if(!pause){
 				temps += getTime(true);
 				pause=1;
-				document.getElementById('test').innerHTML+="<br>pause: "+temps+" ms";
+				document.getElementById('test').innerHTML+="<br>pause: "+formatTime(temps);
 				document.getElementById('result').innerHTML="Time: "+temps+" ms";
 			}
 			break;
 		case 3:	//record
 			if(!pause){
-				document.getElementById('test').innerHTML+="<br>record: "+ getTime(false) +" ms";
+				document.getElementById('test').innerHTML+="<br>record: "+ formatTime(getTime(false));
 			}
 			break;
 		default:

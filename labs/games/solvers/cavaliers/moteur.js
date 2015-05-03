@@ -80,6 +80,9 @@ function Game_shot(tab,position,distanceC,parent){
 	this.distanceE=this.estimate(); //distance total estimée pour atteindre la fin (cout actuel + estimation pour atteindre la fin)
 	this.parent=parent||null; //objet parent
 
+	// for cavalier optimisation
+	this.tab.cost = this.distanceC;
+
 	this.tab[position[0]][position[1]] = 1;
 }
 Game_shot.prototype.target=0; //position de l'arrivée
@@ -171,6 +174,10 @@ Game_shot.prototype.get_next=function(){
 
 
 Game_shot.prototype.compare=function(tab){
+	if (tab.cost !== this.tab.cost) {// one way game
+		return false;
+	}
+
 	var lx=this.tab.length,ly=this.tab[0].length,x=-1,y;
 	while(++x<lx){
 		y=0;
@@ -205,7 +212,7 @@ Game_shot.prototype.display=function(mode){
 
 Game_shot.prototype.Aetoile=function(){
 	var todo=[],done=[],current=this,x=current.target[0],y=current.target[1],fils,i,trouver;
-	var information=0,nbInformation=100;
+	var information=0,nbInformation=1000;
 	while(current.distanceE>1 ){
 		if(++information>nbInformation){
 			postMessage({cmd:"solutionUpdate",done:done.length,tocompute:todo.length,distance:current.distanceC+"/"+current.distanceE});

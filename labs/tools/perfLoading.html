@@ -65,6 +65,11 @@
             padding: 1em;
         }
 
+        #messages {
+            color: red;
+            left-margin: 2em;
+        }
+
         #Results h2{
             margin-bottom: 0;
         }
@@ -125,6 +130,8 @@
 <section>
     <div class="inputSource">
         <label>Performance source: <textarea id="source" placeholder="paste the performance JSON here"></textarea></label>
+        <label><input type="checkbox" id="offset0">display chart from first data</label>
+        <span id="messages"></span>
     </div>
     <div class="helper">
         Generate the performance source code:<br>
@@ -170,6 +177,10 @@ function(e){
 };
 
 document.getElementById('source').onchange = manageCode;
+document.getElementById('offset0').onchange = changeOptionOffset;
+var messages = document.getElementById('messages');
+
+var optionOffset = false;
 
 var getColor = (function(){
     var i = 0;
@@ -177,6 +188,11 @@ var getColor = (function(){
         return 138 * i++ % 360;
     };
 })();
+
+function changeOptionOffset() {
+    optionOffset = this.checked;
+    manageCode.call(document.getElementById('source'));
+}
 
 function copyToClipboard(text, title){
     title = '\n\n' + title || '';
@@ -187,9 +203,24 @@ function copyToClipboard(text, title){
 function manageCode(){
     'use strict';
 
-    if(!this.value){ return; }
-    var perf = JSON.parse(this.value);
-    if(!perf){ return; }
+    if(!this.value){
+        messages.textContent = 'Please add a source.';
+        return;
+    }
+    var perf;
+    try {
+        perf = JSON.parse(this.value);
+    } catch(e) {
+        try {
+            perf = JSON.parse(this.value.substring(1, this.value.length -1));
+        } catch(e) {}
+    }
+    if(!perf){
+        messages.textContent = 'JSON is not valid.';
+        return;
+    }
+
+    messages.textContent = '';
 
     perf = parse(perf);
     render(perf);
@@ -340,13 +371,16 @@ function manageCode(){
 
         function searchDuration(){
             var max = -Infinity,
+                min = Infinity,
                 li = perfLog.chrono.length;
 
             while(li--){
                 max = Math.max(max, perfLog.chrono[li].start + perfLog.chrono[li].value);
+                min = Math.min(min, perfLog.chrono[li].start);
             }
 
             perfLog.size = max;
+            perfLog.min = min;
         }
 
         return perfLog;
@@ -354,6 +388,7 @@ function manageCode(){
     }
 
     function render(perfLog){
+        var offset0 = optionOffset ? perfLog.min : 0;
         var canvas = document.getElementById('graphAnalyze'),
             iCanvas = document.getElementById('interactiveCanvas'),
             ctx = canvas.getContext('2d'),
@@ -460,7 +495,7 @@ function manageCode(){
             var width = canvas.width = iCanvas.width = canvas.offsetWidth;
             canvas.height = iCanvas.height = 120;
 
-            var sz = width / perfLog.size;
+            var sz = width / (perfLog.size - offset0);
 
             ctx.clearRect(0, 0, width, 120);
 
@@ -475,7 +510,7 @@ function manageCode(){
                 if(!iList.color){
                     iList.color = getColor();
                 }
-                var offsetX = iList.start * sz,
+                var offsetX = (iList.start - offset0) * sz,
                     offsetY = deep * 20 ;
 
                 ctx.beginPath();
@@ -504,7 +539,7 @@ function manageCode(){
                     return x > v[0] - 5 && x < v[1] + 5;
                 }),
                 info = document.getElementById('info'),
-                html = 'time: '+ (x / canvas.offsetWidth * perfLog.size).toFixed(3) +' ms<br>';
+                html = 'time: '+ (x / canvas.offsetWidth * (perfLog.size - offset0) + offset0).toFixed(3) +' ms<br>';
 
             area.forEach(function(v){
                 var item = v[2];
@@ -534,11 +569,11 @@ function manageCode(){
             }
 
             if(recalc){
-                x = X * canvas.offsetWidth / perfLog.size;
+                x = (X - offset0) * canvas.offsetWidth / (perfLog.size - offset0);
                 pos = X;
             }else{
                 x = X;
-                pos = X / canvas.offsetWidth * perfLog.size;
+                pos = X / canvas.offsetWidth * (perfLog.size - offset0) + offset0;
             }
 
             iCtx.beginPath();

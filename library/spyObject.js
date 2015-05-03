@@ -181,13 +181,15 @@ function spyObject(obj, prefix, exclude){
 		while(i--){
 			obj = perfMeasured[i];
 			if(st = stat[obj.name]){
-				st.duration = (st.duration * st.count + obj.value ) / ++st.count;
+				st.total += obj.value;
+				st.duration = st.total / ++st.count;
 				st.min = Math.min(st.min, obj.value);
 				st.max = Math.max(st.max, obj.value);
 			}else{
 				stat[obj.name] = {
 					count: 1,
 					duration: obj.value,
+					total: obj.value,
 					min: obj.value,
 					max: obj.value
 				};
@@ -360,7 +362,7 @@ function spyObject(obj, prefix, exclude){
 		for(i in stat){
 			if(stat.hasOwnProperty(i)){
 				obj = stat[i];
-				info.push(i + ': called ' + obj.count + ' times. Average duration: ' + obj.duration.toFixed(3) + 'ms ( ±' + ((obj.max-obj.min)/2).toFixed(3) + 'ms )');
+				info.push(i + ': called ' + obj.count + ' times. Average duration: ' + obj.duration.toFixed(3) + 'ms ( ±' + ((obj.max-obj.min)/2).toFixed(3) + 'ms ) total: ' + obj.total.toFixed(3) + 'ms');
 			}
 		}
 
@@ -369,7 +371,28 @@ function spyObject(obj, prefix, exclude){
 				chrono: spyInterface.timeline(resetStartTime)
 			};
 
-		return JSON.stringify(perfCode);
+		return JSON.stringify(json(perfCode, 2));
+
+		function json(obj, deep) {
+			var jsObj;
+			var key;
+
+			try {
+				JSON.stringify(obj);
+				jsObj = obj;
+			} catch(e) {
+				if (deep--) {
+					jsObj = {};
+					for(key in obj) {
+						jsObj[key] = json(obj[key], deep);
+					}
+				} else {
+					jsObj = '[Object]';
+				}
+			}
+
+			return jsObj;
+		}
 	};
 
 	/**

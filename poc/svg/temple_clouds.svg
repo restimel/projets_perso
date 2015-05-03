@@ -1,0 +1,519 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="900" height="900" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<title>temple_clouds</title>
+
+<defs>
+
+<linearGradient id="mur" x1="0%" y1="0%" x2="100%" y2="0%">
+	<stop offset="0%" style="stop-color:#cf9c7f;stop-opacity:1"/>
+	<stop offset="100%" style="stop-color:#79503c;stop-opacity:1"/>
+</linearGradient>
+
+<linearGradient id="degrade_muret" x1="0%" y1="0%" x2="100%" y2="0%">
+	<stop offset="0%" style="stop-color:#cf9c7f;stop-opacity:1"/>
+	<stop offset="40%" style="stop-color:#79503c;stop-opacity:1"/>
+	<stop offset="50%" style="stop-color:#79503c;stop-opacity:1"/>
+	<stop offset="100%" style="stop-color:#cf9c7f;stop-opacity:1"/>
+</linearGradient>
+
+<pattern id="cordage" patternUnits="userSpaceOnUse" x="0" y="0" width="10" height="20">
+	<path d="M0,0 V20" class="corde"/>
+</pattern> 
+
+<!--<pattern id="plancher" patternUnits="userSpaceOnUse" x="0" y="0" width="10" height="10">
+	<path d="M0,0 H10" class="corde"/>
+</pattern> //deprecated?
+-->
+
+<linearGradient id="plancher" x1="0%" y1="0%" x2="100%" y2="0%">
+	<stop offset="0%" style="stop-color:#69403c;stop-opacity:1"/>
+	<stop offset="55%" style="stop-color:#69403c;stop-opacity:1"/>
+	<stop offset="56%" style="stop-color:#e19b75;stop-opacity:1"/>
+	<stop offset="100%" style="stop-color:#e19b75;stop-opacity:1"/>
+</linearGradient>
+
+<radialGradient id="degrade_flamme" cx="50%" cy="80%" r="50%" fx="50%" fy="100%" gradientUnits="objectBoundingBox">
+		<stop offset="0%" style="stop-color:orange;stop-opacity:0.8;"/>
+		<stop offset="40%" style="stop-color:yellow;stop-opacity:0.7;"/>
+		<stop offset="80%" style="stop-color:red;stop-opacity:0.8;"/>
+		<stop offset="100%" style="stop-color:#660000;stop-opacity:0.3;"/>
+		<animate attributeName="fx" attributeType="XML" values="50%;80%;30%;50%" begin="0s" dur="3.91s" repeatCount="indefinite"/>
+		<animate attributeName="fy" attributeType="XML" values="100%;85%;115%;75%;100%" begin="0s" dur="4.1s" repeatCount="indefinite"/>
+</radialGradient>
+
+<radialGradient id="degrade_toit" cx="0%" cy="0%" r="90%" fx="50%" fy="40%" gradientUnits="objectBoundingBox">
+		<stop offset="0%" style="stop-color:#b97558;stop-opacity:1;"/><!--c8977d-->
+		<stop offset="100%" style="stop-color:#945e46;stop-opacity:1;"/>
+</radialGradient>
+
+<radialGradient id="fond_soleil" cx="38%" cy="10%" r="50%" gradientUnits="objectBoundingBox">
+		<stop offset="0%" style="stop-color:#ffeecc;stop-opacity:0.5;"/>
+		<stop offset="10%" style="stop-color:#fceac4;stop-opacity:0.9;"/>
+		<stop offset="30%" style="stop-color:#fdc497;stop-opacity:0.8;"/>
+		<stop offset="50%" style="stop-color:#fceac4;stop-opacity:0.8;"/>
+		<stop offset="70%" style="stop-color:#fdc497;stop-opacity:0.9;"/>
+</radialGradient>
+
+<filter id="fond_nuage">
+		<feTurbulence baseFrequency="0.012,0.012" 
+			type="fractalNoise" numOctaves="3" seed="2">
+		</feTurbulence>
+		<feComponentTransfer result="final">
+			<feFuncR type="discrete" tableValues="0 0"/>
+			<feFuncG type="discrete" tableValues="0 0"/>
+			<feFuncB type="discrete" tableValues="0.2 0.2"/>
+		</feComponentTransfer>
+		<feColorMatrix type="matrix" values="
+			0 0 1 1 0
+			0 0 0.917 0.77 0
+			0 0 0.768 0.59 0
+			0 0 0 0 1"/>
+			
+</filter>
+
+<marker id="cone" markerWidth="4" markerHeight="4" refX="0" refY="2" orient="auto">
+	<polyline points="0,0 4,2 0,4"/>
+</marker>
+
+<style>
+<![CDATA[
+	.corde{
+		fill:none;
+		stroke:#79503c;
+		stroke-width:1px;
+		stroke-linecap:butt;
+		stroke-linejoin:miter;
+		stroke-opacity:1;
+	}
+	
+	#cone,.poteau{
+		stroke:#6f483b;
+		fill:#6f483b;
+	}
+	.poteau{
+		fill:none;
+		stroke-width:2px;
+		stroke-linecap:butt;
+		stroke-linejoin:miter;
+		stroke-opacity:1;
+		marker-start:url(#cone);
+	}
+	
+	.plancher{
+		fill:url(#plancher);
+		fill-rule:evenodd;
+		stroke:#79503c;
+		stroke-width:1px;
+		stroke-linecap:butt;
+		stroke-linejoin:miter;
+		stroke-opacity:0.8;
+	}
+	.flamme{
+		fill:url(#degrade_flamme);
+		fill-opacity: 1;
+		stroke:none;
+		/*stroke-width:0.1;
+		stroke-opacity:0.3;
+		stroke-linejoin:miter;
+		stroke-miterlimit:10;*/
+	}
+	.fond_soleil{
+		stroke:none;
+		fill:url(#fond_soleil);
+		fill-opacity: 0.7;/*debug*/
+	}
+	.fond_nuage{
+		stroke:none;
+		filter:url(#fond_nuage);
+		filter-opacity: 0.5;
+	}
+	
+	.piloti{
+		fill:none;
+		stroke:#6f483b;
+		stroke-width:3px;
+		stroke-linecap:butt;
+		stroke-linejoin:bevel;
+		stroke-opacity:1;
+	}
+	
+	.toit{
+		fill:url(#degrade_toit);
+		stroke:#6f483b;
+		stroke-width:1px;
+		stroke-linecap:round;
+		stroke-linejoin:miter;
+		stroke-miterlimit:10;
+		stroke-opacity:0.6;
+	}
+	.muret{
+		fill:url(#degrade_muret);
+		stroke:#cf9c7f;
+		stroke-bottom:none;
+	}
+	.facade{
+		fill:url(#degrade_muret);
+		stroke:#79503c;
+		stroke-bottom:none;
+	}
+	.fenetre{
+		fill:#102030;
+		stroke:#604030;
+	}
+	.feuille{
+		fill:#615602;
+		stroke:#726902;
+	}
+]]>
+</style>
+
+<!--
+ groupe d'objets
+-->
+
+<path id="pont_cordes_part1"
+     class="corde"
+     style="fill:url(#cordage);"
+     d="M0,0 c157,82 197,47 246,3 v26 c-70,56 -119,60 -246,-2 z"
+>
+	<animate
+		id="animate_pont_cordes1"
+		attributeName="d"
+		attributeType="XML"
+		to="M0,0 c157,32 157,47 246,3 v26 c-70,26 -119,45 -246,-2 z"
+		begin="pont_cordes.click"
+		dur="250ms"
+		restart="whenNotActive"
+		fill="freeze"
+		additive="sum"
+	/>
+	<animate
+		id="animate_pont_cordes2"
+		attributeName="d"
+		attributeType="XML"
+		to="M0,0 c127,112 207,32 246,3 v26 c-70,76 -100,67 -246,-2 z"
+		begin="animate_pont_cordes1.end"
+		dur="500ms"
+		restart="whenNotActive"
+		fill="freeze"
+		additive="sum"
+	/>
+	<animate
+		id="animate_pont_cordes3"
+		attributeName="d"
+		attributeType="XML"
+		to="M0,0 c157,82 197,47 246,3 v26 c-70,56 -119,60 -246,-2 z"
+		begin="animate_pont_cordes2.end"
+		dur="1s"
+		restart="whenNotActive"
+		fill="freeze"
+	/>
+</path>
+
+<path id="pont_cordes_part2"
+     class="plancher"
+     d="M12,26 c127,62 176,58 246,2 h-12 c-70,56 -119,60 -246,-2 z"
+>
+	<animate
+		id="animate_pont_cordes11"
+		attributeName="d"
+		attributeType="XML"
+		to="M12,26 c127,47 176,28 246,2 h-12 c-70,26 -119,45 -246,-2 z"
+		begin="animate_pont_cordes1.begin"
+		dur="250ms"
+		restart="auto"
+		fill="freeze"
+		additive="sum"
+	/>
+	<animate
+		id="animate_pont_cordes12"
+		attributeName="d"
+		attributeType="XML"
+		to="M12,26 c146,69 176,78 246,2 h-12 c-70,76 -100,67 -246,-2 z"
+		begin="animate_pont_cordes2.begin"
+		dur="500ms"
+		restart="whenNotActive"
+		fill="freeze"
+		additive="sum"
+	/>
+	<animate
+		id="animate_pont_cordes13"
+		attributeName="d"
+		attributeType="XML"
+		to="M12,26 c127,62 176,58 246,2 h-12 c-70,56 -119,60 -246,-2 z"
+		begin="animate_pont_cordes3.begin"
+		dur="1s"
+		restart="whenNotActive"
+		fill="freeze"
+	/>
+</path>
+
+
+<!--
+	Objet principal "Pont de cordes"
+-->
+<g id="pont_cordes">
+	//cordage derriere
+	<use xlink:href="#pont_cordes_part1"/>
+	<line x1="246" y1="2" x2="265" y2="28" class="corde"/>
+	<use xlink:href="#flamme" transform="translate(246,-3) scale(0.7,0.8)"/>
+	<line x1="246" y1="-3" x2="246" y2="28" class="poteau"/>
+	<line x1="0" y1="0" x2="-20" y2="26" class="corde"/>
+	<use xlink:href="#flamme" transform="translate(0,-5) scale(0.9,1)"/>
+	<line x1="0" y1="-5" x2="0" y2="26" class="poteau"/>
+
+	//plancher
+	<use xlink:href="#pont_cordes_part2"/>
+
+	//cordage avant
+	<use xlink:href="#pont_cordes_part1" transform="translate(12,0)"/>
+	<line x1="258" y1="2" x2="277" y2="28" class="corde"/>
+	<use xlink:href="#flamme" transform="translate(258,-3) scale(0.7,0.9)"/>
+	<line x1="258" y1="-3" x2="258" y2="28" class="poteau"/>
+	<line x1="12" y1="0" x2="-8" y2="26" class="corde"/>
+	<use xlink:href="#flamme" transform="translate(12,-5) scale(0.9,1.15)"/>
+	<line x1="12" y1="-5" x2="12" y2="26" class="poteau"/>
+</g>
+
+<!--
+	Objet principal "flamme"
+-->
+<g id="flamme">
+<path
+	class="flamme"
+	d="M0,0 c1,0 2,0 3,-2 c-1,2 -1,-2 -1,-3 c0,-1 0,-3 0,-3 c0,-1 -2,-2 -2,-2 c0,1 0,2 0,3 c0,1 -1,2 -1,4 z"
+>
+	<animate attributeName="d" attributeType="XML"
+	begin="0s" dur="8.5s" fill="freeze"
+	values="
+		M0,0 c1,0 2,0 3,-2 c-1,2 -1,-2 -1,-3 c0,-1 0,-3 0,-3 c0,-1 -2,-2 -2,-2 c0,1 0,2 0,3 c0,1 -1,2 -1,4 z;
+		M0,0 c3,1 2,1 3,-1 c-1,0 -3,-1 -1,-6 c-2,5 1,-1 1,-3 c0,2 0,1 -2,3 c2,-2 -1,-1 -2,2 c1,-3 -3,2 -3,4 z;
+		M0,0 c0,1 1,3 1,-2 c-1,-2 1,-1 -1,-6 c-1,-2 -2,3 1,-2 c1,-3 0,2 -3,3 c0,-1 -3,-1 -1,3 c0,-1 -1,3 -1,5 z;
+		M0,0 c3,0 4,-1 3,-3 c0,-2 -1,-2 -1,-6 c2,-3 -2,-1 -1,-8 c-1,6 -5,6 -4,10 c1,2 3,3 3,7 c0,1 1,1 0,-1 z;
+		M0,0 c1,0 2,0 3,-2 c-1,2 -1,-2 -1,-3 c0,-1 0,-3 0,-3 c0,-1 -2,-2 -2,-2 c0,1 0,2 0,3 c0,1 -1,2 -1,4 z
+	"
+	repeatCount="indefinite"
+	/>
+</path>
+</g>
+
+<g id="branche">
+	<ellipse rx="2" ry="3" transform="" class="feuille"/>
+	<ellipse rx="2" ry="4" transform="rotate(15) translate(0,2)" class="feuille"/>
+	<ellipse rx="3" ry="2" transform="rotate(15) translate(1,4)" class="feuille"/>
+	<ellipse rx="1" ry="3" transform="rotate(-15) translate(0,6)" class="feuille"/>
+	<ellipse rx="2" ry="3" transform="rotate(25) translate(2,8)" class="feuille"/>
+	<ellipse rx="1" ry="2" transform="rotate(-10) translate(-1,10)" class="feuille"/>
+	<ellipse rx="1" ry="3" transform="rotate(5) translate(1,12)" class="feuille"/>
+	<ellipse rx="1" ry="2" transform="rotate(-5) translate(-1,14)" class="feuille"/>
+</g>
+<!--
+	Objet principal "plante"
+-->
+<g id="plante">
+	<use xlink:href="#branche" transform="scale(0.6 1.2)"/>
+	<use xlink:href="#branche" transform="translate(-1,0) rotate(25) scale(1 1.05)"/>
+	<use xlink:href="#branche" transform="rotate(15) scale(0.95 1)"/>
+	<use xlink:href="#branche" transform="rotate(45) scale(0.8 1.1)"/>
+	<use xlink:href="#branche" transform="translate(-1,0) rotate(75) scale(0.9 1)"/>
+	<use xlink:href="#branche" transform="translate(-2,1) rotate(55) scale(1.1 0.8)"/>
+	<use xlink:href="#branche" transform="translate(2,2) rotate(100) scale(0.7 0.95)"/>
+	<use xlink:href="#branche" transform="translate(1,2) rotate(140) scale(0.9 1)"/>
+	<use xlink:href="#branche" transform="translate(0,3) rotate(120) scale(0.55 1.3)"/>
+</g>
+
+<path id="toit" d="M -32,0 c14,-5 26,-11 32,-21 c6,11 22,19 32,21 z" class="toit" />
+<!--
+	Objet principal "kiosque"
+-->
+<g id="kiosque">
+	<!--
+	width: [0,65] height: [-24?,0]
+	-->
+	<!--poteaux-->
+	<line x1="8" y1="0" x2="8" y2="-24" class="piloti"/>
+	<line x1="16" y1="0" x2="16" y2="-24" class="piloti"/>
+	<line x1="32" y1="0" x2="32" y2="-24" class="piloti"/>
+	<line x1="48" y1="0" x2="48" y2="-24" class="piloti"/>
+	<line x1="56" y1="0" x2="56" y2="-24" class="piloti"/>
+	<!--base-->
+	<!--<line x1="0" y1="-24" x2="65" y2="-24" class="piloti"/>-->
+	<line x1="0" y1="0" x2="65" y2="0" class="piloti"/>
+	<!-- toit -->
+	<use xlink:href="#toit" transform="translate(32,-24)"/>
+	<use xlink:href="#toit" transform="translate(32,-35) scale(0.6)"/>
+</g>
+
+<polygon id="p_fenetre" points="0,0 0,-32 4,-32 4,-24 0,-24 4,-24 4,-16 0,-16 4,-16 4,-8 0,-8 4,-8 4,0" class="fenetre"/>
+<g id="fenetre">
+	<use xlink:href="#p_fenetre" transform="skewY(-15) translate(0,0.8038)" />
+	<use xlink:href="#p_fenetre" transform="translate(6,0)" />
+	<use xlink:href="#p_fenetre" transform="translate(12,0) skewY(15)" />
+</g>
+
+<mask id="mask_facade">
+		<polyline points="29,0 29,-40 109,-40 109,0" class="facade"/>
+		<!--<rect id="carre" x="29" y="-40" width="80" height="40" style="fill:white;stroke:white;stroke-width:1px;"/>-->
+</mask>
+
+<!--
+	Objet principal "maison"
+-->
+<g id="maison">
+	<!--
+	width: [0,141] height: [-38?,0]
+	-->
+	<!--facade-->
+	<polyline points="29,0 29,-40 109,-40 109,0" class="facade"/>
+	<g  style="mask:url(#mask_facade);">
+		<use xlink:href="#fenetre" transform="translate(20,-1)"/>
+		<use xlink:href="#fenetre" transform="translate(58,-1) scale(1.2,1)"/>
+		<use xlink:href="#fenetre" transform="translate(100,-1)"/>
+	</g>
+	<!--plante-->
+	<use xlink:href="#plante" transform="translate(9,-12) scale(0.8 1) rotate(54)"/>
+	<use xlink:href="#plante" transform="translate(1,-14) scale(0.95 1.1)"/>
+	<!--poteaux-->
+	<line x1="8" y1="0" x2="8" y2="-38" class="piloti"/>
+	<line x1="16" y1="0" x2="16" y2="-38" class="piloti"/>
+	<line x1="42" y1="0" x2="42" y2="-38" class="piloti"/>
+	<line x1="90" y1="0" x2="90" y2="-38" class="piloti"/>
+	<line x1="118" y1="0" x2="118" y2="-38" class="piloti"/>
+	<line x1="131" y1="0" x2="131" y2="-38" class="piloti"/>
+	<!--plante-->
+	<use xlink:href="#plante" transform="translate(130,-14) scale(-0.45 0.60) rotate(97)"/>
+	<!--base-->
+	<polyline points="0,0 0,-14 141,-14 141,0" class="muret"/>
+	<!-- toit -->
+	<use xlink:href="#toit" transform="translate(70,-38) scale(2.2)"/>
+	<use xlink:href="#toit" transform="translate(70,-54) scale(1.5,1.6)"/>
+	<use xlink:href="#toit" transform="translate(70,-76) scale(0.8,1.2)"/>
+</g>
+
+
+<!--
+	Objet principal "rocher"
+-->
+<g id="rocher">
+	<path
+		style="fill:#5d432f;stroke:#6c4e34;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+		d="m 16.5,0 9.05721,-25.50317 -3.09852,-16.20763 10.01059,-5.0053 8.81886,-3.81356 c 10.43209,2.52059 12.1115,6.04171 18.11441,-4.0519 l 13.1091,5.72034 c 6.99153,-1.81369 10.16949,1.09496 17.16102,2.86017 l 6.19703,9.5339 1.663136,36.92796638" />
+	<path
+		style="fill:#834e3e;stroke:#805948;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+		d="m 46,-117.982 -7.62712,9.05721 -5.0053,16.44597 c 1.3993,1.96065 2.91757,4.54732 0.71504,8.81886 l -8.5805,3.09852 c -2.95237,1.11388 -5.88515,26.20902 -4.05192,37.89724 0.70629,8.82664 -8.43892,28.31694 -12.87075,42.66419 L 8.3411,-0.23835 71.16164,-1.3181868 68.150116,-35.127097 56.142166,-44.1375 59.56653,-55.770389 c -8.362094,-2.14101 -5.709418,-28.383436 -3.166171,-48.271061 l -6.639768,-7.31343"/>
+	<path
+		style="fill:#cb9e87;stroke:#cb9480;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:0.75294119"
+		d="m 0,0 6.91207,-28.12501 2.38348,-17.39936 5.72034,-10.96398 c 2.81836,-5.46348 0.14825,-20.93292 0.95339,-25.26483 l 6.19703,-9.0572 c -0.0483,-9.50695 6.88469,-19.93654 12.87077,-28.84005 l 11.91736,1.19174 c 5.44589,5.7492 10.73048,11.98231 17.39937,14.0625 l 5.0053,22.643 13.82415,18.11441 c 7.3024,8.36359 12.28255,21.73116 13.34746,31.93856 l 1.66843,34.56039"/>
+		
+		
+<!--TODO à uniformiser-->		
+		<path
+       d="m 0,0 6.91207,-28.12501 2.38348,-17.39936 5.72034,-10.96398 c 2.81836,-5.46348 0.14825,-20.93292 0.95339,-25.26483 l 6.19703,-9.0572 c -0.0483,-9.50695 6.88469,-19.93654 12.87077,-28.84005 l 11.91736,1.19174 c 5.44589,5.7492 10.73048,11.98231 17.39937,14.0625 l 5.0053,22.643 13.82415,18.11441 c 7.3024,8.36359 12.28255,21.73116 13.34746,31.93856 l 1.66843,34.56039"
+       style="fill:#cb9e87;stroke:#cb9480;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1" />
+    <path
+       d="m 46,-117.982 -7.62712,9.05721 -5.0053,16.44597 c 1.3993,1.96065 2.91757,4.54732 0.71504,8.81886 l -8.5805,3.09852 c -2.95237,1.11388 -5.88515,26.20902 -4.05192,37.89724 0.70629,8.82664 -8.43892,28.31694 -12.87075,42.66419 L 8.3411,-0.23835 71.16164,-1.3181868 68.150116,-35.127097 56.142166,-44.1375 59.56653,-55.770389 c -8.362094,-2.14101 -5.709418,-28.383436 -3.166171,-48.271061 l -6.639768,-7.31343"
+       style="fill:#834e3e;stroke:#a36f5b;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:0.54117649999999995;filter:url(#filter3912)" />
+    <path
+       id="path3070"
+       d="m 16.5,0 9.05721,-25.50317 -3.09852,-16.20763 10.01059,-5.0053 8.81886,-3.81356 c 10.43209,2.52059 12.1115,6.04171 18.11441,-4.0519 l 13.1091,5.72034 c 6.99153,-1.81369 10.16949,1.09496 17.16102,2.86017 l 6.19703,9.5339 1.663136,36.92796638"
+       style="fill:#5d432f;stroke:#866140;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:0.53333335999999998;filter:url(#filter3924)" />
+    <path
+       d="m 46.7161,-108.20975 c -6.19703,62.923731 -1.90678,62.447031 -1.90678,62.447031 l -4.29025,19.54449 -6.19704,15.25424 -0.47669,11.91737003 0,-26.21822003 8.10381,-14.77754 -1.43008,-37.1822 6.67373,-35.275431"
+       style="fill:#452110;stroke:#7e442f;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.60784316000000005;fill-opacity:0.57254905000000000;filter:url(#filter3968)" />
+    <path
+       d="m 54.819915,-106.30297 3.33687,21.927967 0,21.92796 5.720326,28.125 -1.906766,22.88136 -5.24365,6.6737297 2.38348,-8.1038197 c 2.2174,-2.7228 2.25873,-11.97379 3.33686,-18.1144 -2.68647,-10.72746 -2.97288,-17.45481 -9.0572,-33.84534 3.37864,-5.72881 0.9742,-24.95145 0.95339,-38.612287"
+       style="fill:#452110;stroke:#7e442f;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.73333335;fill-opacity:0.57254905000000000;filter:url(#filter3948)" />
+       
+   <!-- jusqu'ici -->    
+		
+</g>
+
+</defs>
+
+
+<!--
+***********************************
+	DESSIN
+***********************************
+-->
+
+<!--fond-->
+<!--nuage -->
+<!--
+<rect x="0" y="0" width="100%" height="100%" class="fond_nuage"/> 
+-->
+<rect x="0" y="0" width="100%" height="100%" class="fond_soleil"/>
+
+<!-- debug -->
+<!--
+<image xlink:href="./temple_clouds.jpg" x="0" y="0" width="900" height="900" style="opacity: 0.5;"/>
+-->
+
+<!--montagne-->
+<use xlink:href="#rocher" transform="translate(455,700) scale(2.5,3.5)"/>
+<!--kiosque-->
+<use xlink:href="#kiosque" transform="translate(125,450)"/>
+<use xlink:href="#kiosque" transform="translate(456,463) scale(0.75 1.4)"/>
+<!--maison droite-->
+<use xlink:href="#maison" transform="translate(655,394) scale(0.5,0.8)"/>
+
+<!--maison haut-->
+<use xlink:href="#maison" transform="translate(508,310)"/>
+<!--pont-->
+<use xlink:href="#pont_cordes" transform="translate(210,437) scale(1,0.9)"/>
+
+
+<!--
+	temp & test
+
+<use xlink:href="#pont_cordes" transform="translate(110,233) scale(0.5,0.5)"/>
+-->
+
+
+
+<!--
+<g>
+<path id="pont_corde1"
+     class="corde"
+     style="fill:url(#cordage);"
+     d="M222,433 c157,82 197,47 246,3 v26 c-70,56 -119,60 -246,-2 z"
+/>
+
+<path id="pont_corde2"
+     class="corde"
+     style="fill:url(#cordage2);"
+     d="M210,433 c157,82 197,47 246,3 v26 c-70,56 -119,60 -246,-2 z"
+/>
+
+<path id="pont_planche"
+     class="plancher"
+     d="M222,459 c127,62 176,58 246,2 h-12 c-70,56 -119,60 -246,-2 z"
+/>
+</g>
+-->
+
+
+<!--
+<path
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 208.60324,433.37551 C 302.27745,500.78926 386.30039,508.99119 457.51518,438.61336"
+     id="path2388"
+     inkscape:connector-type="polyline"
+     sodipodi:nodetypes="cc" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 208.60324,458.42612 C 334.7131,522.18242 397.2573,516.91682 457.28745,470.26822"
+     id="path2390"
+     inkscape:connector-type="polyline"
+     sodipodi:nodetypes="cc" />
+-->
+
+
+
+</svg>
+
+
+
+

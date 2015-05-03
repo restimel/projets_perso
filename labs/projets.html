@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<!--
+tuto.html
+
+Author: Benoit Mariat (b.mariat@gmail.com)
+Date: March 2015
+
+License: You are free to use, share, redistribute and modify it if you keep all authors and contributors names. ( http://creativecommons.org/licenses/by/3.0/)
+
+Vous êtes autorisés à utiliser, partager, redistribuer et modifier ce code tant que vous gardez les noms des auteurs et contributeurs. (http://creativecommons.org/licenses/by/3.0/deed.fr)
+
+
+Content: Projects that I have made.
+Original file: http://b.mariat.free.fr/
+
+-->
+<title>Projets</title>
+<link rel="stylesheet" type="text/css" href="menu.css">
+</head>
+<body>
+<h1>Projets</h1>
+<p>Vous pouvez découvrir ici quelques-uns des projets personnels que j'ai développés. Ces projets sont des applications de plus grande ampleur que les autres scripts présentés dans les autres sections.<br>
+Si vous remarquez des erreurs, merci de me prévenir.</p>
+<section>
+
+	<section>
+		<h2>Projets personnels</h2>
+		<article>
+			<header><h3><a href="./insideWeCube/index.html">InsideWeCube : résolveur de casse-tête 'insideZeCube'</a></h3></header>
+			<p>
+				Cette application permet de résoudre les cubes casse-tête '<a href="www.insidezecube.com">InsideZeCube</a>'. Il est également possible de construire ses propres cubes à l'aide de ceux que l'on possède.<br>
+				Ce projet utilise les technologies HTML5: web-workers et indexDB, et également CSS3: tranform (rotateZ).<br>
+				L'ensemble du code source est disponible sur <a href="https://github.com/restimel/insideWeCube">Github</a>. La version disponible ici est une version de développement et n'est pas forcément stable. Pour naviguer sur une version plus stable utilisez celle disponible <a href="https://restimel.github.io/insideWeCube/index.html">en ligne sur Github</a>.<br>
+				<br>
+				<a href="./insideWeCube/index.html">Accéder à l'application</a> <small title="cette application est en français et en anglais (au choix)">(fr + en)</small>
+			</p>
+		</article>
+		<article>
+			<header><h3><a href="./javascript/go05/go.html">Jugos : un éditeur de partie de Go</a></h3></header>
+			<p>
+				Cette application permet de lire et d'éditer des parties aux format <abbr title="Smart Game Format">SGF</abbr>. Il est également possible de compter les points en fin de partie ou de lancer des quizz à partir d'un fichier (le but étant de retrouver le coup joué).<br>
+				Le goban est affiché à l'aide du SVG.<br>
+				Ce projet figure parmi mes premiers réalisés en JavaScript (en 2007). Et bien qu'incomplet il est tout à fait fonctionnel. <a href="./javascript/go05/documentation/sgf_support.html">Consulter les fonctionnalités SGF supportées</a>.<br>
+				<br>
+				<a href="./javascript/go05/go.html">Accéder à l'application</a> <small title="cette application est en français et en anglais (selon le navigateur)">(fr + en)</small>
+			</p>
+		</article>
+	</section>
+
+</section>
+
+<script>
+//pour ajouter une action sur les tiles
+Array.prototype.forEach.call(document.querySelectorAll("article"),function(elem){elem.onclick=function(){location.href=elem.querySelector("a").href;};});
+</script>
+</body>
+</html>
