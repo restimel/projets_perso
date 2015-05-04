@@ -157,7 +157,7 @@ Original file: http://b.mariat.free.fr/
  	font-weight: bold;
  }
 
- .side5 a{
+ a.github{
  	position: absolute;
 	top: 25%;
 	left: 0;
@@ -195,19 +195,37 @@ Original file: http://b.mariat.free.fr/
 	margin: auto;
 }
 
+.warning {
+	position: absolute;
+	background-color: rgba(255, 50, 0, 0.9);
+	width: 500px;
+	height: 500px;
+	font-size: 40px;
+	z-index: 10000;
+	-webkit-transform: translateZ(-100000px) rotateX(90deg);
+	-moz-transform: translateZ(-100000px) rotateX(90deg);
+	-o-transform: translateZ(-100000px) rotateX(90deg);
+	-ms-transform: translateZ(-100000px) rotateX(90deg);
+	transform: translateZ(-100000px) rotateX(90deg);
+	text-align: center;
+}
+
 </style>
 
 <div id="container">
+	<div class="warning">
+		Sorry your browser does not support CSS perspective technology ☹
+	</div>
 	<input type="hidden" id="cubeColor" value="">
 	<div class="cube">
 		<div class="face side6">
 			<img src="img/smiley.png" alt="smiley">
 		</div><!--back-->
 		<div class="face side5">
-			<a href="https://github.com/restimel" target="_blank">Visit my Github page!</a>
+			<iframe src="./cube.html"></iframe>
 		</div>
 		<div class="face side4">
-		<iframe src="./cube.html"></iframe>
+			<a href="https://github.com/restimel" target="_blank" class="github">Visit my Github page!</a>
 		</div>
 		<div class="face side3">
 			<fieldset>
@@ -276,6 +294,10 @@ Original file: http://b.mariat.free.fr/
 		var transform = 'rotateX('+ position.x +'deg)  rotateY('+ position.y +'deg) rotateZ('+ position.z +'deg)';
 
 		cube.style.WebkitTransform = transform;
+		cube.style.MozTransform = transform;
+		cube.style.OTransform = transform;
+		cube.style.MsTransform = transform;
+		cube.style.transform = transform;
 	}
 
 	for(var x in position) {
