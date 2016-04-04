@@ -1,0 +1,414 @@
+<html>
+<head>
+<!--
+	Author: Benoit Mariat (b.mariat@gmail.com)
+	update: feb 5th 2011 (ajout de la correspondance des mauvaises réponses)
+-->
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>QCM linguistique</title>
+<style type="text/css">
+	.corrected{
+		font-style: italic;
+		font-size:9px;
+	}
+
+	.presentation th{
+		font-size: smaller;
+	}
+	.good{
+		color:green;
+	}
+	.failed{
+		color:red;
+	}
+</style>
+</head>
+<body>
+<script type="text/javascript">
+//var liste=[];
+
+
+var choix=[];
+
+var reponse=[]; // 0: ask 1: good answer 2: user answer 3: spent time for answer
+var time=0;
+var current_id=0;
+var dsp_answer=1;
+
+
+function fill(){ //DEPRECATED function (ne sert qu'à aider à remplir les grilles de caractères)
+	var txt="";
+	/*var katak=0x30a1;
+	var hirag=0x3041;
+	for(var i=0;i<95;i++){
+		if(latin[i]=="") continue;
+		if(latin[i]=="¿") continue;
+		txt+="liste1.push(['"+latin[i]+"','&#"+(hirag+i)+";']);<br>";
+		txt+="liste2.push(['"+latin[i]+"','&#"+(katak+i)+";']);<br>";
+	}*/
+	txt+="var hiragana=[";
+	for(var i=0; i<liste1.length; i++){
+		if(i) txt+=",";
+		txt+="['"+liste1[i][0]+"','"+liste1[i][1]+"']";
+	}
+	txt+="];<br>";
+	txt+="var katakana=[";
+	for(var i=0; i<liste2.length; i++){
+		if(i) txt+=",";
+		txt+="['"+liste2[i][0]+"','"+liste2[i][1]+"']";
+	}
+	txt+="];<br>";
+
+	document.getElementById('choix').innerHTML=txt;
+}
+
+function select_symbol(active,symbol){
+	choix[document.getElementById("choix").value][1][symbol][2]=active?1:0;
+}
+
+function select_all_symbol(active){
+	var tbl=choix[document.getElementById("choix").value][1];
+	var max=tbl.length;
+	var v=active?1:0;
+	for(var i=0;i<max;i++){
+		if(tbl[i][2]!==-1)tbl[i][2]=v;
+	}
+	table(choix[document.getElementById('choix').value]);
+}
+
+function table(info,boutons,ask_list,dsp_others){
+//display all answers
+	var c1=info[0][1];
+	var c2=info[0][2];
+	var nb_colonnes=10;
+
+	var liste=info[1];
+	txt='<table class="presentation" border="1">';
+
+	if(!boutons){
+		txt+='<tr>';
+		for(var i=0;i<nb_colonnes;i++){
+			txt+="<th></th>";
+			txt+="<th>"+c1+"</th>";
+			txt+="<th>"+c2+"</th>";
+			txt+="<th></th>";
+		}
+		txt+='</tr>';
+
+		for(var i=0,l=liste.length;i<l;i++){
+			if(i%nb_colonnes==0){
+				if(i) txt+="</tr>";
+				txt+="<tr>";
+			}
+			if(liste[i][2]===-1){
+				txt+="<td></td>";
+			}else{
+				txt+="<td><input type='checkbox' onchange='select_symbol(this.checked,"+i+")'"+(liste[i][2]==1?" checked":"")+"></td>";
+			}
+			txt+="<td onmouseover=\"document.getElementById('zoom').innerHTML='"+liste[i][0]+"'\" onmouseout=\"document.getElementById('zoom').innerHTML=''\">"+liste[i][0]+"</td>";
+			txt+="<td onmouseover=\"document.getElementById('zoom').innerHTML='"+liste[i][1]+"'\" onmouseout=\"document.getElementById('zoom').innerHTML=''\">"+liste[i][1]+"</td>";
+			txt+="<td></td>";
+		}
+	}else{
+		for(var i=0,l=liste.length;i<l;i++){
+			if(i%nb_colonnes==0){
+				if(i) txt+="</tr>";
+				txt+="<tr>";
+			}
+			if(liste[i][2]===-1){
+				txt+="<td></td><td></td>";
+			}else{
+				if(ask_list.indexOf(liste[i][0])===-1 && ask_list.indexOf(liste[i][1])===-1){
+					if(dsp_others){
+						txt+="<td onmouseover=\"document.getElementById('zoom').innerHTML='"+liste[i][0]+"'\" onmouseout=\"document.getElementById('zoom').innerHTML=''\">"+liste[i][0]+"</td>";
+						txt+="<td onmouseover=\"document.getElementById('zoom').innerHTML='"+liste[i][1]+"'\" onmouseout=\"document.getElementById('zoom').innerHTML=''\">"+liste[i][1]+"</td>";
+					}else{
+						txt+="<td></td><td></td>";
+					}
+				}else{
+					txt+='<td id="answ_'+liste[i][0]+'">';
+					if(boutons===1){
+						txt+="&nbsp;&nbsp;&nbsp;&nbsp;";
+					}else{
+						txt+="<button onmouseover=\"document.getElementById('zoom').innerHTML='"+liste[i][0]+"'\" onmouseout=\"document.getElementById('zoom').innerHTML=''\" onclick=\"var elem=document.getElementById('answ_'+reponse[current_id][0]);if(reponse[current_id][1]=='"+liste[i][0]+"'){elem.className='good';}else{elem.className='failed';} elem.innerHTML=reponse[current_id][0];answer('"+liste[i][0]+"');\">"+liste[i][0]+"</button>";
+					}
+					txt+='</td>';
+
+					txt+='<td id="answ_'+liste[i][1]+'">';
+					if(boutons===2){
+						txt+="&nbsp;&nbsp;&nbsp;&nbsp;";
+					}else{
+						txt+="<button onmouseover=\"document.getElementById('zoom').innerHTML='"+liste[i][1]+"'\" onmouseout=\"document.getElementById('zoom').innerHTML=''\" onclick=\"var elem=document.getElementById('answ_'+reponse[current_id][0]);if(reponse[current_id][1]=='"+liste[i][1]+"'){elem.className='good';}else{elem.className='failed';} elem.innerHTML=reponse[current_id][0];answer('"+liste[i][1]+"');\">"+liste[i][1]+"</button>";
+					}
+					txt+='</td>';
+				}
+			}
+			txt+="<td></td>";
+		}
+	}
+	txt+="</tr>";
+	if(!boutons){
+		txt+="<tr><td colspan='"+(nb_colonnes*4)+"'><input type='button' value='select all' onclick='select_all_symbol(true)'><input type='button' value='unselect all' onclick='select_all_symbol(false)'></td></tr>";
+		txt+="</table>";
+	}else{
+		txt+="</table>";
+		txt+='<input id="keyboard_entry" type="text" onchange="var elem=document.getElementById(\'answ_\'+reponse[current_id][0]);if(reponse[current_id][1]==this.value.toUpperCase()){elem.className=\'good\';}else{elem.className=\'failed\';} elem.innerHTML=reponse[current_id][0];answer(this.value.toUpperCase());this.value=\'\';this.focus();" onblur="this.focus();">';
+	}
+
+	document.getElementById("reponse").innerHTML=txt;
+}
+
+function change_choix(id){
+	document.getElementById("q1").value="Question about "+choix[id][0][1]+" symbol";
+	document.getElementById("q2").value="Question about "+choix[id][0][2]+" symbol";
+}
+
+function question(){
+	document.getElementById("question").innerHTML=reponse[current_id][0];
+	document.getElementById("info").innerHTML=(current_id+1)+"/"+reponse.length;
+	time=new Date();
+}
+
+function recherche_opp(car){
+	var i=0,tab=choix[document.getElementById("choix").value][1],li=tab.length;
+	while(i<li){
+		if(tab[i][0]===car) return tab[i][1];
+		if(tab[i][1]===car) return tab[i][0];
+		i++;
+	}
+	return "?";
+}
+
+function resultat(){
+	var i=0,l=reponse.length,total_time=0,score=0,txt="<table>",corr,tmp;
+	txt+="<tr><th>n°</th><th>Ask</th><th>Good answer</th><th>Your answer</th><th>time</th></tr>";
+	for(;i<l;i++){
+		if(reponse[i][2]===''){ break;}
+		txt+="<tr>";
+		txt+="<td>"+(i+1)+":</td>";
+		txt+="<td onmouseover=\"document.getElementById('zoom').innerHTML=this.textContent||this.innerText\" onmouseout=\"document.getElementById('zoom').innerHTML=''\">"+reponse[i][0]+"</td>";
+		txt+="<td><strong onmouseover=\"document.getElementById('zoom').innerHTML=this.textContent||this.innerText\" onmouseout=\"document.getElementById('zoom').innerHTML=''\">"+reponse[i][1]+"</strong></td>";
+		if(reponse[i][1]==reponse[i][2]){
+			txt+="<td style='color: green;'>"+reponse[i][2]+"</td>";
+			score++;
+		}else{
+			corr=recherche_opp(reponse[i][2]);
+			txt+="<td style='color: red;'>"+reponse[i][2]+"<span class=\"corrected\" onmouseover=\"document.getElementById('zoom').innerHTML='"+corr+"'\" onmouseout=\"document.getElementById('zoom').innerHTML=''\">("+corr+")</span></td>";
+		}
+		//alert(typeof(reponse[i][3])+" - "+reponse[i][3]);
+		var t_green=parseFloat(document.getElementById("time").value)*1000||5000;
+		//alert(t_green);
+		var t_orange=t_green*3;
+		if(reponse[i][3]<=t_green){
+			txt+="<td><font color='green'>"+(Math.round(reponse[i][3]/100)/10)+" s</font></td>";
+		}else if(reponse[i][3]<t_orange){
+			txt+="<td><font color='orange'>"+(Math.round(reponse[i][3]/100)/10)+" s</font></td>";
+		}else{
+			txt+="<td><font color='red'>"+(Math.round(reponse[i][3]/100)/10)+" s</font></td>";
+		}
+		total_time+=reponse[i][3];
+		txt+="</tr>";
+	}
+	txt+="<tr><th>total:</th><th colspan='2'></th><th>";
+	if(score/i==1){
+		txt+="<font color='green'>";
+	}else if(score/i>0.5){
+		txt+="<font color='orange'>";
+	}else{
+		txt+="<font color='red'>";
+	}
+	txt+=score+"/"+i+"</font></th><th>";
+	if(total_time<=t_green*i){
+			txt+="<font color='green'>";
+		}else if(total_time<=t_orange*i){
+			txt+="<font color='orange'>";
+		}else{
+			txt+="<font color='red'>";
+		}
+	txt+=(Math.round(total_time/100)/10)+" s</font></th></tr></table>";
+	document.getElementById("rslt").innerHTML=txt;
+}
+
+function answer(rsp){
+	var tm=Date.now();
+	reponse[current_id][3]=tm-time;
+	reponse[current_id][2]=rsp;
+
+	if(dsp_answer) resultat();
+	if(++current_id!=reponse.length){
+		question();
+	}else{
+		if(!dsp_answer) resultat();
+		//fin
+		document.getElementById("formulaire").style.visibility="visible";
+		//document.getElementById("reponse").innerHTML="";
+		document.getElementById("question").innerHTML="";
+		var i=0,l=reponse.length,j=0;
+		for(;i<l;i++){
+			if(reponse[i][1]==reponse[i][2]) j++;
+		}
+		document.getElementById("info").innerHTML="score:"+j+"/"+l;
+	}
+}
+
+function init_question(mode){
+	var nb=parseInt(document.getElementById("nb").value,10)||10;
+	//var chx=document.getElementById("choix").value;
+	var liste=choix[document.getElementById("choix").value][1],md=(mode+1)%2;
+	dsp_answer=document.getElementById('dsp_answer').checked?1:0;
+	reponse=[];
+	var max=liste.length;
+	var v=0,i=0,car,l;
+	var protect1=0,protect2=0,max_protect2=max*5,max_protect1=max_protect2*5;
+
+
+	//choose question
+	question: while(i<nb){
+		v=Math.floor(Math.random()*max);
+
+		if(liste[v][2]!==1){
+			protect1++;
+			if(protect1<max_protect1)
+			{
+				continue;
+			}
+		}
+		protect1=0;
+
+		if(i<liste.length){
+			car=liste[v][mode];
+			for(j=0,l=reponse.length;j<l;j++){
+				if(car==reponse[j][0]){
+					protect2++;
+					if(protect2<max_protect2)
+					{
+						continue question;
+					}
+				}
+			}
+		}
+		protect2=0;
+
+		reponse.push([car,liste[v][md],'',-1]);
+		//if(v==0) alert("("+i+")"+protect1+"/"+max_protect2+"||"+protect2+"/"+max_protect2+"=>"+v);
+		protect1=0;
+		protect2=0;
+		i++;
+	}
+
+	//difficulty
+	/*
+		possible answer:
+		0: table only questions (others are visible)
+		1: table only questions (others are invisible)
+		2: table
+		3: button sorted
+		4: all scrambled
+	*/
+	var diff=parseInt(document.getElementById('difficulte').value);
+	var liste_answer=[];
+	//generate all possible answer
+	if(diff<2 && nb<liste.length){
+		//create a reduce list
+		for(i=0;i<nb;i++){
+			liste_answer.push(reponse[i][1]);
+		}
+	}else{
+	//generate the full list
+		for(i=0;i<max;i++){
+			if(liste[i][2]==1) liste_answer.push(liste[i][md]);
+		}
+		//liste_answer=liste.join('ø').split('ø');
+	}
+
+	if(diff>3){
+		//scrambled
+		liste_answer=liste_answer.sort(function(){return (Math.random()-0.5); });
+	}else{
+		//ordered
+		liste_answer=liste_answer.sort();
+	}
+
+	if(diff>2){
+		//display all possible answer
+		max=liste_answer.length;
+		var txt="<table border='0'><tr>";
+		var asw="";
+		for(i=0;i<max;i++){
+			if(i%7==0){
+				if(i) txt+="</tr>";
+				txt+="<tr>";
+			}
+			answ=liste_answer[i];
+			txt+="<td><input type='button' value='"+answ+"' onclick=\"answer('"+answ+"')\" onmouseover=\"document.getElementById('zoom').innerHTML=this.value\" onmouseout=\"document.getElementById('zoom').innerHTML=''\"/></td>";
+		}
+		txt+="</tr></table>";
+		txt+='<input id="keyboard_entry" type="text" onchange="answer(this.value.toUpperCase());this.value=\'\';this.focus();" onblur="this.focus();">';
+		document.getElementById("reponse").innerHTML=txt;
+	}else{
+		//displayed in table mode
+		table(choix[document.getElementById("choix").value],mode+1,liste_answer,!diff);
+	}
+	document.getElementById("formulaire").style.visibility="hidden";
+	document.getElementById("rslt").innerHTML="";
+	current_id=0;
+	question();
+	document.getElementById("keyboard_entry").focus();
+}
+
+function init(){
+	//txt: 0: title	| 1: name of 1st column	| 2: name of 2nd column
+	//hiragana ou katakana: 0: Char1 | 1: Char2 | 2: is_active (-1:jamais;0:non;1:oui)
+	var hiragana_txt=['Hiragana','Romaji','Hiragana'];
+	var hiragana=[['A','あ',1],['I','い',1],['U','う',1],['E','え',1],['O','お',1],['','',-1],['','',-1],['VU','ゔ',1],['','',-1],['','',-1],['KA','か',1],['KI','き',1],['KU','く',1],['KE','け',1],['KO','こ',1],['GA','が',1],['GI','ぎ',1],['GU','ぐ',1],['GE','げ',1],['GO','ご',1],['SA','さ',1],['SHI','し',1],['SU','す',1],['SE','せ',1],['SO','そ',1],['ZA','ざ',1],['JI','じ',1],['ZU','ず',1],['ZE','ぜ',1],['ZO','ぞ',1],['TA','た',1],['CHI','ち',1],['TSU','つ',1],['TE','て',1],['TO','と',1],['DA','だ',1],['JI','ぢ',1],['ZU','づ',1],['DE','で',1],['DO','ど',1],['NA','な',1],['NI','に',1],['NU','ぬ',1],['NE','ね',1],['NO','の',1],['','',-1],['','',-1],['','',-1],['','',-1],['','',-1],['HA','は',1],['HI','ひ',1],['FU','ふ',1],['HE','へ',1],['HO','ほ',1],['BA','ば',1],['BI','び',1],['BU','ぶ',1],['BE','べ',1],['BO','ぼ',1],['','',-1],['','',-1],['','',-1],['','',-1],['','',-1],['PA','ぱ',1],['PI','ぴ',1],['PU','ぷ',1],['PE','ぺ',1],['PO','ぽ',1],['MA','ま',1],['MI','み',1],['MU','む',1],['ME','め',1],['MO','も',1],['','',-1],['','',-1],['','',-1],['','',-1],['','',-1],['YA','や',1],['','',-1],['YU','ゆ',1],['','',-1],['YO','よ',1],['','',-1],['','',-1],['','',-1],['','',-1],['','',-1],['RA','ら',1],['RI','り',1],['RU','る',1],['RE','れ',1],['RO','ろ',1],['','',-1],['','',-1],['','',-1],['','',-1],['','',-1],['WA','わ',1],['WI','ゐ',1],['','',-1],['WE','ゑ',1],['WO','を',1],['','',-1],['','',-1],['','',-1],['','',-1],['','',-1],['N','ん',1]];
+
+	var katakana_txt=['Katakana','Romaji','Katakana'];
+	var katakana=[['A','ア',1],['I','イ',1],['U','ウ',1],['E','エ',1],['O','オ',1],['','',-1],['','',-1],['VU','ヴ',1],['','',-1],['','',-1],['KA','カ',1],['KI','キ',1],['KU','ク',1],['KE','ケ',1],['KO','コ',1],['GA','ガ',1],['GI','ギ',1],['GU','グ',1],['GE','ゲ',1],['GO','ゴ',1],['SA','サ',1],['SHI','シ',1],['SU','ス',1],['SE','セ',1],['SO','ソ',1],['ZA','ザ',1],['JI','ジ',1],['ZU','ズ',1],['ZE','ゼ',1],['ZO','ゾ',1],['TA','タ',1],['CHI','チ',1],['TSU','ツ',1],['TE','テ',1],['TO','ト',1],['DA','ダ',1],['JI','ヂ',1],['ZU','ヅ',1],['DE','デ',1],['DO','ド',1],['NA','ナ',1],['NI','ニ',1],['NU','ヌ',1],['NE','ネ',1],['NO','ノ',1],['','',-1],['','',-1],['','',-1],['','',-1],['','',-1],['HA','ハ',1],['HI','ヒ',1],['FU','フ',1],['HE','ヘ',1],['HO','ホ',1],['BA','バ',1],['BI','ビ',1],['BE','ベ',1],['BU','ブ',1],['BO','ボ',1],['','',-1],['','',-1],['','',-1],['','',-1],['','',-1],['PA','パ',1],['PI','ピ',1],['PU','プ',1],['PE','ペ',1],['PO','ポ',1],['MA','マ',1],['MI','ミ',1],['MU','ム',1],['ME','メ',1],['MO','モ',1],['','',-1],['','',-1],['','',-1],['','',-1],['','',-1],['YA','ヤ',1],['','',-1],['YU','ユ',1],['','',-1],['YO','ヨ',1],['','',-1],['','',-1],['','',-1],['','',-1],['','',-1],['RA','ラ',1],['RI','リ',1],['RU','ル',1],['RE','レ',1],['RO','ロ',1],['','',-1],['','',-1],['','',-1],['','',-1],['','',-1],['WA','ワ',1],['WI','ヰ',1],['','',-1],['WE','ヱ',1],['WO','ヲ',1],['VA','ヷ',1],['VI','ヸ',1],['','',-1],['VE','ヹ',1],['VO','ヺ',1],['N','ン',1]];
+
+	var greek_txt=['Greek','name','Greek'];
+	var greek=[['ALPHA','',1]];
+
+
+
+	choix = [[hiragana_txt,hiragana],[katakana_txt,katakana]];
+
+	//var txt="";
+	var elem_sel=document.getElementById("choix");
+	var elem_option;
+	for(var i=0,l=choix.length;i<l;i++){
+		elem_option=document.createElement("option");
+		elem_option.setAttribute("value",i);
+		if(document.body.textContent){
+			elem_option.textContent=choix[i][0][0];
+		}else{
+			elem_option.innerText=choix[i][0][0];
+		}
+		elem_sel.appendChild(elem_option);
+		//txt+="<option value='"+i+"'>"+choix[i][0][0]+"</option>";
+	}
+
+	//document.getElementById("choix").innerHTML=txt;
+	change_choix(0);
+}
+
+
+window.onload=init;
+
+</script>
+
+<div id="formulaire">
+Choice: <select name="choix" id="choix" onchange="change_choix(this.value)"></select> - <span title="Number of question in a Test">Number of question:<input type="text" size="5" name="nb" id="nb" value="10"></span> - <span title="The Goal for 1 question (if you answered in this time it will be green)">Perfect Time:<input type="text" size="4" name="time" id="time" value="3">s</span><br>
+
+Difficulty: <select name="difficulte" id="difficulte"><option value="0">Beginner</option><option value="1">Average</option><option value="2" selected>Good</option><option value="3">Fluent</option><option value="4">Awesome</option></select> <span title="if checked you could see if have answered correctly immediately. If not you have to wait the end of the test to check"><input type="checkbox" name="dsp_answer" id="dsp_answer" checked> Display answer during the test</span><br>
+<input type="button" value="Table of all symbol" onclick="table(choix[document.getElementById('choix').value])" title="If you want to (re)learn or if you want to remove some symbol from the test"> -
+<input type="button" id="q1" value="Question 1" onclick="init_question(0);"> -
+<input type="button" id="q2" value="Question 2" onclick="init_question(1);"> -
+</div>
+<div id="info"></div>
+
+<div id="question" style="font-size:50;"></div>
+<div id="reponse"></div>
+<div id="zoom" style="font-size:40; height: 50;"></div>
+<div id="rslt"></div>
+</body>
+</html>
