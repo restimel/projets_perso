@@ -24,7 +24,7 @@ Original file: http://b.mariat.free.fr/index.html
 <nav class="extended">
 	<div></div><label></label>
 	<header>Benoît Mariat</header>
-	<a href="./cv/cv.html" target="contenu"><!--<img src="./cv.png" alt="cv">-->Curriculum Vitae</a>
+	<!-- <a href="./cv/cv.html" target="contenu">Curriculum Vitae</a> -->
 	<a href="./tools.html" target="contenu">Outils</a>
 	<a href="./demo.html" target="contenu">Démonstration & Jeux</a>
 	<a href="./projets.html" target="contenu">Projets</a>
@@ -46,7 +46,7 @@ Original file: http://b.mariat.free.fr/index.html
 	document.querySelector("nav>div").addEventListener("click",displayHideMenu,false);
 	iframe.addEventListener("load",iframeHistorique,false);
 	document.getElementById("previousPage").addEventListener("click",iframeBack,false);
-	
+
 	function displayHideMenu(e){
 	//permet d'afficher ou de cacher le menu de navigation
 		if(this.parentNode.className==="extended"){
@@ -55,10 +55,10 @@ Original file: http://b.mariat.free.fr/index.html
 			this.parentNode.className="extended";
 		}
 	}
-	
+
 	function iframeHistorique(e){
 	//permet de gérer l'historique de l'iframe afin de pouvoir naviguer facilement en arrière
-		
+
 		//récupération informations courante
 		var href=this.contentWindow.location.href,
 			title=this.contentDocument.title;
@@ -68,7 +68,7 @@ Original file: http://b.mariat.free.fr/index.html
 			if(currentPage) historiqueIframe.push(currentPage);
 			currentPage={href:href,title:title};
 		}
-		
+
 		//maj bouton
 		if(historiqueIframe.length){
 			historiqueTitle.textContent=historiqueIframe[historiqueIframe.length-1].title;
@@ -77,11 +77,11 @@ Original file: http://b.mariat.free.fr/index.html
 			historiqueTitle.textContent="-";
 			historiqueTitle.parentNode.disabled=true;
 		}
-		
+
 		//maj titre
 		document.title="Benoît Mariat : "+title;
 	}
-	
+
 	function iframeBack(){
 	//permet de revenir en arrière dans l'historique
 		var h=historiqueIframe.pop();
@@ -90,7 +90,7 @@ Original file: http://b.mariat.free.fr/index.html
 			iframe.src=h.href;
 		}
 	}
-	
+
 	//initialisation
 	iframe.src="indexLabs.html";
 	//iframeHistorique();

@@ -549,7 +549,7 @@ function Canvas(){
 						else cl="#660000";
 						tg.draw(ctx,cl,cl,[x+3,3],tg.size(this.taille/2-6,this.taille/2-6),true);
 					}
-					
+
 				}else{
 					//on est en mode visualisation de la figure à reproduire (une seule figure est à reproduire)
 					ctx.save();
@@ -728,12 +728,16 @@ function Canvas(){
 	document.onkeydown=function(event){
 		if(event.keyCode===68){ //d
 			debug=!debug;
+			console.log("mode debug: ",debug?"on":"false");
 		}
 		if(debug && event.keyCode===71){ //g
 			console.log(Tans.join("|")); //permet de récupérer les coordonées d'une nouvelle figure
 		}
 		if(event.keyCode===83){ //s
 			if(confirm("Are you sure you want to see the solution?")) zone_target.draw(ctx,true);
+		}
+		if(typeof help==="function"&&event.keyCode===72){ //h
+			help();
 		}
 	}
 }
